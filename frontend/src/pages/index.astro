@@ -1,0 +1,127 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlockRenderer from "../components/blocks/BlockRenderer.astro";
+import { STRAPI_URL } from "../lib/strapi";
+import type {
+  StrapiCollectionResponse,
+  StrapiPage,
+  NewsItem,
+} from "../types/strapi";
+
+// Deep-populate each dynamic-zone block. `populate=*` does NOT descend into a
+// dynamic zone's component fields in Strapi 5, so target each on a per-block
+// basis. Hero explicitly populates its `image` media relation.
+// Each block lists its populate targets. Strapi 5 rejects comma-separated
+// targets inside a dynamic-zone `[on]` populate, so multi-target blocks use the
+// indexed-array form (`[populate][0]`, `[populate][1]`).
+const blockPopulate: Record<string, string[]> = {
+  "blocks.hero": ["image"],
+  "blocks.services-grid": ["*"],
+  "blocks.featured-services": ["services", "image"],
+  "blocks.latest-news": ["image"],
+  "blocks.cta": ["*"],
+  "blocks.market-insight": ["*"],
+  "blocks.profile-card": ["*"],
+  "blocks.rich-text": ["*"],
+  "blocks.faq": ["*"],
+  "blocks.form": ["*"],
+};
+// Media nested inside a repeatable component (insights → icon) needs the
+// object-form populate; the flat array form above can't express that depth.
+// `=true` (not `=*`) for the image media relation — the wildcard makes Strapi
+// descend into the file's `related` morph and 400s with "Invalid key related".
+// `insights` is a repeatable component; populating it returns its string fields
+// (label, value, iconName) — no nested media populate needed anymore.
+const MARKET_INSIGHTS_POPULATE = [
+  "populate[content][on][blocks.market-insights-section][populate][image]=true",
+  "populate[content][on][blocks.market-insights-section][populate][insights]=true",
+];
+
+const populateQuery = [
+  ...Object.entries(blockPopulate).flatMap(([component, targets]) =>
+    targets.length === 1
+      ? `populate[content][on][${component}][populate]=${targets[0]}`
+      : targets.map(
+          (t, i) => `populate[content][on][${component}][populate][${i}]=${t}`,
+        ),
+  ),
+  ...MARKET_INSIGHTS_POPULATE,
+].join("&");
+
+// Target the home page deterministically by slug.
+const HOME_SLUG = "home";
+
+let page: StrapiPage | null = null;
+let news: NewsItem[] = [];
+let loadError = false;
+
+try {
+  const [pageRes, newsRes] = await Promise.all([
+    fetch(
+      `${STRAPI_URL}/api/pages?filters[slug][$eq]=${HOME_SLUG}&${populateQuery}`,
+    ),
+    fetch(
+      `${STRAPI_URL}/api/news?sort=date:desc&pagination[limit]=3&populate=photo`,
+    ),
+  ]);
+
+  if (!pageRes.ok) throw new Error(`Strapi /api/pages → ${pageRes.status}`);
+  const pageJson: StrapiCollectionResponse<StrapiPage> = await pageRes.json();
+  page = pageJson.data?.[0] ?? null;
+
+  if (newsRes.ok) {
+    const newsJson: StrapiCollectionResponse<NewsItem> = await newsRes.json();
+    news = newsJson.data ?? [];
+  }
+} catch (err) {
+  console.error("[index] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+const blocks = page?.content ?? [];
+---
+
+<BaseLayout
+  title={page?.title ?? "CCK — Regulating Kiribati's telecommunication market"}
+  description={page?.description ?? undefined}
+>
+  {
+    loadError && (
+      <section class="bg-surface">
+        <div class="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+          <h1 class="font-serif text-3xl font-bold text-primary">
+            Content unavailable
+          </h1>
+          <p class="mt-3 text-muted-foreground">
+            We couldn't reach the content service. Please try again shortly.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    !loadError && blocks.length === 0 && (
+      <section class="bg-surface">
+        <div class="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+          <h1 class="font-serif text-3xl font-bold text-primary">
+            No content yet
+          </h1>
+          <p class="mt-3 text-muted-foreground">
+            Add blocks to a Page entry in Strapi to populate this site.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    blocks.map((block, index) => (
+      <div class={index % 2 === 0 ? "bg-surface" : "bg-surface-muted"}>
+        <BlockRenderer block={block} news={news} />
+      </div>
+    ))
+  }
+</BaseLayout>

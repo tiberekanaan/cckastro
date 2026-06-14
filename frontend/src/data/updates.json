@@ -1,0 +1,38 @@
+[
+  {
+    "id": "kauma-adventist-high-school",
+    "title": "Kauma Adventist High School connected to the network",
+    "excerpt": "A new connectivity project brings reliable internet access to students on the outer islands.",
+    "category": "Connectivity",
+    "date": "2026-05-28",
+    "image": "kauma.svg",
+    "href": "/updates/kauma-adventist-high-school"
+  },
+  {
+    "id": "spectrum-consultation-2026",
+    "title": "Public consultation on 2026 spectrum allocation",
+    "excerpt": "CCK invites stakeholders to comment on the proposed national spectrum roadmap.",
+    "category": "Consultation",
+    "date": "2026-05-14",
+    "image": "spectrum.svg",
+    "href": "/updates/spectrum-consultation-2026"
+  },
+  {
+    "id": "type-approval-guidelines",
+    "title": "Updated type-approval guidelines now in effect",
+    "excerpt": "Revised equipment certification requirements take effect for all importers.",
+    "category": "Regulation",
+    "date": "2026-04-30",
+    "image": "guidelines.svg",
+    "href": "/updates/type-approval-guidelines"
+  },
+  {
+    "id": "consumer-protection-report",
+    "title": "Annual consumer protection report published",
+    "excerpt": "Findings on service quality, complaints and pricing across the sector.",
+    "category": "Report",
+    "date": "2026-04-12",
+    "image": "report.svg",
+    "href": "/updates/consumer-protection-report"
+  }
+]

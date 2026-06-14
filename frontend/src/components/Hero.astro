@@ -1,0 +1,77 @@
+---
+import { Image } from "astro:assets";
+import type { HeroBlock } from "../types/strapi";
+import { mediaUrl } from "../lib/strapi";
+import Button from "./ui/Button.astro";
+
+interface Props {
+  block: HeroBlock;
+}
+
+const { block } = Astro.props;
+const img = mediaUrl(block.image);
+const width = block.image?.width ?? undefined;
+const height = block.image?.height ?? undefined;
+const hasImage = Boolean(img && width && height);
+---
+
+<section
+  class:list={[
+    "relative isolate overflow-hidden",
+    hasImage ? "bg-primary" : "bg-gradient-to-b from-surface-muted to-surface",
+  ]}
+>
+  {
+    hasImage && (
+      <>
+        <Image
+          src={img!}
+          width={width!}
+          height={height!}
+          alt={block.image?.alternativeText ?? ""}
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        {/* Contrast overlay for legible text over the photo. */}
+        <div
+          class="absolute inset-0 -z-10 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/40"
+        />
+      </>
+    )
+  }
+
+  <div class="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-36">
+    <div class="max-w-2xl">
+      <h1
+        class:list={[
+          "font-serif text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl",
+          hasImage ? "text-primary-foreground" : "text-primary",
+        ]}
+      >
+        {block.title}
+      </h1>
+      {
+        block.subtitle && (
+          <p
+            class:list={[
+              "mt-6 text-lg leading-relaxed",
+              hasImage ? "text-primary-foreground/85" : "text-muted-foreground",
+            ]}
+          >
+            {block.subtitle}
+          </p>
+        )
+      }
+      {
+        block.buttonText && block.buttonLink && (
+          <div class="mt-8">
+            <Button href={block.buttonLink} variant="primary">
+              {block.buttonText}
+            </Button>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

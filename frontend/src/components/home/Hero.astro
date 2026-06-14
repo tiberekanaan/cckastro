@@ -1,0 +1,78 @@
+---
+import { site } from "../../data/site";
+import Button from "../ui/Button.astro";
+
+const { hero } = site;
+---
+
+<section
+  class="relative overflow-hidden bg-gradient-to-b from-surface-muted to-surface"
+>
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24"
+  >
+    <div class="max-w-xl">
+      <span
+        class="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent"
+      >
+        {hero.eyebrow}
+      </span>
+      <h1
+        class="mt-5 font-serif text-4xl font-bold leading-[1.08] text-primary sm:text-5xl lg:text-6xl"
+      >
+        {hero.title}
+      </h1>
+      <p class="mt-6 text-lg leading-relaxed text-muted-foreground">
+        {hero.body}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href={hero.primaryCta.href} variant="primary"
+          >{hero.primaryCta.label}</Button
+        >
+        <Button href={hero.secondaryCta.href} variant="outline"
+          >{hero.secondaryCta.label}</Button
+        >
+      </div>
+    </div>
+
+    <div class="relative hidden lg:block" aria-hidden="true">
+      <div
+        class="absolute -right-10 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-accent/10 blur-3xl"
+      >
+      </div>
+      <svg
+        class="relative mx-auto h-[26rem] w-full max-w-md text-primary"
+        viewBox="0 0 360 420"
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <!-- signal arcs -->
+        <g stroke="var(--color-accent)" stroke-width="2.5" opacity="0.7">
+          <path d="M250 70a44 44 0 0 1 0 62"></path>
+          <path d="M268 52a70 70 0 0 1 0 98"></path>
+          <path d="M110 70a44 44 0 0 0 0 62"></path>
+          <path d="M92 52a70 70 0 0 0 0 98"></path>
+        </g>
+        <!-- tower lattice -->
+        <g stroke-width="3">
+          <path d="M180 40v330"></path>
+          <path d="M150 370 180 40 210 370"></path>
+          <path d="M163 190h34M158 240h44M152 290h56M146 340h68"></path>
+          <path d="M167 150l26 40M193 150l-26 40M163 240l34 50M197 240l-34 50"
+          ></path>
+          <!-- antennas -->
+          <path d="M180 40v-22M168 26l24-10M168 16l24 10"></path>
+          <!-- dishes -->
+          <ellipse cx="225" cy="120" rx="22" ry="14" transform="rotate(20 225 120)"></ellipse>
+          <path d="M213 132l-12 16"></path>
+          <ellipse cx="135" cy="120" rx="22" ry="14" transform="rotate(-20 135 120)"></ellipse>
+          <path d="M147 132l12 16"></path>
+        </g>
+        <!-- ground -->
+        <path d="M120 370h120" stroke-width="3"></path>
+      </svg>
+    </div>
+  </div>
+</section>

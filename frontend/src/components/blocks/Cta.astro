@@ -1,0 +1,65 @@
+---
+import type { CtaBlock } from "../../types/strapi";
+import { mediaUrl } from "../../lib/strapi";
+import Button from "../ui/Button.astro";
+
+interface Props {
+  block: CtaBlock;
+}
+
+const { block } = Astro.props;
+const isDanger = block.variant === "danger";
+const img = mediaUrl(block.image);
+---
+
+{
+  isDanger ? (
+    <section>
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div class="grid items-center gap-8 rounded-card border border-border bg-surface-muted p-8 sm:p-12 lg:grid-cols-[1fr_auto]">
+          <div class="max-w-xl">
+            <h2 class="font-serif text-2xl font-bold text-primary sm:text-3xl">
+              {block.title}
+            </h2>
+            {block.body && <p class="mt-3 text-muted-foreground">{block.body}</p>}
+            {block.ctaLabel && block.ctaHref && (
+              <a
+                href={block.ctaHref}
+                class="mt-6 inline-flex items-center gap-2 rounded-full bg-danger px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                {block.ctaLabel} &rarr;
+              </a>
+            )}
+          </div>
+          {img && (
+            <img
+              src={img}
+              alt={block.image?.alternativeText ?? ""}
+              class="h-44 w-44 justify-self-center object-contain"
+            />
+          )}
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="py-16">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="rounded-card bg-primary px-6 py-14 text-center text-primary-foreground sm:px-12">
+          <h2 class="font-serif text-3xl font-bold sm:text-4xl">{block.title}</h2>
+          {block.body && (
+            <p class="mx-auto mt-3 max-w-xl text-primary-foreground/75">
+              {block.body}
+            </p>
+          )}
+          {block.ctaLabel && block.ctaHref && (
+            <div class="mt-7 flex justify-center">
+              <Button href={block.ctaHref} variant="primary">
+                {block.ctaLabel}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}

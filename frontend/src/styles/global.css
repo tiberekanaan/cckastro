@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* Tailwind v4 CSS-first config. No tailwind.config.* file.
+   Semantic OKLCH tokens extracted from the CCK brand (navy/blue). */
+@theme {
+  /* Brand */
+  --color-primary: oklch(0.33 0.12 268);
+  --color-primary-hover: oklch(0.28 0.12 268);
+  --color-primary-foreground: oklch(0.98 0.005 268);
+
+  --color-accent: oklch(0.48 0.18 266);
+  --color-accent-hover: oklch(0.42 0.18 266);
+  --color-accent-foreground: oklch(0.99 0.005 266);
+
+  --color-secondary: oklch(0.62 0.10 185); /* logo teal */
+  --color-danger: oklch(0.55 0.20 27); /* distress red */
+
+  /* Surfaces & text */
+  --color-surface: oklch(1 0 0);
+  --color-surface-muted: oklch(0.965 0.013 268); /* lavender section bg */
+  --color-foreground: oklch(0.24 0.02 266);
+  --color-muted-foreground: oklch(0.55 0.02 266);
+  --color-border: oklch(0.90 0.01 266);
+  --color-ring: oklch(0.48 0.18 266);
+
+  /* Typography */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+
+  /* Radii */
+  --radius-card: 0.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}

@@ -1,0 +1,104 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Button from "../ui/Button.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+interface Props {
+  updates: CollectionEntry<"updates">[];
+}
+
+const { updates } = Astro.props;
+
+// Load local thumbnails with Vite glob (Astro.glob removed in v6).
+const images = import.meta.glob<string>("../../assets/updates/*.svg", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+const urlFor = (file: string): string | undefined =>
+  Object.entries(images).find(([path]) => path.endsWith(`/${file}`))?.[1];
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+const [lead, ...rest] = updates;
+---
+
+<section class="bg-surface-muted">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="flex items-end justify-between gap-4">
+      <SectionHeading eyebrow="News & notices" title="Latest Updates" />
+      <Button href="/news" variant="ghost" class="hidden shrink-0 sm:inline-flex">
+        See more &rarr;
+      </Button>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      {
+        lead && (
+          <a
+            href={lead.data.href}
+            class="group flex flex-col overflow-hidden rounded-card border border-border bg-surface transition-shadow hover:shadow-lg"
+          >
+            <div class="aspect-[16/9] overflow-hidden">
+              <img
+                src={urlFor(lead.data.image)}
+                alt=""
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+            <div class="flex flex-1 flex-col p-6">
+              <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                {lead.data.category} &middot; {dateFmt.format(lead.data.date)}
+              </span>
+              <h3 class="mt-2 font-serif text-2xl font-semibold text-primary group-hover:text-accent">
+                {lead.data.title}
+              </h3>
+              <p class="mt-2 text-muted-foreground">{lead.data.excerpt}</p>
+            </div>
+          </a>
+        )
+      }
+
+      <ul class="flex flex-col gap-4">
+        {
+          rest.map(({ data }) => (
+            <li>
+              <a
+                href={data.href}
+                class="group flex gap-4 rounded-card border border-border bg-surface p-3 transition-shadow hover:shadow-md"
+              >
+                <img
+                  src={urlFor(data.image)}
+                  alt=""
+                  loading="lazy"
+                  class="size-24 shrink-0 rounded-lg object-cover"
+                />
+                <div class="min-w-0 py-1">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                    {data.category} &middot; {dateFmt.format(data.date)}
+                  </span>
+                  <h3 class="mt-1 font-semibold leading-snug text-primary group-hover:text-accent">
+                    {data.title}
+                  </h3>
+                  <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    {data.excerpt}
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-8 sm:hidden">
+      <Button href="/news" variant="outline" class="w-full">See more</Button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,94 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RichTextNode from "../../components/blocks/RichTextNode.astro";
+import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import type { NewsItem } from "../../types/strapi";
+
+const { documentId } = Astro.params;
+
+let article: NewsItem | null = null;
+let loadError = false;
+
+try {
+  const res = await fetch(
+    `${STRAPI_URL}/api/news/${documentId}?populate=photo`,
+  );
+  if (!res.ok) throw new Error(`Strapi /api/news/${documentId} → ${res.status}`);
+  const json: { data: NewsItem | null } = await res.json();
+  article = json.data ?? null;
+} catch (err) {
+  console.error("[news/[documentId]] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+if (!article && !loadError) Astro.response.status = 404;
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const fmtDate = (d?: string | null): string =>
+  d ? dateFmt.format(new Date(d)) : "";
+
+const photo = mediaUrl(article?.photo);
+const body = article?.description ?? [];
+---
+
+<BaseLayout
+  title={article?.title ?? "News not found"}
+  description={undefined}
+>
+  <article class="bg-surface">
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+      >
+        <span aria-hidden="true">&larr;</span> Back
+      </a>
+
+      {
+        article ? (
+          <>
+            <header class="mt-6">
+              {article.date && (
+                <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                  News &middot; {fmtDate(article.date)}
+                </span>
+              )}
+              <h1 class="mt-2 font-serif text-4xl font-bold leading-tight text-primary">
+                {article.title}
+              </h1>
+            </header>
+
+            {photo && (
+              <img
+                src={photo}
+                alt={article.photo?.alternativeText ?? ""}
+                class="mt-8 aspect-[16/9] w-full rounded-card object-cover"
+              />
+            )}
+
+            <div class="mt-8">
+              {body.map((node) => (
+                <RichTextNode node={node} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div class="py-16 text-center">
+            <h1 class="font-serif text-3xl font-bold text-primary">
+              Article not found
+            </h1>
+            <p class="mt-3 text-muted-foreground">
+              This news item may have been moved or unpublished.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

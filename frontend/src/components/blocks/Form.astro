@@ -1,0 +1,52 @@
+---
+import type { FormBlock } from "../../types/strapi";
+
+interface Props {
+  block: FormBlock;
+}
+
+const { block } = Astro.props;
+const isRegistration = block.formType === "Registration";
+const heading = isRegistration ? "Registration" : "General Inquiry";
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";
+---
+
+{/* UI only — wire to an Astro Action (src/actions/index.ts) before going live. */}
+<section>
+  <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+    <div class="rounded-card border border-border bg-surface p-8">
+      <h2 class="font-serif text-2xl font-bold text-primary">{heading}</h2>
+      <form class="mt-6 grid gap-4">
+        <label class="block text-sm font-medium text-foreground">
+          Full name
+          <input class={inputClass} type="text" name="name" required />
+        </label>
+        <label class="block text-sm font-medium text-foreground">
+          Email
+          <input class={inputClass} type="email" name="email" required />
+        </label>
+        {
+          isRegistration ? (
+            <label class="block text-sm font-medium text-foreground">
+              Organisation
+              <input class={inputClass} type="text" name="organisation" />
+            </label>
+          ) : (
+            <label class="block text-sm font-medium text-foreground">
+              Message
+              <textarea class={inputClass} name="message" rows="4" required />
+            </label>
+          )
+        }
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "communication-networks",
+    "title": "Communication Networks & Services",
+    "summary": "Licensing and oversight of network operators and service providers.",
+    "icon": "network",
+    "href": "/services/communication-networks"
+  },
+  {
+    "id": "type-approval",
+    "title": "Type Approval",
+    "summary": "Certification of radio and telecom equipment for use in Kiribati.",
+    "icon": "approval",
+    "href": "/services/type-approval"
+  },
+  {
+    "id": "telecommunication",
+    "title": "Telecommunication",
+    "summary": "Regulation of fixed, mobile and broadband telecommunication services.",
+    "icon": "antenna",
+    "href": "/services/telecommunication"
+  },
+  {
+    "id": "domain-name",
+    "title": "Domain Name (.ki)",
+    "summary": "Administration of the national .ki country-code top-level domain.",
+    "icon": "domain",
+    "href": "/services/domain-name"
+  },
+  {
+    "id": "numbering",
+    "title": "Numbering",
+    "summary": "Management and allocation of the national numbering plan.",
+    "icon": "hash",
+    "href": "/services/numbering"
+  },
+  {
+    "id": "licensing",
+    "title": "Licensing",
+    "summary": "Apply for and renew operator, spectrum and service licences.",
+    "icon": "license",
+    "href": "/services/licensing"
+  }
+]

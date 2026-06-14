@@ -1,0 +1,47 @@
+[
+  {
+    "id": "mobile-penetration",
+    "label": "Mobile Penetration",
+    "value": "46",
+    "unit": "%",
+    "icon": "mobile",
+    "note": "Active SIMs per 100 people"
+  },
+  {
+    "id": "internet-penetration",
+    "label": "Internet Penetration",
+    "value": "54",
+    "unit": "%",
+    "icon": "globe",
+    "note": "Population with internet access"
+  },
+  {
+    "id": "mobile-coverage",
+    "label": "Mobile Coverage",
+    "value": "73",
+    "unit": "%",
+    "icon": "coverage",
+    "note": "Population covered by a network"
+  },
+  {
+    "id": "mobile-subscriptions",
+    "label": "Mobile Subscriptions",
+    "value": "58k",
+    "icon": "users",
+    "note": "Total active subscriptions"
+  },
+  {
+    "id": "internet-service-providers",
+    "label": "Internet Service Providers",
+    "value": "3",
+    "icon": "globe",
+    "note": "Licensed ISPs"
+  },
+  {
+    "id": "mobile-service-providers",
+    "label": "Mobile Service Providers",
+    "value": "2",
+    "icon": "antenna",
+    "note": "Licensed mobile operators"
+  }
+]

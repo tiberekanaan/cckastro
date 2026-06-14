@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_shared_service_items",
+  "info": {
+    "displayName": "ServiceItem",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "summary": {
+      "type": "text"
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": [
+        "network",
+        "approval",
+        "antenna",
+        "domain",
+        "hash",
+        "license",
+        "mobile",
+        "globe",
+        "coverage",
+        "users"
+      ],
+      "default": "network"
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

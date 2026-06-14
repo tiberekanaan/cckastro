@@ -1,0 +1,87 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import type { Commissioner, StrapiCollectionResponse } from "../../types/strapi";
+
+const { slug } = Astro.params;
+
+let commissioner: Commissioner | null = null;
+let loadError = false;
+
+try {
+  const res = await fetch(
+    `${STRAPI_URL}/api/commissioners?filters[slug][$eq]=${slug}&populate=image`,
+  );
+  if (!res.ok) throw new Error(`Strapi /api/commissioners → ${res.status}`);
+  const json: StrapiCollectionResponse<Commissioner> = await res.json();
+  commissioner = json.data?.[0] ?? null;
+} catch (err) {
+  console.error("[commissioners/[slug]] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+if (!commissioner && !loadError) Astro.response.status = 404;
+
+const photo = mediaUrl(commissioner?.image) ?? "/default-avatar.svg";
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const backgroundHtml = commissioner?.background
+  ? await marked.parse(commissioner.background)
+  : "";
+---
+
+<BaseLayout
+  title={commissioner?.name ?? "Commissioner not found"}
+  description={commissioner?.role ?? undefined}
+>
+  <article class="bg-surface">
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+      <a
+        href="/about"
+        class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+      >
+        <span aria-hidden="true">&larr;</span> Back to About Us
+      </a>
+
+      {
+        commissioner ? (
+          <>
+            <header class="mt-8 flex flex-col items-center text-center">
+              <img
+                src={photo}
+                alt={commissioner.image?.alternativeText ?? commissioner.name ?? ""}
+                class="size-40 rounded-full object-cover"
+              />
+              <h1 class="mt-6 font-serif text-4xl font-bold leading-tight text-primary">
+                {commissioner.name}
+              </h1>
+              {commissioner.role && (
+                <p class="mt-2 text-lg text-muted-foreground">
+                  {commissioner.role}
+                </p>
+              )}
+            </header>
+
+            {backgroundHtml && (
+              <div
+                class="mt-10 leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_li]:mt-1 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+                set:html={backgroundHtml}
+              />
+            )}
+          </>
+        ) : (
+          <div class="py-16 text-center">
+            <h1 class="font-serif text-3xl font-bold text-primary">
+              Commissioner not found
+            </h1>
+            <p class="mt-3 text-muted-foreground">
+              This profile may have been moved or unpublished.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

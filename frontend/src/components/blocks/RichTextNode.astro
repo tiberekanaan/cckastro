@@ -1,0 +1,77 @@
+---
+import type { StrapiBlockNode, StrapiInlineNode } from "../../types/strapi";
+import Self from "./RichTextNode.astro";
+
+interface Props {
+  node: StrapiBlockNode | StrapiInlineNode;
+}
+
+const { node } = Astro.props;
+
+// Inline text marks → semantic wrapping (rendered innermost-out).
+const headingClass: Record<number, string> = {
+  1: "mt-8 font-serif text-3xl font-bold text-primary",
+  2: "mt-8 font-serif text-2xl font-bold text-primary",
+  3: "mt-6 font-serif text-xl font-semibold text-primary",
+};
+---
+
+{node.type === "text" && (
+  node.code ? (
+    <code class="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-sm">{node.text}</code>
+  ) : node.bold ? (
+    <strong>{node.text}</strong>
+  ) : node.italic ? (
+    <em>{node.text}</em>
+  ) : node.underline ? (
+    <u>{node.text}</u>
+  ) : node.strikethrough ? (
+    <s>{node.text}</s>
+  ) : (
+    <Fragment>{node.text}</Fragment>
+  )
+)}
+
+{node.type === "link" && (
+  <a href={node.url} class="text-accent underline underline-offset-2 hover:text-accent-hover">
+    {node.children.map((child) => <Self node={child} />)}
+  </a>
+)}
+
+{node.type === "paragraph" && (
+  <p class="mt-4 leading-relaxed text-foreground">
+    {node.children.map((child) => <Self node={child} />)}
+  </p>
+)}
+
+{node.type === "heading" && (
+  <h2 class={headingClass[node.level ?? 2] ?? headingClass[2]}>
+    {node.children.map((child) => <Self node={child} />)}
+  </h2>
+)}
+
+{node.type === "quote" && (
+  <blockquote class="mt-4 border-l-4 border-accent pl-4 italic text-muted-foreground">
+    {node.children.map((child) => <Self node={child} />)}
+  </blockquote>
+)}
+
+{node.type === "code" && (
+  <pre class="mt-4 overflow-x-auto rounded-card bg-primary p-4 text-sm text-primary-foreground"><code>{node.children.map((child) => <Self node={child} />)}</code></pre>
+)}
+
+{node.type === "list" && (
+  node.format === "ordered" ? (
+    <ol class="mt-4 list-decimal space-y-1 pl-6 text-foreground">
+      {node.children.map((child) => <Self node={child} />)}
+    </ol>
+  ) : (
+    <ul class="mt-4 list-disc space-y-1 pl-6 text-foreground">
+      {node.children.map((child) => <Self node={child} />)}
+    </ul>
+  )
+)}
+
+{node.type === "list-item" && (
+  <li>{node.children.map((child) => <Self node={child} />)}</li>
+)}

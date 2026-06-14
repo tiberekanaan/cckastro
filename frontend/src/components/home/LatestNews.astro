@@ -1,0 +1,103 @@
+---
+import type { NewsItem } from "../../types/strapi";
+import { mediaUrl, richTextToPlain } from "../../lib/strapi";
+import SectionHeading from "../ui/SectionHeading.astro";
+import Button from "../ui/Button.astro";
+
+interface Props {
+  items: NewsItem[];
+}
+
+const { items } = Astro.props;
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+const fmtDate = (d?: string | null): string => (d ? dateFmt.format(new Date(d)) : "");
+const excerpt = (n: NewsItem): string => richTextToPlain(n.description).slice(0, 150);
+
+const [lead, ...rest] = items;
+---
+
+<section class="bg-surface-muted">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="flex items-end justify-between gap-4">
+      <SectionHeading eyebrow="News & notices" title="Latest Updates" />
+      <Button href="/news" variant="ghost" class="hidden shrink-0 sm:inline-flex">
+        See more &rarr;
+      </Button>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      {
+        lead && (
+          <a
+            href={`/news/${lead.documentId}`}
+            class="group flex flex-col overflow-hidden rounded-card border border-border bg-surface transition-shadow hover:shadow-lg"
+          >
+            <div class="aspect-[16/9] overflow-hidden bg-surface-muted">
+              {mediaUrl(lead.photo) && (
+                <img
+                  src={mediaUrl(lead.photo)}
+                  alt={lead.photo?.alternativeText ?? ""}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
+            </div>
+            <div class="flex flex-1 flex-col p-6">
+              <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                News &middot; {fmtDate(lead.date)}
+              </span>
+              <h3 class="mt-2 font-serif text-2xl font-semibold text-primary group-hover:text-accent">
+                {lead.title}
+              </h3>
+              <p class="mt-2 text-muted-foreground">{excerpt(lead)}</p>
+            </div>
+          </a>
+        )
+      }
+
+      <ul class="flex flex-col gap-4">
+        {
+          rest.map((item) => (
+            <li>
+              <a
+                href={`/news/${item.documentId}`}
+                class="group flex gap-4 rounded-card border border-border bg-surface p-3 transition-shadow hover:shadow-md"
+              >
+                <div class="size-24 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
+                  {mediaUrl(item.photo) && (
+                    <img
+                      src={mediaUrl(item.photo)}
+                      alt={item.photo?.alternativeText ?? ""}
+                      loading="lazy"
+                      class="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+                <div class="min-w-0 py-1">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                    News &middot; {fmtDate(item.date)}
+                  </span>
+                  <h3 class="mt-1 font-semibold leading-snug text-primary group-hover:text-accent">
+                    {item.title}
+                  </h3>
+                  <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    {excerpt(item)}
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-8 sm:hidden">
+      <Button href="/news" variant="outline" class="w-full">See more</Button>
+    </div>
+  </div>
+</section>

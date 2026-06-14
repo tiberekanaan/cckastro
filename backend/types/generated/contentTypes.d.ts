@@ -468,6 +468,37 @@ export interface ApiNewNew extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOrgRoleOrgRole extends Struct.CollectionTypeSchema {
+  collectionName: 'org_roles';
+  info: {
+    displayName: 'Org Role';
+    pluralName: 'org-roles';
+    singularName: 'org-role';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::org-role.org-role'
+    > &
+      Schema.Attribute.Private;
+    personName: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    reports: Schema.Attribute.Relation<'oneToMany', 'api::org-role.org-role'>;
+    reportsTo: Schema.Attribute.Relation<'manyToOne', 'api::org-role.org-role'>;
+    roleTitle: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPagePage extends Struct.CollectionTypeSchema {
   collectionName: 'pages';
   info: {
@@ -492,6 +523,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.market-insights-section',
         'blocks.rich-text',
         'blocks.form',
+        'blocks.org-chart',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -1118,6 +1150,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::new.new': ApiNewNew;
+      'api::org-role.org-role': ApiOrgRoleOrgRole;
       'api::page.page': ApiPagePage;
       'api::project.project': ApiProjectProject;
       'api::resource.resource': ApiResourceResource;

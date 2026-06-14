@@ -1,0 +1,94 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlockRenderer from "../components/blocks/BlockRenderer.astro";
+import { STRAPI_URL } from "../lib/strapi";
+import type { StrapiCollectionResponse, StrapiPage } from "../types/strapi";
+
+// Deep-populate each dynamic-zone block (see index.astro for the rationale).
+// org-chart is scalar-only; it fetches its own role data inside the component.
+const blockPopulate: Record<string, string[]> = {
+  "blocks.hero": ["image"],
+  "blocks.services-grid": ["*"],
+  "blocks.featured-services": ["services", "image"],
+  "blocks.cta": ["*"],
+  "blocks.profile-card": ["*"],
+  "blocks.rich-text": ["*"],
+  "blocks.faq": ["*"],
+  "blocks.form": ["*"],
+  "blocks.org-chart": ["*"],
+};
+
+const populateQuery = Object.entries(blockPopulate)
+  .flatMap(([component, targets]) =>
+    targets.length === 1
+      ? `populate[content][on][${component}][populate]=${targets[0]}`
+      : targets.map(
+          (t, i) => `populate[content][on][${component}][populate][${i}]=${t}`,
+        ),
+  )
+  .join("&");
+
+const ABOUT_SLUG = "about";
+
+let page: StrapiPage | null = null;
+let loadError = false;
+
+try {
+  const res = await fetch(
+    `${STRAPI_URL}/api/pages?filters[slug][$eq]=${ABOUT_SLUG}&${populateQuery}`,
+  );
+  if (!res.ok) throw new Error(`Strapi /api/pages → ${res.status}`);
+  const json: StrapiCollectionResponse<StrapiPage> = await res.json();
+  page = json.data?.[0] ?? null;
+} catch (err) {
+  console.error("[about] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+const blocks = page?.content ?? [];
+---
+
+<BaseLayout
+  title={page?.title ?? "About Us — CCK"}
+  description={page?.description ?? undefined}
+>
+  {
+    loadError && (
+      <section class="bg-surface">
+        <div class="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+          <h1 class="font-serif text-3xl font-bold text-primary">
+            Content unavailable
+          </h1>
+          <p class="mt-3 text-muted-foreground">
+            We couldn't reach the content service. Please try again shortly.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    !loadError && blocks.length === 0 && (
+      <section class="bg-surface">
+        <div class="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+          <h1 class="font-serif text-3xl font-bold text-primary">
+            No content yet
+          </h1>
+          <p class="mt-3 text-muted-foreground">
+            Add blocks to the About page in Strapi to populate this view.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    blocks.map((block, index) => (
+      <div class={index % 2 === 0 ? "bg-surface" : "bg-surface-muted"}>
+        <BlockRenderer block={block} />
+      </div>
+    ))
+  }
+</BaseLayout>

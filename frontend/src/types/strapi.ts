@@ -147,6 +147,12 @@ export interface FormBlock extends BlockBase {
   formType?: "General Inquiry" | "Registration";
 }
 
+export interface OrgChartBlock extends BlockBase {
+  __component: "blocks.org-chart";
+  title?: string | null;
+  description?: string | null;
+}
+
 export type PageBlock =
   | HeroBlock
   | ServicesGridBlock
@@ -158,7 +164,8 @@ export type PageBlock =
   | ProfileCardBlock
   | RichTextBlock
   | FaqBlock
-  | FormBlock;
+  | FormBlock
+  | OrgChartBlock;
 
 /* --- Collection types --- */
 export interface StrapiPage {

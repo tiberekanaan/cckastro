@@ -1,0 +1,92 @@
+---
+import type { OrgChartBlock } from "../types/strapi";
+
+interface Props {
+  block: OrgChartBlock;
+}
+
+const { block } = Astro.props;
+
+interface OrgRole {
+  roleTitle: string;
+  personName: string | null;
+  reportsTo: { roleTitle: string } | null;
+}
+
+let links: [string, string][] = [];
+let nodes: { id: string; title: string; name: string }[] = [];
+
+try {
+  const res = await fetch(
+    `${import.meta.env.STRAPI_URL}/api/org-roles?populate=reportsTo`,
+  );
+  if (res.ok) {
+    // Strapi 5 flattened format: data is a plain array of entries.
+    const { data } = (await res.json()) as { data: OrgRole[] };
+
+    links = data
+      .filter((role) => role.reportsTo?.roleTitle)
+      .map((role) => [role.reportsTo!.roleTitle, role.roleTitle]);
+
+    nodes = data.map((role) => ({
+      id: role.roleTitle,
+      title: role.personName ?? "",
+      name: role.roleTitle,
+    }));
+  }
+} catch {
+  // Fail soft: render heading without a chart if Strapi is unreachable.
+}
+---
+
+<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+  {block.title && <h2 class="text-3xl font-semibold tracking-tight text-balance">{block.title}</h2>}
+  {block.description && <p class="mt-3 max-w-2xl text-base text-muted">{block.description}</p>}
+
+  <div
+    id="org-chart-container"
+    class="mt-8 w-full overflow-x-auto rounded-xl border border-border bg-surface p-4"
+    data-links={JSON.stringify(links)}
+    data-nodes={JSON.stringify(nodes)}
+  >
+  </div>
+</section>
+
+<script>
+  import Highcharts from "highcharts";
+  import "highcharts/modules/sankey";
+  import "highcharts/modules/organization";
+
+  const container = document.getElementById("org-chart-container");
+  if (container) {
+    const links = JSON.parse(container.dataset.links ?? "[]") as [string, string][];
+    const nodes = JSON.parse(container.dataset.nodes ?? "[]") as {
+      id: string;
+      title: string;
+      name: string;
+    }[];
+
+    const options: Highcharts.Options = {
+      chart: { inverted: true, height: Math.max(400, nodes.length * 60) },
+      title: { text: undefined },
+      accessibility: { enabled: false },
+      credits: { enabled: false },
+      series: [
+        {
+          type: "organization",
+          name: "Organization",
+          keys: ["from", "to"],
+          data: links,
+          nodes,
+          colorByPoint: false,
+          color: "#1e3a8a",
+          dataLabels: { color: "#ffffff" },
+          borderColor: "#1e3a8a",
+          nodeWidth: 65,
+        } as Highcharts.SeriesOrganizationOptions,
+      ],
+    };
+
+    Highcharts.chart("org-chart-container", options);
+  }
+</script>

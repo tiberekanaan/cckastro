@@ -11,6 +11,7 @@ import ProfileCard from "./ProfileCard.astro";
 import RichText from "./RichText.astro";
 import Faq from "./Faq.astro";
 import Form from "./Form.astro";
+import OrgChart from "../OrgChart.astro";
 
 interface Props {
   block: PageBlock;
@@ -32,3 +33,4 @@ const { block, news = [] } = Astro.props;
 {block.__component === "blocks.rich-text" && <RichText block={block} />}
 {block.__component === "blocks.faq" && <Faq block={block} />}
 {block.__component === "blocks.form" && <Form block={block} />}
+{block.__component === "blocks.org-chart" && <OrgChart block={block} />}

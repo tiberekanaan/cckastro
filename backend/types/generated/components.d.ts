@@ -104,6 +104,18 @@ export interface BlocksMarketInsightsSection extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksOrgChart extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_org_charts';
+  info: {
+    displayName: 'OrgChart';
+    icon: 'apps';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksProfileCard extends Struct.ComponentSchema {
   collectionName: 'components_blocks_profile_cards';
   info: {
@@ -178,6 +190,7 @@ declare module '@strapi/strapi' {
       'blocks.latest-news': BlocksLatestNews;
       'blocks.market-insight': BlocksMarketInsight;
       'blocks.market-insights-section': BlocksMarketInsightsSection;
+      'blocks.org-chart': BlocksOrgChart;
       'blocks.profile-card': BlocksProfileCard;
       'blocks.rich-text': BlocksRichText;
       'blocks.services-grid': BlocksServicesGrid;

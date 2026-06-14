@@ -1,0 +1,65 @@
+---
+import type { ServicesGridBlock } from "../../types/strapi";
+import { iconNames, type IconName } from "../../types/content";
+import Icon from "../ui/Icon.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+interface Props {
+  block: ServicesGridBlock;
+}
+
+const { block } = Astro.props;
+const services = block.services ?? [];
+
+// Guard against unknown enum values coming from the CMS.
+const iconFor = (icon: string): IconName =>
+  (iconNames as readonly string[]).includes(icon) ? (icon as IconName) : "network";
+---
+
+<section class="bg-surface">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <SectionHeading
+      eyebrow={block.eyebrow ?? undefined}
+      title={block.heading ?? "Our Services"}
+    />
+    <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+      {
+        services.map((service) => (
+          <li>
+            <a
+              href={service.href ?? "#"}
+              class="group flex items-center gap-4 rounded-card bg-primary p-4 text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-lg"
+            >
+              <span
+                class="grid size-11 shrink-0 place-items-center rounded-lg bg-primary-foreground/10 text-secondary"
+                aria-hidden="true"
+              >
+                <Icon name={iconFor(service.icon)} class="size-6" />
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-semibold leading-tight">{service.title}</span>
+                {service.summary && (
+                  <span class="mt-0.5 block text-sm text-primary-foreground/70">
+                    {service.summary}
+                  </span>
+                )}
+              </span>
+              <svg
+                class="size-5 shrink-0 text-primary-foreground/60 transition-transform group-hover:translate-x-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

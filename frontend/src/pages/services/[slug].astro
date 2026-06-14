@@ -1,0 +1,83 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import type { StrapiCollectionResponse, Service } from "../../types/strapi";
+
+const { slug } = Astro.params;
+
+let service: Service | null = null;
+
+if (slug) {
+  const res = await fetch(
+    `${STRAPI_URL}/api/services?filters[slug][$eq]=${slug}&populate=image`,
+  );
+  const data: StrapiCollectionResponse<Service> = await res.json();
+  console.log("Strapi Response:", data);
+  // Strapi 5 responses are flattened — no `.attributes` wrapper.
+  service = data.data?.[0] ?? null;
+}
+
+if (!service) {
+  Astro.response.status = 404;
+}
+---
+
+{
+  service ? (
+    <BaseLayout title={service.title} description={service.description ?? undefined}>
+      <section class="bg-surface">
+        <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
+          <a
+            href="/#services"
+            class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+          >
+            <span aria-hidden="true">&larr;</span>
+            Back to services
+          </a>
+          <h1 class="mt-6 font-serif text-4xl font-semibold text-primary">
+            {service.title}
+          </h1>
+          {service.image && (
+            <img
+              src={mediaUrl(service.image)}
+              alt={service.image.alternativeText ?? service.title}
+              class="mt-8 h-64 w-full rounded-2xl object-cover shadow-md mb-8"
+            />
+          )}
+          {service.description && (
+            <p class="mt-3 text-lg leading-relaxed text-muted-foreground">
+              {service.description}
+            </p>
+          )}
+          {service.content && (
+            <div class="mt-8 whitespace-pre-line leading-relaxed text-foreground">
+              {service.content}
+            </div>
+          )}
+        </div>
+      </section>
+    </BaseLayout>
+  ) : (
+    <BaseLayout title="Service not found">
+      <section class="bg-surface">
+        <div class="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+          <h1 class="font-serif text-3xl font-bold text-primary">
+            Service not found
+          </h1>
+          <p class="mt-3 text-muted-foreground">
+            The service you're looking for doesn't exist or hasn't been published.
+          </p>
+          <a
+            href="/#services"
+            class="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover"
+          >
+            <span aria-hidden="true">&larr;</span>
+            Back to services
+          </a>
+        </div>
+      </section>
+    </BaseLayout>
+  )
+}

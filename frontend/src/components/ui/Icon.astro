@@ -1,0 +1,45 @@
+---
+import type { IconName } from "../../types/content";
+
+interface Props {
+  name: IconName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+
+// 24x24 stroke icons, currentColor. Zero-JS, inline SVG.
+const paths: Record<IconName, string> = {
+  network:
+    '<path d="M12 3v6m0 6v6M5.6 5.6l4.2 4.2m4.4 4.4l4.2 4.2M3 12h6m6 0h6M5.6 18.4l4.2-4.2m4.4-4.4l4.2-4.2"/><circle cx="12" cy="12" r="3"/>',
+  approval:
+    '<path d="m9 12 2 2 4-4"/><path d="M21 12c0 1.2-.7 2.2-1.7 2.8.3 1.1 0 2.3-.8 3.1-.8.8-2 1.1-3.1.8C14.7 19.6 13.7 20.3 12 20.3s-2.7-.7-3.4-1.6c-1.1.3-2.3 0-3.1-.8-.8-.8-1.1-2-.8-3.1C3.7 14.2 3 13.2 3 12s.7-2.2 1.7-2.8c-.3-1.1 0-2.3.8-3.1.8-.8 2-1.1 3.1-.8C9.3 4.4 10.3 3.7 12 3.7s2.7.7 3.4 1.6c1.1-.3 2.3 0 3.1.8.8.8 1.1 2 .8 3.1 1 .6 1.7 1.6 1.7 2.8Z"/>',
+  antenna:
+    '<path d="M12 12v9m-4 0h8M5 8a7 7 0 0 1 14 0M8.5 9.5a3.5 3.5 0 0 1 7 0"/><circle cx="12" cy="9" r="1"/>',
+  domain:
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.4 4 5.6 4 9s-1.5 6.6-4 9c-2.5-2.4-4-5.6-4-9s1.5-6.6 4-9Z"/>',
+  hash: '<path d="M9 4 7 20M17 4l-2 16M5 9h15M4 15h15"/>',
+  license:
+    '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4M7 14h7"/><circle cx="16" cy="10" r="1.6"/>',
+  mobile:
+    '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
+  globe:
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  coverage:
+    '<path d="M12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/><path d="M8.5 15.5a5 5 0 0 1 7 0M5.5 12.5a9 9 0 0 1 13 0M2.5 9.5a13 13 0 0 1 19 0"/>',
+  users:
+    '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.8M21 20a6 6 0 0 0-4-5.6"/>',
+};
+---
+
+<svg
+  class={className}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>

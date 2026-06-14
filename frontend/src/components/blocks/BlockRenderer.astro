@@ -1,0 +1,29 @@
+---
+import type { PageBlock } from "../../types/strapi";
+import Hero from "../Hero.astro";
+import ServicesGrid from "./ServicesGrid.astro";
+import ServicesAccordion from "../ServicesAccordion.astro";
+import Cta from "./Cta.astro";
+import MarketInsight from "./MarketInsight.astro";
+import ProfileCard from "./ProfileCard.astro";
+import RichText from "./RichText.astro";
+import Faq from "./Faq.astro";
+import Form from "./Form.astro";
+
+interface Props {
+  block: PageBlock;
+}
+
+const { block } = Astro.props;
+---
+
+{/* Map Strapi __component → Astro component (discriminated union narrows props). */}
+{block.__component === "blocks.hero" && <Hero block={block} />}
+{block.__component === "blocks.services-grid" && <ServicesGrid block={block} />}
+{block.__component === "blocks.featured-services" && <ServicesAccordion block={block} />}
+{block.__component === "blocks.cta" && <Cta block={block} />}
+{block.__component === "blocks.market-insight" && <MarketInsight block={block} />}
+{block.__component === "blocks.profile-card" && <ProfileCard block={block} />}
+{block.__component === "blocks.rich-text" && <RichText block={block} />}
+{block.__component === "blocks.faq" && <Faq block={block} />}
+{block.__component === "blocks.form" && <Form block={block} />}

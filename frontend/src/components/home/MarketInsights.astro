@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Icon from "../ui/Icon.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+interface Props {
+  insights: CollectionEntry<"insights">[];
+}
+
+const { insights } = Astro.props;
+---
+
+<div>
+  <SectionHeading eyebrow="The sector at a glance" title="Market Insight" />
+  <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    {
+      insights.map(({ data }) => (
+        <div class="rounded-card border border-border bg-surface p-4 transition-colors hover:border-accent">
+          <span
+            class="grid size-9 place-items-center rounded-lg bg-accent/10 text-accent"
+            aria-hidden="true"
+          >
+            <Icon name={data.icon} class="size-5" />
+          </span>
+          <dd class="mt-3 font-serif text-3xl font-bold text-primary">
+            {data.value}
+            {data.unit && (
+              <span class="text-xl text-accent">{data.unit}</span>
+            )}
+          </dd>
+          <dt class="mt-1 text-sm font-medium text-foreground">{data.label}</dt>
+          {data.note && (
+            <p class="mt-1 text-xs text-muted-foreground">{data.note}</p>
+          )}
+        </div>
+      ))
+    }
+  </dl>
+</div>

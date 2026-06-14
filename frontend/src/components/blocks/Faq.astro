@@ -1,0 +1,40 @@
+---
+import type { FaqBlock } from "../../types/strapi";
+import RichTextNode from "./RichTextNode.astro";
+
+interface Props {
+  block: FaqBlock;
+}
+
+const { block } = Astro.props;
+const answer = block.answer ?? [];
+---
+
+<section class="bg-surface">
+  <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <details
+      class="group rounded-card border border-border bg-surface p-5 [&_p:first-child]:mt-0"
+    >
+      <summary
+        class="flex cursor-pointer items-center justify-between gap-4 font-semibold text-primary marker:content-['']"
+      >
+        {block.question}
+        <svg
+          class="size-5 shrink-0 text-accent transition-transform group-open:rotate-180"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </summary>
+      <div class="mt-3 text-muted-foreground">
+        {answer.map((node) => <RichTextNode node={node} />)}
+      </div>
+    </details>
+  </div>
+</section>

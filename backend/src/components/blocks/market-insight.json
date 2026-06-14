@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_blocks_market_insights",
+  "info": {
+    "displayName": "MarketInsight"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

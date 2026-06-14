@@ -1,0 +1,162 @@
+import type { IconName } from "./content";
+
+/**
+ * Strapi 5 API response types (flattened — no `.attributes` wrappers).
+ * Entries are keyed by a 24-char alphanumeric `documentId`.
+ */
+
+export interface StrapiMedia {
+  url: string;
+  alternativeText?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+/* --- Rich text (Strapi "blocks" field) --- */
+export interface StrapiTextNode {
+  type: "text";
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  code?: boolean;
+}
+
+export interface StrapiLinkNode {
+  type: "link";
+  url: string;
+  children: StrapiInlineNode[];
+}
+
+export type StrapiInlineNode = StrapiTextNode | StrapiLinkNode;
+
+export interface StrapiBlockNode {
+  type: "paragraph" | "heading" | "list" | "list-item" | "quote" | "code";
+  level?: number;
+  format?: "ordered" | "unordered";
+  children: (StrapiInlineNode | StrapiBlockNode)[];
+}
+
+export type StrapiRichText = StrapiBlockNode[];
+
+/* --- Dynamic-zone blocks --- */
+interface BlockBase {
+  __component: string;
+  id: number;
+}
+
+export interface HeroBlock extends BlockBase {
+  __component: "blocks.hero";
+  title: string;
+  subtitle?: string | null;
+  image?: StrapiMedia | null;
+  buttonText?: string | null;
+  buttonLink?: string | null;
+}
+
+export interface ServiceItem {
+  id: number;
+  title: string;
+  summary?: string | null;
+  icon: IconName;
+  href?: string | null;
+}
+
+export interface ServicesGridBlock extends BlockBase {
+  __component: "blocks.services-grid";
+  eyebrow?: string | null;
+  heading?: string | null;
+  services?: ServiceItem[];
+}
+
+export interface Service {
+  id: number;
+  documentId: string;
+  title: string;
+  description?: string | null;
+  slug?: string | null;
+  content?: string | null;
+  image?: StrapiMedia | null;
+}
+
+export interface FeaturedServicesBlock extends BlockBase {
+  __component: "blocks.featured-services";
+  eyebrow?: string | null;
+  heading?: string | null;
+  services?: Service[];
+}
+
+export interface CtaBlock extends BlockBase {
+  __component: "blocks.cta";
+  variant?: "primary" | "danger";
+  title: string;
+  body?: string | null;
+  ctaLabel?: string | null;
+  ctaHref?: string | null;
+  image?: StrapiMedia | null;
+}
+
+export interface MarketInsightBlock extends BlockBase {
+  __component: "blocks.market-insight";
+  label?: string | null;
+  value?: string | null;
+}
+
+export interface ProfileCardBlock extends BlockBase {
+  __component: "blocks.profile-card";
+  name?: string | null;
+  title?: string | null;
+  photo?: StrapiMedia | null;
+}
+
+export interface RichTextBlock extends BlockBase {
+  __component: "blocks.rich-text";
+  content?: StrapiRichText;
+}
+
+export interface FaqBlock extends BlockBase {
+  __component: "blocks.faq";
+  question?: string | null;
+  answer?: StrapiRichText;
+}
+
+export interface FormBlock extends BlockBase {
+  __component: "blocks.form";
+  formType?: "General Inquiry" | "Registration";
+}
+
+export type PageBlock =
+  | HeroBlock
+  | ServicesGridBlock
+  | FeaturedServicesBlock
+  | CtaBlock
+  | MarketInsightBlock
+  | ProfileCardBlock
+  | RichTextBlock
+  | FaqBlock
+  | FormBlock;
+
+/* --- Collection types --- */
+export interface StrapiPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  content?: PageBlock[];
+}
+
+export interface NewsItem {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  date?: string | null;
+  description?: StrapiRichText;
+  photo?: StrapiMedia | null;
+}
+
+export interface StrapiCollectionResponse<T> {
+  data: T[];
+  meta: unknown;
+}

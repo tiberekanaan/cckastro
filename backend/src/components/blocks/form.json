@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_blocks_forms",
+  "info": {
+    "displayName": "Form"
+  },
+  "options": {},
+  "attributes": {
+    "formType": {
+      "type": "enumeration",
+      "enum": [
+        "General Inquiry",
+        "Registration"
+      ]
+    }
+  },
+  "config": {}
+}

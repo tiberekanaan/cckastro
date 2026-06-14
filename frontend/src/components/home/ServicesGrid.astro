@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Icon from "../ui/Icon.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+interface Props {
+  services: CollectionEntry<"services">[];
+}
+
+const { services } = Astro.props;
+---
+
+<div>
+  <SectionHeading eyebrow="What we do" title="Our Services" />
+  <ul class="mt-6 flex flex-col gap-3">
+    {
+      services.map(({ id, data }) => (
+        <li>
+          <a
+            href={data.href}
+            class="group flex items-center gap-4 rounded-card bg-primary p-4 text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-lg"
+          >
+            <span
+              class="grid size-11 shrink-0 place-items-center rounded-lg bg-primary-foreground/10 text-secondary"
+              aria-hidden="true"
+            >
+              <Icon name={data.icon} class="size-6" />
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block font-semibold leading-tight">{data.title}</span>
+              <span class="mt-0.5 block text-sm text-primary-foreground/70">
+                {data.summary}
+              </span>
+            </span>
+            <svg
+              class="size-5 shrink-0 text-primary-foreground/60 transition-transform group-hover:translate-x-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              data-id={id}
+            >
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

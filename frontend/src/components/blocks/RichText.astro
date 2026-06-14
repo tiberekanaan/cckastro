@@ -1,0 +1,17 @@
+---
+import type { RichTextBlock } from "../../types/strapi";
+import RichTextNode from "./RichTextNode.astro";
+
+interface Props {
+  block: RichTextBlock;
+}
+
+const { block } = Astro.props;
+const nodes = block.content ?? [];
+---
+
+<section class="bg-surface">
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    {nodes.map((node) => <RichTextNode node={node} />)}
+  </div>
+</section>

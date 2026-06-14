@@ -1,5 +1,21 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BlocksCommissionerProfiles extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_commissioner_profiles';
+  info: {
+    displayName: 'CommissionerProfiles';
+    icon: 'user';
+  };
+  attributes: {
+    commissioners: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::commissioner.commissioner'
+    >;
+    eyebrow: Schema.Attribute.String;
+    heading: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksCta extends Struct.ComponentSchema {
   collectionName: 'components_blocks_ctas';
   info: {
@@ -182,6 +198,7 @@ export interface SharedServiceItem extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'blocks.commissioner-profiles': BlocksCommissionerProfiles;
       'blocks.cta': BlocksCta;
       'blocks.faq': BlocksFaq;
       'blocks.featured-services': BlocksFeaturedServices;

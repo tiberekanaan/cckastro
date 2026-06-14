@@ -35,7 +35,8 @@
         "blocks.market-insights-section",
         "blocks.rich-text",
         "blocks.form",
-        "blocks.org-chart"
+        "blocks.org-chart",
+        "blocks.commissioner-profiles"
       ]
     }
   }

@@ -20,15 +20,21 @@ const blockPopulate: Record<string, string[]> = {
   "blocks.org-chart": ["*"],
 };
 
-const populateQuery = Object.entries(blockPopulate)
-  .flatMap(([component, targets]) =>
+// commissioner-profiles needs a nested relation→media populate (not expressible
+// by the single-level builder above), so it is appended verbatim.
+const NESTED_POPULATE =
+  "populate[content][on][blocks.commissioner-profiles][populate][commissioners][populate]=image";
+
+const populateQuery = [
+  ...Object.entries(blockPopulate).flatMap(([component, targets]) =>
     targets.length === 1
       ? `populate[content][on][${component}][populate]=${targets[0]}`
       : targets.map(
           (t, i) => `populate[content][on][${component}][populate][${i}]=${t}`,
         ),
-  )
-  .join("&");
+  ),
+  NESTED_POPULATE,
+].join("&");
 
 const ABOUT_SLUG = "about";
 

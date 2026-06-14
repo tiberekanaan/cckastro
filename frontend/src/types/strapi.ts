@@ -153,6 +153,23 @@ export interface OrgChartBlock extends BlockBase {
   description?: string | null;
 }
 
+export interface Commissioner {
+  id: number;
+  documentId: string;
+  name?: string | null;
+  role?: string | null;
+  slug?: string | null;
+  image?: StrapiMedia | null;
+  background?: StrapiRichText;
+}
+
+export interface CommissionerProfilesBlock extends BlockBase {
+  __component: "blocks.commissioner-profiles";
+  eyebrow?: string | null;
+  heading?: string | null;
+  commissioners?: Commissioner[];
+}
+
 export type PageBlock =
   | HeroBlock
   | ServicesGridBlock
@@ -165,7 +182,8 @@ export type PageBlock =
   | RichTextBlock
   | FaqBlock
   | FormBlock
-  | OrgChartBlock;
+  | OrgChartBlock
+  | CommissionerProfilesBlock;
 
 /* --- Collection types --- */
 export interface StrapiPage {

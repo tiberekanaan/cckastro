@@ -19,4 +19,10 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Latest Updates now fetches latest 3 from News collection (`/api/news?sort=date:desc&limit=3`) via `LatestNews.astro` (not a dynamic-zone block).
 - Added `@astrojs/node` (standalone) adapter for SSR; `npm run build` + `astro check` pass clean.
 
+#### Commissioner Profiles (added — branch `feature/commissioner-profiles`)
+- Backend: new `commissioner` collection (name, role, slug UID→name, image, background richtext) + `blocks.commissioner-profiles` component (oneToMany relation `commissioners`); registered in `page.content`.
+- Frontend: `CommissionerProfiles.astro` card grid (links to `/commissioners/[slug]`), wired in `BlockRenderer.astro`; `about.astro` appends nested relation→media populate.
+- Detail route `commissioners/[slug].astro` (SSR, slug filter, RichText background, back-to-About link); `Commissioner` + block types added.
+- `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval.
+
 #### History

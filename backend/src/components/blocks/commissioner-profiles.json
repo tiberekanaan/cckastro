@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_commissioner_profiles",
+  "info": {
+    "displayName": "CommissionerProfiles",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "commissioners": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::commissioner.commissioner"
+    }
+  }
+}

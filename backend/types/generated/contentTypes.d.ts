@@ -440,6 +440,39 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCommissionerCommissioner
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'commissioners';
+  info: {
+    displayName: 'Commissioner';
+    pluralName: 'commissioners';
+    singularName: 'commissioner';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    background: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::commissioner.commissioner'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNewNew extends Struct.CollectionTypeSchema {
   collectionName: 'news';
   info: {
@@ -524,6 +557,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.rich-text',
         'blocks.form',
         'blocks.org-chart',
+        'blocks.commissioner-profiles',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -1149,6 +1183,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::new.new': ApiNewNew;
       'api::org-role.org-role': ApiOrgRoleOrgRole;
       'api::page.page': ApiPagePage;

@@ -1,5 +1,6 @@
 ---
 import type { FeaturedServicesBlock } from "../types/strapi";
+import { mediaUrl } from "../lib/strapi";
 import SectionHeading from "./ui/SectionHeading.astro";
 
 interface Props {
@@ -8,49 +9,69 @@ interface Props {
 
 const { block } = Astro.props;
 const services = (block.services ?? []).filter((s) => s.slug);
+const image = mediaUrl(block.image);
 ---
 
-<div>
-  <SectionHeading
-    eyebrow={block.eyebrow ?? undefined}
-    title={block.heading ?? "Our Services"}
-  />
+<section class="bg-surface-muted">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+      <div class="overflow-hidden rounded-card bg-surface">
+        {
+          image && (
+            <img
+              src={image}
+              alt={block.image?.alternativeText ?? ""}
+              loading="lazy"
+              class="h-full w-full object-cover"
+            />
+          )
+        }
+      </div>
 
-  <div class="mt-8 divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-      {
-        services.map((service) => (
-          <details class="group">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-serif text-lg font-semibold text-primary transition-colors hover:bg-surface-muted">
-              <span>{service.title}</span>
-              <svg
-                class="size-5 shrink-0 text-accent transition-transform duration-200 group-open:rotate-180"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </summary>
-            <div class="px-5 pb-5">
-              {service.description && (
-                <p class="mb-4 text-sm leading-relaxed text-muted-foreground">
-                  {service.description}
-                </p>
-              )}
-              <a
-                href={`/services/${service.slug}`}
-                class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
-              >
-                Read More
-                <span aria-hidden="true">&rarr;</span>
-              </a>
-            </div>
-          </details>
-        ))
-      }
+      <div>
+        <SectionHeading
+          eyebrow={block.eyebrow ?? undefined}
+          title={block.heading ?? "Our Services"}
+        />
+
+        <div class="mt-8 divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
+          {
+            services.map((service) => (
+              <details class="group">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-serif text-lg font-semibold text-primary transition-colors hover:bg-surface-muted">
+                  <span>{service.title}</span>
+                  <svg
+                    class="size-5 shrink-0 text-accent transition-transform duration-200 group-open:rotate-180"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </summary>
+                <div class="px-5 pb-5">
+                  {service.description && (
+                    <p class="mb-4 text-sm leading-relaxed text-muted-foreground">
+                      {service.description}
+                    </p>
+                  )}
+                  <a
+                    href={`/services/${service.slug}`}
+                    class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+                  >
+                    Read More
+                    <span aria-hidden="true">&rarr;</span>
+                  </a>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</section>

@@ -1,8 +1,9 @@
 ---
-import type { PageBlock } from "../../types/strapi";
+import type { PageBlock, NewsItem } from "../../types/strapi";
 import Hero from "../Hero.astro";
 import ServicesGrid from "./ServicesGrid.astro";
 import ServicesAccordion from "../ServicesAccordion.astro";
+import LatestNews from "../LatestNews.astro";
 import Cta from "./Cta.astro";
 import MarketInsight from "./MarketInsight.astro";
 import ProfileCard from "./ProfileCard.astro";
@@ -12,15 +13,17 @@ import Form from "./Form.astro";
 
 interface Props {
   block: PageBlock;
+  news?: NewsItem[];
 }
 
-const { block } = Astro.props;
+const { block, news = [] } = Astro.props;
 ---
 
 {/* Map Strapi __component → Astro component (discriminated union narrows props). */}
 {block.__component === "blocks.hero" && <Hero block={block} />}
 {block.__component === "blocks.services-grid" && <ServicesGrid block={block} />}
 {block.__component === "blocks.featured-services" && <ServicesAccordion block={block} />}
+{block.__component === "blocks.latest-news" && <LatestNews block={block} items={news} />}
 {block.__component === "blocks.cta" && <Cta block={block} />}
 {block.__component === "blocks.market-insight" && <MarketInsight block={block} />}
 {block.__component === "blocks.profile-card" && <ProfileCard block={block} />}

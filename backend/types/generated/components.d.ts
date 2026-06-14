@@ -37,6 +37,7 @@ export interface BlocksFeaturedServices extends Struct.ComponentSchema {
   attributes: {
     eyebrow: Schema.Attribute.String;
     heading: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
     services: Schema.Attribute.Relation<'oneToMany', 'api::service.service'>;
   };
 }
@@ -63,6 +64,18 @@ export interface BlocksHero extends Struct.ComponentSchema {
     image: Schema.Attribute.Media<'images'>;
     subtitle: Schema.Attribute.Text;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface BlocksLatestNews extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_latest_news';
+  info: {
+    displayName: 'LatestNews';
+    icon: 'bell';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<'images'>;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -148,6 +161,7 @@ declare module '@strapi/strapi' {
       'blocks.featured-services': BlocksFeaturedServices;
       'blocks.form': BlocksForm;
       'blocks.hero': BlocksHero;
+      'blocks.latest-news': BlocksLatestNews;
       'blocks.market-insight': BlocksMarketInsight;
       'blocks.profile-card': BlocksProfileCard;
       'blocks.rich-text': BlocksRichText;

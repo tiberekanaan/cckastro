@@ -484,6 +484,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.hero',
         'blocks.services-grid',
         'blocks.featured-services',
+        'blocks.latest-news',
         'blocks.cta',
         'blocks.faq',
         'blocks.profile-card',

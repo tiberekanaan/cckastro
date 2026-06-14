@@ -3,8 +3,6 @@ export const prerender = false;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlockRenderer from "../components/blocks/BlockRenderer.astro";
-import ServicesAccordion from "../components/ServicesAccordion.astro";
-import LatestNews from "../components/LatestNews.astro";
 import { STRAPI_URL } from "../lib/strapi";
 import type {
   StrapiCollectionResponse,
@@ -15,19 +13,29 @@ import type {
 // Deep-populate each dynamic-zone block. `populate=*` does NOT descend into a
 // dynamic zone's component fields in Strapi 5, so target each on a per-block
 // basis. Hero explicitly populates its `image` media relation.
-const blockPopulate: Record<string, string> = {
-  "blocks.hero": "image",
-  "blocks.services-grid": "*",
-  "blocks.featured-services": "services",
-  "blocks.cta": "*",
-  "blocks.market-insight": "*",
-  "blocks.profile-card": "*",
-  "blocks.rich-text": "*",
-  "blocks.faq": "*",
-  "blocks.form": "*",
+// Each block lists its populate targets. Strapi 5 rejects comma-separated
+// targets inside a dynamic-zone `[on]` populate, so multi-target blocks use the
+// indexed-array form (`[populate][0]`, `[populate][1]`).
+const blockPopulate: Record<string, string[]> = {
+  "blocks.hero": ["image"],
+  "blocks.services-grid": ["*"],
+  "blocks.featured-services": ["services", "image"],
+  "blocks.latest-news": ["image"],
+  "blocks.cta": ["*"],
+  "blocks.market-insight": ["*"],
+  "blocks.profile-card": ["*"],
+  "blocks.rich-text": ["*"],
+  "blocks.faq": ["*"],
+  "blocks.form": ["*"],
 };
 const populateQuery = Object.entries(blockPopulate)
-  .map(([component, target]) => `populate[content][on][${component}][populate]=${target}`)
+  .flatMap(([component, targets]) =>
+    targets.length === 1
+      ? `populate[content][on][${component}][populate]=${targets[0]}`
+      : targets.map(
+          (t, i) => `populate[content][on][${component}][populate][${i}]=${t}`,
+        ),
+  )
   .join("&");
 
 // Target the home page deterministically by slug.
@@ -97,20 +105,5 @@ const blocks = page?.content ?? [];
     )
   }
 
-  {
-    blocks.map((block) =>
-      block.__component === "blocks.featured-services" ? (
-        <section class="bg-surface-muted">
-          <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-            <div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
-              <ServicesAccordion block={block} />
-              {news.length > 0 && <LatestNews items={news} />}
-            </div>
-          </div>
-        </section>
-      ) : (
-        <BlockRenderer block={block} />
-      ),
-    )
-  }
+  {blocks.map((block) => <BlockRenderer block={block} news={news} />)}
 </BaseLayout>

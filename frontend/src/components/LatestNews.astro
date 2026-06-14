@@ -1,13 +1,15 @@
 ---
-import type { NewsItem } from "../types/strapi";
+import type { NewsItem, LatestNewsBlock } from "../types/strapi";
 import { mediaUrl } from "../lib/strapi";
 import SectionHeading from "./ui/SectionHeading.astro";
 
 interface Props {
+  block: LatestNewsBlock;
   items: NewsItem[];
 }
 
-const { items } = Astro.props;
+const { block, items } = Astro.props;
+const blockImage = mediaUrl(block.image);
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -18,38 +20,60 @@ const fmtDate = (d?: string | null): string =>
   d ? dateFmt.format(new Date(d)) : "";
 ---
 
-<div>
-  <SectionHeading eyebrow="News & notices" title="Latest News" />
+<section class="bg-surface">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+      <div class="overflow-hidden rounded-card bg-surface-muted md:order-last">
+        {
+          blockImage && (
+            <img
+              src={blockImage}
+              alt={block.image?.alternativeText ?? ""}
+              loading="lazy"
+              class="h-full w-full object-cover"
+            />
+          )
+        }
+      </div>
 
-  <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-    {
-      items.map((item) => (
-        <li>
-          <a
-            href={`/news/${item.documentId}`}
-            class="group flex items-center gap-4 p-4 transition-colors hover:bg-surface-muted"
-          >
-            <div class="size-20 shrink-0 overflow-hidden rounded-md bg-surface-muted">
-              {mediaUrl(item.photo) && (
-                <img
-                  src={mediaUrl(item.photo)}
-                  alt={item.photo?.alternativeText ?? ""}
-                  loading="lazy"
-                  class="h-20 w-20 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              )}
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-serif font-semibold leading-snug text-primary group-hover:text-accent">
-                {item.title}
-              </h3>
-              <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {fmtDate(item.date)}
-              </span>
-            </div>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-</div>
+      <div>
+        <SectionHeading
+          eyebrow="News & notices"
+          title={block.title ?? "Latest News"}
+        />
+
+        <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
+          {
+            items.map((item) => (
+              <li>
+                <a
+                  href={`/news/${item.documentId}`}
+                  class="group flex items-center gap-4 p-4 transition-colors hover:bg-surface-muted"
+                >
+                  <div class="size-20 shrink-0 overflow-hidden rounded-md bg-surface-muted">
+                    {mediaUrl(item.photo) && (
+                      <img
+                        src={mediaUrl(item.photo)}
+                        alt={item.photo?.alternativeText ?? ""}
+                        loading="lazy"
+                        class="h-20 w-20 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="font-serif font-semibold leading-snug text-primary group-hover:text-accent">
+                      {item.title}
+                    </h3>
+                    <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {fmtDate(item.date)}
+                    </span>
+                  </div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

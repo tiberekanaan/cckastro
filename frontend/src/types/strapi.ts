@@ -85,6 +85,13 @@ export interface FeaturedServicesBlock extends BlockBase {
   eyebrow?: string | null;
   heading?: string | null;
   services?: Service[];
+  image?: StrapiMedia | null;
+}
+
+export interface LatestNewsBlock extends BlockBase {
+  __component: "blocks.latest-news";
+  title?: string | null;
+  image?: StrapiMedia | null;
 }
 
 export interface CtaBlock extends BlockBase {
@@ -130,6 +137,7 @@ export type PageBlock =
   | HeroBlock
   | ServicesGridBlock
   | FeaturedServicesBlock
+  | LatestNewsBlock
   | CtaBlock
   | MarketInsightBlock
   | ProfileCardBlock

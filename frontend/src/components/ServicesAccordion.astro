@@ -10,15 +10,13 @@ const { block } = Astro.props;
 const services = (block.services ?? []).filter((s) => s.slug);
 ---
 
-<section class="bg-surface-muted">
-  <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-20">
-    <SectionHeading
-      eyebrow={block.eyebrow ?? undefined}
-      title={block.heading ?? "Our Services"}
-      align="center"
-    />
+<div>
+  <SectionHeading
+    eyebrow={block.eyebrow ?? undefined}
+    title={block.heading ?? "Our Services"}
+  />
 
-    <div class="mt-10 divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
+  <div class="mt-8 divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
       {
         services.map((service) => (
           <details class="group">
@@ -54,6 +52,5 @@ const services = (block.services ?? []).filter((s) => s.slug);
           </details>
         ))
       }
-    </div>
   </div>
-</section>
+</div>

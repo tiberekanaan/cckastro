@@ -1,0 +1,55 @@
+---
+import type { NewsItem } from "../types/strapi";
+import { mediaUrl } from "../lib/strapi";
+import SectionHeading from "./ui/SectionHeading.astro";
+
+interface Props {
+  items: NewsItem[];
+}
+
+const { items } = Astro.props;
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+const fmtDate = (d?: string | null): string =>
+  d ? dateFmt.format(new Date(d)) : "";
+---
+
+<div>
+  <SectionHeading eyebrow="News & notices" title="Latest News" />
+
+  <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={`/news/${item.documentId}`}
+            class="group flex items-center gap-4 p-4 transition-colors hover:bg-surface-muted"
+          >
+            <div class="size-20 shrink-0 overflow-hidden rounded-md bg-surface-muted">
+              {mediaUrl(item.photo) && (
+                <img
+                  src={mediaUrl(item.photo)}
+                  alt={item.photo?.alternativeText ?? ""}
+                  loading="lazy"
+                  class="h-20 w-20 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-serif font-semibold leading-snug text-primary group-hover:text-accent">
+                {item.title}
+              </h3>
+              <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {fmtDate(item.date)}
+              </span>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

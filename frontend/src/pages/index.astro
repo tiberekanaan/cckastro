@@ -3,7 +3,8 @@ export const prerender = false;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlockRenderer from "../components/blocks/BlockRenderer.astro";
-import LatestNews from "../components/home/LatestNews.astro";
+import ServicesAccordion from "../components/ServicesAccordion.astro";
+import LatestNews from "../components/LatestNews.astro";
 import { STRAPI_URL } from "../lib/strapi";
 import type {
   StrapiCollectionResponse,
@@ -42,7 +43,7 @@ try {
       `${STRAPI_URL}/api/pages?filters[slug][$eq]=${HOME_SLUG}&${populateQuery}`,
     ),
     fetch(
-      `${STRAPI_URL}/api/news?sort=date:desc&pagination[limit]=3&populate=*`,
+      `${STRAPI_URL}/api/news?sort=date:desc&pagination[limit]=3&populate=photo`,
     ),
   ]);
 
@@ -96,7 +97,20 @@ const blocks = page?.content ?? [];
     )
   }
 
-  {blocks.map((block) => <BlockRenderer block={block} />)}
-
-  {news.length > 0 && <LatestNews items={news} />}
+  {
+    blocks.map((block) =>
+      block.__component === "blocks.featured-services" ? (
+        <section class="bg-surface-muted">
+          <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+            <div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
+              <ServicesAccordion block={block} />
+              {news.length > 0 && <LatestNews items={news} />}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <BlockRenderer block={block} />
+      ),
+    )
+  }
 </BaseLayout>

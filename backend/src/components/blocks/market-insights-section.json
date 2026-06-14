@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_blocks_market_insights_sections",
+  "info": {
+    "displayName": "MarketInsightsSection",
+    "icon": "chartBubble"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "insights": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.market-insight"
+    }
+  }
+}

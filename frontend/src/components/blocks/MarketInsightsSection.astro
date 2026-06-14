@@ -1,0 +1,59 @@
+---
+import type { MarketInsightsSectionBlock } from "../../types/strapi";
+import { mediaUrl } from "../../lib/strapi";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  block: MarketInsightsSectionBlock;
+}
+
+// Fallback when an insight has no iconName set in the CMS.
+const FALLBACK_ICON = "lucide:bar-chart-3";
+
+const { block } = Astro.props;
+const image = mediaUrl(block.image);
+const insights = block.insights ?? [];
+---
+
+<section>
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+      {
+        image && (
+          <img
+            src={image}
+            alt={block.image?.alternativeText ?? block.title ?? ""}
+            class="h-full w-full rounded-card border border-border object-cover"
+          />
+        )
+      }
+      <div>
+        {
+          block.title && (
+            <h2 class="font-serif text-3xl font-bold text-primary">
+              {block.title}
+            </h2>
+          )
+        }
+        {
+          insights.length > 0 && (
+            <dl class="mt-8 grid grid-cols-2 gap-4">
+              {insights.map((insight) => (
+                <div>
+                  <Icon
+                    name={insight.iconName || FALLBACK_ICON}
+                    class="mb-4 h-12 w-12 text-primary"
+                  />
+                  <dd class="text-3xl font-bold text-primary">
+                    {insight.value}
+                  </dd>
+                  <dt class="text-sm text-gray-500">{insight.label}</dt>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

@@ -110,6 +110,20 @@ export interface MarketInsightBlock extends BlockBase {
   value?: string | null;
 }
 
+export interface MarketInsightItem {
+  id: number;
+  label?: string | null;
+  value?: string | null;
+  iconName?: string | null;
+}
+
+export interface MarketInsightsSectionBlock extends BlockBase {
+  __component: "blocks.market-insights-section";
+  title?: string | null;
+  image?: StrapiMedia | null;
+  insights?: MarketInsightItem[];
+}
+
 export interface ProfileCardBlock extends BlockBase {
   __component: "blocks.profile-card";
   name?: string | null;
@@ -140,6 +154,7 @@ export type PageBlock =
   | LatestNewsBlock
   | CtaBlock
   | MarketInsightBlock
+  | MarketInsightsSectionBlock
   | ProfileCardBlock
   | RichTextBlock
   | FaqBlock

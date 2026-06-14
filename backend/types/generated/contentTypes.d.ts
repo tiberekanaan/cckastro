@@ -489,6 +489,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.faq',
         'blocks.profile-card',
         'blocks.market-insight',
+        'blocks.market-insights-section',
         'blocks.rich-text',
         'blocks.form',
       ]

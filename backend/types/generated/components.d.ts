@@ -85,8 +85,22 @@ export interface BlocksMarketInsight extends Struct.ComponentSchema {
     displayName: 'MarketInsight';
   };
   attributes: {
+    iconName: Schema.Attribute.String;
     label: Schema.Attribute.String;
     value: Schema.Attribute.String;
+  };
+}
+
+export interface BlocksMarketInsightsSection extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_market_insights_sections';
+  info: {
+    displayName: 'MarketInsightsSection';
+    icon: 'chartBubble';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<'images'>;
+    insights: Schema.Attribute.Component<'blocks.market-insight', true>;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -163,6 +177,7 @@ declare module '@strapi/strapi' {
       'blocks.hero': BlocksHero;
       'blocks.latest-news': BlocksLatestNews;
       'blocks.market-insight': BlocksMarketInsight;
+      'blocks.market-insights-section': BlocksMarketInsightsSection;
       'blocks.profile-card': BlocksProfileCard;
       'blocks.rich-text': BlocksRichText;
       'blocks.services-grid': BlocksServicesGrid;

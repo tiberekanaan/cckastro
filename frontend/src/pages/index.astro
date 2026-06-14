@@ -28,15 +28,27 @@ const blockPopulate: Record<string, string[]> = {
   "blocks.faq": ["*"],
   "blocks.form": ["*"],
 };
-const populateQuery = Object.entries(blockPopulate)
-  .flatMap(([component, targets]) =>
+// Media nested inside a repeatable component (insights → icon) needs the
+// object-form populate; the flat array form above can't express that depth.
+// `=true` (not `=*`) for the image media relation — the wildcard makes Strapi
+// descend into the file's `related` morph and 400s with "Invalid key related".
+// `insights` is a repeatable component; populating it returns its string fields
+// (label, value, iconName) — no nested media populate needed anymore.
+const MARKET_INSIGHTS_POPULATE = [
+  "populate[content][on][blocks.market-insights-section][populate][image]=true",
+  "populate[content][on][blocks.market-insights-section][populate][insights]=true",
+];
+
+const populateQuery = [
+  ...Object.entries(blockPopulate).flatMap(([component, targets]) =>
     targets.length === 1
       ? `populate[content][on][${component}][populate]=${targets[0]}`
       : targets.map(
           (t, i) => `populate[content][on][${component}][populate][${i}]=${t}`,
         ),
-  )
-  .join("&");
+  ),
+  ...MARKET_INSIGHTS_POPULATE,
+].join("&");
 
 // Target the home page deterministically by slug.
 const HOME_SLUG = "home";
@@ -105,5 +117,11 @@ const blocks = page?.content ?? [];
     )
   }
 
-  {blocks.map((block) => <BlockRenderer block={block} news={news} />)}
+  {
+    blocks.map((block, index) => (
+      <div class={index % 2 === 0 ? "bg-surface" : "bg-surface-muted"}>
+        <BlockRenderer block={block} news={news} />
+      </div>
+    ))
+  }
 </BaseLayout>

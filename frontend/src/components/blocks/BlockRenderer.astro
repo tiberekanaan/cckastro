@@ -6,6 +6,7 @@ import ServicesAccordion from "../ServicesAccordion.astro";
 import LatestNews from "../LatestNews.astro";
 import Cta from "./Cta.astro";
 import MarketInsight from "./MarketInsight.astro";
+import MarketInsightsSection from "./MarketInsightsSection.astro";
 import ProfileCard from "./ProfileCard.astro";
 import RichText from "./RichText.astro";
 import Faq from "./Faq.astro";
@@ -26,6 +27,7 @@ const { block, news = [] } = Astro.props;
 {block.__component === "blocks.latest-news" && <LatestNews block={block} items={news} />}
 {block.__component === "blocks.cta" && <Cta block={block} />}
 {block.__component === "blocks.market-insight" && <MarketInsight block={block} />}
+{block.__component === "blocks.market-insights-section" && <MarketInsightsSection block={block} />}
 {block.__component === "blocks.profile-card" && <ProfileCard block={block} />}
 {block.__component === "blocks.rich-text" && <RichText block={block} />}
 {block.__component === "blocks.faq" && <Faq block={block} />}

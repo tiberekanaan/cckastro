@@ -4,6 +4,9 @@ import type { Core } from '@strapi/strapi';
 const PUBLIC_ACTIONS = [
   'api::org-role.org-role.find',
   'api::org-role.org-role.findOne',
+  // Commissioner profiles: card grid (find) + detail page / dynamic-zone relation (findOne).
+  'api::commissioner.commissioner.find',
+  'api::commissioner.commissioner.findOne',
 ];
 
 export default {

@@ -160,7 +160,8 @@ export interface Commissioner {
   role?: string | null;
   slug?: string | null;
   image?: StrapiMedia | null;
-  background?: StrapiRichText;
+  /** Strapi `richtext` field → Markdown string (rendered via `marked`). */
+  background?: string | null;
 }
 
 export interface CommissionerProfilesBlock extends BlockBase {

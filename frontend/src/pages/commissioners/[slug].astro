@@ -1,8 +1,8 @@
 ---
 export const prerender = false;
 
+import { marked } from "marked";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RichTextNode from "../../components/blocks/RichTextNode.astro";
 import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
 import type { Commissioner, StrapiCollectionResponse } from "../../types/strapi";
 
@@ -26,7 +26,10 @@ try {
 if (!commissioner && !loadError) Astro.response.status = 404;
 
 const photo = mediaUrl(commissioner?.image) ?? "/default-avatar.svg";
-const background = commissioner?.background ?? [];
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const backgroundHtml = commissioner?.background
+  ? await marked.parse(commissioner.background)
+  : "";
 ---
 
 <BaseLayout
@@ -61,12 +64,11 @@ const background = commissioner?.background ?? [];
               )}
             </header>
 
-            {background.length > 0 && (
-              <div class="mt-10">
-                {background.map((node) => (
-                  <RichTextNode node={node} />
-                ))}
-              </div>
+            {backgroundHtml && (
+              <div
+                class="mt-10 leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_li]:mt-1 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+                set:html={backgroundHtml}
+              />
             )}
           </>
         ) : (

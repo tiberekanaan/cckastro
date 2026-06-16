@@ -501,6 +501,38 @@ export interface ApiNewNew extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOfficialDocumentOfficialDocument
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'official_documents';
+  info: {
+    displayName: 'Official Document';
+    pluralName: 'official-documents';
+    singularName: 'official-document';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::official-document.official-document'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<['Regulation', 'Rule']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiOrgRoleOrgRole extends Struct.CollectionTypeSchema {
   collectionName: 'org_roles';
   info: {
@@ -1185,6 +1217,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::new.new': ApiNewNew;
+      'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;
       'api::org-role.org-role': ApiOrgRoleOrgRole;
       'api::page.page': ApiPagePage;
       'api::project.project': ApiProjectProject;

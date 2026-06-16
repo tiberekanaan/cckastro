@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="Rule document">
+  <!-- clipboard back -->
+  <rect x="50" y="40" width="100" height="120" rx="10" fill="#ffffff" stroke="#1f8a82" stroke-width="3.5"/>
+  <!-- clip -->
+  <rect x="82" y="30" width="36" height="20" rx="6" fill="#e4f4f2" stroke="#1f8a82" stroke-width="3"/>
+  <rect x="90" y="24" width="20" height="12" rx="6" fill="#1f8a82"/>
+  <!-- checklist rows -->
+  <rect x="64" y="72" width="16" height="16" rx="4" fill="#e4f4f2" stroke="#1f8a82" stroke-width="2.6"/>
+  <path d="m67 80 3 3 5-6" stroke="#1f8a82" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="90" y1="80" x2="134" y2="80" stroke="#aee0db" stroke-width="4" stroke-linecap="round"/>
+  <rect x="64" y="100" width="16" height="16" rx="4" fill="#e4f4f2" stroke="#1f8a82" stroke-width="2.6"/>
+  <path d="m67 108 3 3 5-6" stroke="#1f8a82" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="90" y1="108" x2="128" y2="108" stroke="#aee0db" stroke-width="4" stroke-linecap="round"/>
+  <rect x="64" y="128" width="16" height="16" rx="4" fill="#ffffff" stroke="#aee0db" stroke-width="2.6"/>
+  <line x1="90" y1="136" x2="120" y2="136" stroke="#aee0db" stroke-width="4" stroke-linecap="round"/>
+</svg>

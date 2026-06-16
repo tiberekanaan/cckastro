@@ -17,7 +17,6 @@ export const site = {
   nav: [
     { label: "About Us", href: "/about" },
     { label: "Services", href: "/services" },
-    { label: "Regulation", href: "/regulation" },
     { label: "Resources", href: "/resources" },
     { label: "News", href: "/news" },
     { label: "Public Consultations", href: "/consultations" },

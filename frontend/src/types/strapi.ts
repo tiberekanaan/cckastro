@@ -205,7 +205,22 @@ export interface NewsItem {
   photo?: StrapiMedia | null;
 }
 
+export interface OfficialDocument {
+  id: number;
+  documentId: string;
+  title: string;
+  type: "Regulation" | "Rule";
+  file?: StrapiMedia | null;
+}
+
+export interface StrapiPagination {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+}
+
 export interface StrapiCollectionResponse<T> {
   data: T[];
-  meta: unknown;
+  meta: { pagination?: StrapiPagination };
 }

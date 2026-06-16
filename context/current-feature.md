@@ -25,4 +25,10 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Detail route `commissioners/[slug].astro` (SSR, slug filter, RichText background, back-to-About link); `Commissioner` + block types added.
 - `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval.
 
+#### Resources Library (added — branch `feature/resources-library`)
+- Backend: new `official-document` collection (`title` string, `type` enum Regulation/Rule, `file` single PDF media) + router/controller/service factories. Overlaps legacy `resource` collection (kept separate per spec).
+- Nav: removed redundant `Regulation`→`/regulation`; `Resources`→`/resources` is now the sole link. Added `OfficialDocument` + `StrapiPagination` types.
+- Frontend: new SSR `resources/index.astro` (`prerender=false`) — GET filter form (q/type/limit), Strapi `filters[title][$containsi]` + `filters[type][$eq]` + `pagination[page|pageSize]` fetch, 4-col card grid, type-differentiated SVG headers, astro-icon View/Download buttons, Prev/Next from `meta.pagination`.
+- `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
+
 #### History

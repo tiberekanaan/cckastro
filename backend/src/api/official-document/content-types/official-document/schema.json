@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "official_documents",
+  "info": {
+    "singularName": "official-document",
+    "pluralName": "official-documents",
+    "displayName": "Official Document"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Regulation",
+        "Rule"
+      ],
+      "required": true
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "files"
+      ]
+    }
+  }
+}

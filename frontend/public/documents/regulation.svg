@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="Regulation document">
+  <!-- back page -->
+  <rect x="58" y="34" width="86" height="116" rx="7" fill="#eef1fb" stroke="#c7cff0" stroke-width="2"/>
+  <!-- front page -->
+  <path d="M48 30h54l24 24v82a6 6 0 0 1-6 6H48a6 6 0 0 1-6-6V36a6 6 0 0 1 6-6Z" fill="#ffffff" stroke="#2b357a" stroke-width="3.5"/>
+  <!-- folded corner -->
+  <path d="M102 30v18a6 6 0 0 0 6 6h18" stroke="#2b357a" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- text lines -->
+  <line x1="56" y1="70" x2="112" y2="70" stroke="#9aa4d8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="56" y1="84" x2="118" y2="84" stroke="#c7cff0" stroke-width="4" stroke-linecap="round"/>
+  <line x1="56" y1="98" x2="100" y2="98" stroke="#c7cff0" stroke-width="4" stroke-linecap="round"/>
+  <!-- official seal -->
+  <circle cx="120" cy="128" r="26" fill="#2b357a"/>
+  <circle cx="120" cy="128" r="26" stroke="#ffffff" stroke-width="2" stroke-dasharray="3 4" opacity="0.6"/>
+  <path d="m110 128 6.5 6.5L131 120" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ribbon -->
+  <path d="M112 150v22l8-6 8 6v-22" fill="#1f8a82"/>
+</svg>

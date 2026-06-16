@@ -205,6 +205,22 @@ export interface NewsItem {
   photo?: StrapiMedia | null;
 }
 
+export interface Project {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  description?: StrapiRichText;
+  photos?: StrapiMedia[] | null;
+}
+
+/** UAF single type. `description` is a Strapi `richtext` (Markdown) field. */
+export interface UafPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  description?: string | null;
+}
+
 export interface OfficialDocument {
   id: number;
   documentId: string;

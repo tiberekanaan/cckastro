@@ -31,4 +31,12 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Frontend: new SSR `resources/index.astro` (`prerender=false`) — GET filter form (q/type/limit), Strapi `filters[title][$containsi]` + `filters[type][$eq]` + `pagination[page|pageSize]` fetch, 4-col card grid, type-differentiated SVG headers, astro-icon View/Download buttons, Prev/Next from `meta.pagination`.
 - `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
 
+#### Universal Access Fund (added — branch `feature/uaf-page`)
+- Backend: new `uaf-page` **single type** (`title` string, `description` richtext/Markdown) + router/controller/service factories.
+- Nav: `site.ts` main nav `Public Consultations`→`/consultations` replaced with `UAF`→`/universal-access` (Header + Footer both read `site.ts`; footer Resources-column consultations link left intact).
+- Frontend: new SSR `universal-access.astro` (`prerender=false`) — parallel native fetch of `/api/uaf-page` + `/api/projects?populate=photos`; h1 + `marked`-rendered Markdown in arbitrary-variant prose container; reveal-staggered (`data-reveal` + inline `animation-delay`) card grid linking to `/projects/[documentId]`.
+- New SSR `projects/[documentId].astro` detail route (cover + RichTextNode body + photo gallery, back-to-UAF link). `Project` + `UafPage` types added.
+- Adaptations vs spec: no Astro `projects` Content collection (used SSR fetch like News, not `getCollection`); `project` schema has no `slug`/`image`/`project_status` (link by `documentId`, image from `photos[0]`, status pill omitted); no typography plugin (arbitrary-variant prose, not `prose`).
+- `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
+
 #### History

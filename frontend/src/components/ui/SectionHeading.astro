@@ -18,12 +18,13 @@ const { eyebrow, title, align = "left", class: className } = Astro.props;
 >
   {
     eyebrow && (
-      <span class="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+      <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+        <span class="size-1.5 rounded-full bg-accent" aria-hidden="true" />
         {eyebrow}
       </span>
     )
   }
-  <h2 class="font-serif text-3xl font-semibold text-primary sm:text-4xl">
+  <h2 class="text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">
     {title}
   </h2>
 </div>

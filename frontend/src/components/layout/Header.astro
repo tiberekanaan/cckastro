@@ -10,27 +10,15 @@ import Button from "../ui/Button.astro";
     class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6"
   >
     <a href="/" class="flex items-center gap-3" aria-label={site.name}>
-      <svg
+      <img
+        src="/cck-logo.png"
+        alt=""
+        width="40"
+        height="40"
         class="h-10 w-10 shrink-0"
-        viewBox="0 0 40 40"
-        fill="none"
-        aria-hidden="true"
-      >
-        <circle cx="20" cy="20" r="19" fill="var(--color-primary)"></circle>
-        <path
-          d="M14 25a9 9 0 0 1 0-10"
-          stroke="var(--color-secondary)"
-          stroke-width="2.4"
-          stroke-linecap="round"></path>
-        <path
-          d="M26 15a9 9 0 0 1 0 10"
-          stroke="var(--color-primary-foreground)"
-          stroke-width="2.4"
-          stroke-linecap="round"></path>
-        <circle cx="20" cy="20" r="3" fill="var(--color-secondary)"></circle>
-      </svg>
+      />
       <span class="leading-tight">
-        <span class="block font-serif text-lg font-bold text-primary"
+        <span class="block text-lg font-extrabold tracking-tight text-primary"
           >{site.shortName}</span
         >
         <span class="block text-[11px] text-muted-foreground"

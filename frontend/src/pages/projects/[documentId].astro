@@ -1,0 +1,97 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RichTextNode from "../../components/blocks/RichTextNode.astro";
+import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import type { Project } from "../../types/strapi";
+
+const { documentId } = Astro.params;
+
+let project: Project | null = null;
+let loadError = false;
+
+try {
+  const res = await fetch(
+    `${STRAPI_URL}/api/projects/${documentId}?populate=photos`,
+  );
+  if (!res.ok)
+    throw new Error(`Strapi /api/projects/${documentId} → ${res.status}`);
+  const json: { data: Project | null } = await res.json();
+  project = json.data ?? null;
+} catch (err) {
+  console.error("[projects/[documentId]] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+if (!project && !loadError) Astro.response.status = 404;
+
+const photos = project?.photos ?? [];
+const cover = mediaUrl(photos[0]);
+const gallery = photos.slice(1);
+const body = project?.description ?? [];
+---
+
+<BaseLayout title={project?.title ?? "Project not found"}>
+  <article class="bg-surface">
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+      <a
+        href="/universal-access"
+        class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+      >
+        <span aria-hidden="true">&larr;</span> Back to UAF
+      </a>
+
+      {
+        project ? (
+          <>
+            <header class="mt-6">
+              <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                Universal Access Fund
+              </span>
+              <h1 class="mt-2 font-serif text-4xl font-bold leading-tight text-primary">
+                {project.title}
+              </h1>
+            </header>
+
+            {cover && (
+              <img
+                src={cover}
+                alt={photos[0]?.alternativeText ?? project.title ?? ""}
+                class="mt-8 aspect-[16/9] w-full rounded-card object-cover"
+              />
+            )}
+
+            <div class="mt-8">
+              {body.map((node) => (
+                <RichTextNode node={node} />
+              ))}
+            </div>
+
+            {gallery.length > 0 && (
+              <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {gallery.map((media) => (
+                  <img
+                    src={mediaUrl(media)}
+                    alt={media.alternativeText ?? ""}
+                    loading="lazy"
+                    class="aspect-square w-full rounded-card object-cover"
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div class="py-16 text-center">
+            <h1 class="font-serif text-3xl font-bold text-primary">
+              Project not found
+            </h1>
+            <p class="mt-3 text-muted-foreground">
+              This project may have been moved or unpublished.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

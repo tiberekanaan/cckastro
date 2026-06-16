@@ -15,63 +15,54 @@ const height = block.image?.height ?? undefined;
 const hasImage = Boolean(img && width && height);
 ---
 
-<section
-  class:list={[
-    "relative isolate overflow-hidden",
-    hasImage ? "bg-primary" : "bg-gradient-to-b from-surface-muted to-surface",
-  ]}
->
-  {
-    hasImage && (
-      <>
-        <Image
-          src={img!}
-          width={width!}
-          height={height!}
-          alt={block.image?.alternativeText ?? ""}
-          loading="eager"
-          fetchpriority="high"
-          class="absolute inset-0 -z-10 h-full w-full object-cover"
-        />
-        {/* Contrast overlay for legible text over the photo. */}
-        <div
-          class="absolute inset-0 -z-10 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/40"
-        />
-      </>
-    )
-  }
+{/* Inset, rounded hero panel floating on the soft page background. */}
+<section class="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+  <div
+    class:list={[
+      "relative isolate overflow-hidden rounded-[var(--radius-panel)] shadow-soft",
+      hasImage ? "bg-primary" : "bg-gradient-to-br from-primary to-accent",
+    ]}
+  >
+    {
+      hasImage && (
+        <>
+          <Image
+            src={img!}
+            width={width!}
+            height={height!}
+            alt={block.image?.alternativeText ?? ""}
+            loading="eager"
+            fetchpriority="high"
+            class="absolute inset-0 -z-10 h-full w-full object-cover"
+          />
+          {/* Contrast overlay for legible text over the photo. */}
+          <div class="absolute inset-0 -z-10 bg-gradient-to-r from-primary/95 via-primary/75 to-primary/35" />
+        </>
+      )
+    }
 
-  <div class="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-36">
-    <div class="max-w-2xl">
-      <h1
-        class:list={[
-          "font-serif text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl",
-          hasImage ? "text-primary-foreground" : "text-primary",
-        ]}
-      >
-        {block.title}
-      </h1>
-      {
-        block.subtitle && (
-          <p
-            class:list={[
-              "mt-6 text-lg leading-relaxed",
-              hasImage ? "text-primary-foreground/85" : "text-muted-foreground",
-            ]}
-          >
-            {block.subtitle}
-          </p>
-        )
-      }
-      {
-        block.buttonText && block.buttonLink && (
-          <div class="mt-8">
-            <Button href={block.buttonLink} variant="primary">
-              {block.buttonText}
-            </Button>
-          </div>
-        )
-      }
+    <div class="px-6 py-24 sm:px-12 lg:px-16 lg:py-36">
+      <div class="max-w-2xl">
+        <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+          {block.title}
+        </h1>
+        {
+          block.subtitle && (
+            <p class="mt-6 max-w-xl text-lg leading-relaxed text-primary-foreground/85">
+              {block.subtitle}
+            </p>
+          )
+        }
+        {
+          block.buttonText && block.buttonLink && (
+            <div class="mt-8">
+              <Button href={block.buttonLink} variant="primary">
+                {block.buttonText}
+              </Button>
+            </div>
+          )
+        }
+      </div>
     </div>
   </div>
 </section>

@@ -23,14 +23,14 @@ const insights = block.insights ?? [];
           <img
             src={image}
             alt={block.image?.alternativeText ?? block.title ?? ""}
-            class="h-full w-full rounded-card border border-border object-cover"
+            class="h-full w-full rounded-[var(--radius-panel)] object-cover shadow-soft"
           />
         )
       }
       <div>
         {
           block.title && (
-            <h2 class="font-serif text-3xl font-bold text-primary">
+            <h2 class="text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">
               {block.title}
             </h2>
           )
@@ -39,15 +39,14 @@ const insights = block.insights ?? [];
           insights.length > 0 && (
             <dl class="mt-8 grid grid-cols-2 gap-4">
               {insights.map((insight) => (
-                <div>
-                  <Icon
-                    name={insight.iconName || FALLBACK_ICON}
-                    class="mb-4 h-12 w-12 text-primary"
-                  />
-                  <dd class="text-3xl font-bold text-primary">
+                <div class="rounded-card bg-surface p-5 shadow-soft ring-1 ring-border/60">
+                  <span class="mb-4 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Icon name={insight.iconName || FALLBACK_ICON} class="h-6 w-6" />
+                  </span>
+                  <dd class="text-3xl font-extrabold text-primary">
                     {insight.value}
                   </dd>
-                  <dt class="text-sm text-gray-500">{insight.label}</dt>
+                  <dt class="mt-1 text-sm text-muted-foreground">{insight.label}</dt>
                 </div>
               ))}
             </dl>

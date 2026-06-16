@@ -8,7 +8,16 @@ const year = new Date().getFullYear();
   <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
     <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
       <div class="max-w-xs">
-        <span class="font-serif text-xl font-bold">{site.shortName}</span>
+        <span class="flex items-center gap-2.5">
+          <img
+            src="/cck-logo.png"
+            alt=""
+            width="36"
+            height="36"
+            class="h-9 w-9 rounded-full bg-primary-foreground p-1"
+          />
+          <span class="text-xl font-extrabold tracking-tight">{site.shortName}</span>
+        </span>
         <p class="mt-3 text-sm text-primary-foreground/70">{site.name}</p>
         <address class="mt-4 not-italic text-sm text-primary-foreground/70">
           {site.address}<br />

@@ -1,0 +1,147 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { STRAPI_URL, mediaUrl, richTextToPlain } from "../lib/strapi";
+import type {
+  Project,
+  UafPage,
+  StrapiCollectionResponse,
+} from "../types/strapi";
+
+let page: UafPage | null = null;
+let projects: Project[] = [];
+let loadError = false;
+
+// Fetch the intro and the projects independently — a missing/unpublished UAF
+// single type (404) must not blank out the project grid, and vice versa.
+try {
+  const res = await fetch(`${STRAPI_URL}/api/uaf-page`);
+  if (res.ok) {
+    const json: { data: UafPage | null } = await res.json();
+    page = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/uaf-page → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[universal-access] UAF intro fetch failed:", err);
+}
+
+try {
+  const res = await fetch(`${STRAPI_URL}/api/projects?populate=photos`);
+  if (!res.ok) throw new Error(`Strapi /api/projects → ${res.status}`);
+  const json: StrapiCollectionResponse<Project> = await res.json();
+  projects = json.data ?? [];
+} catch (err) {
+  console.error("[universal-access] projects fetch failed:", err);
+  loadError = true;
+}
+
+const heading = page?.title ?? "Universal Access Fund";
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const descriptionHtml = page?.description
+  ? await marked.parse(page.description)
+  : "";
+const excerpt = (p: Project): string =>
+  richTextToPlain(p.description).slice(0, 160);
+---
+
+<BaseLayout
+  title={heading}
+  description="Universal Access Fund projects bridging the connectivity gap across Kiribati."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+      <header class="max-w-3xl">
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          {heading}
+        </h1>
+        {
+          descriptionHtml && (
+            <div
+              class="mt-5 text-lg leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_li]:mt-1 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+              set:html={descriptionHtml}
+            />
+          )
+        }
+      </header>
+
+      {
+        projects.length > 0 ? (
+          <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project, index) => (
+              <a
+                href={`/projects/${project.documentId}`}
+                data-reveal
+                data-reveal-delay={`${index * 100}ms`}
+                style={`animation-delay: ${index * 100}ms`}
+                class="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+              >
+                <div class="overflow-hidden">
+                  <img
+                    src={mediaUrl(project.photos?.[0]) ?? "/news-placeholder.svg"}
+                    alt={
+                      project.photos?.[0]?.alternativeText ??
+                      project.title ??
+                      "Project"
+                    }
+                    loading="lazy"
+                    class="h-56 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                </div>
+
+                <div class="flex grow flex-col p-6">
+                  <h2 class="mb-2 line-clamp-2 text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
+                    {project.title}
+                  </h2>
+                  <p class="line-clamp-3 text-slate-600">{excerpt(project)}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="mt-12 rounded-2xl border border-slate-100 bg-white p-12 text-center">
+            <h2 class="font-serif text-2xl font-bold text-primary">
+              {loadError ? "Projects are unavailable" : "No projects yet"}
+            </h2>
+            <p class="mt-3 text-muted-foreground">
+              {loadError
+                ? "We couldn't load UAF projects. Please try again shortly."
+                : "Check back soon for the latest Universal Access Fund projects."}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Zero-JS staggered entrance — per-card delay set inline via animation-delay.
+     `backwards` shows the initial frame during the delay, then reverts so the
+     hover lift transform keeps working after entrance. */
+  [data-reveal] {
+    animation: reveal-up 0.6s ease-out backwards;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

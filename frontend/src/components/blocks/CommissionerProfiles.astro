@@ -10,18 +10,19 @@ const { block } = Astro.props;
 const commissioners = block.commissioners ?? [];
 ---
 
-<section class="bg-surface">
+<section>
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
     {
       (block.eyebrow || block.heading) && (
-        <header class="mb-10 text-center">
+        <header class="mb-10 flex flex-col items-center text-center">
           {block.eyebrow && (
-            <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+            <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <span class="size-1.5 rounded-full bg-accent" aria-hidden="true" />
               {block.eyebrow}
             </span>
           )}
           {block.heading && (
-            <h2 class="mt-2 font-serif text-3xl font-bold text-primary sm:text-4xl">
+            <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">
               {block.heading}
             </h2>
           )}
@@ -37,14 +38,14 @@ const commissioners = block.commissioners ?? [];
             <li>
               <a
                 href={`/commissioners/${c.slug}`}
-                class="group flex h-full flex-col items-center rounded-card border border-border bg-surface p-8 text-center transition-shadow hover:shadow-lg"
+                class="group flex h-full flex-col items-center rounded-card bg-surface p-8 text-center shadow-[var(--shadow-soft)] ring-1 ring-border/60 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]"
               >
                 <img
                   src={photo}
                   alt={c.image?.alternativeText ?? c.name ?? ""}
-                  class="size-32 rounded-full object-cover"
+                  class="size-32 rounded-full object-cover ring-4 ring-primary/10"
                 />
-                <p class="mt-5 font-serif text-xl font-semibold text-primary group-hover:text-accent">
+                <p class="mt-5 text-xl font-bold text-primary group-hover:text-accent">
                   {c.name}
                 </p>
                 {c.role && (

@@ -23,7 +23,7 @@ const fmtDate = (d?: string | null): string =>
 <section>
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
     <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-      <div class="overflow-hidden rounded-card bg-surface-muted md:order-last">
+      <div class="overflow-hidden rounded-[var(--radius-panel)] bg-surface shadow-soft md:order-last">
         {
           blockImage && (
             <img
@@ -42,7 +42,7 @@ const fmtDate = (d?: string | null): string =>
           title={block.title ?? "Latest News"}
         />
 
-        <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
+        <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card bg-surface shadow-soft ring-1 ring-border/60">
           {
             items.map((item) => (
               <li>

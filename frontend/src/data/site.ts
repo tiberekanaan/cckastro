@@ -19,7 +19,7 @@ export const site = {
     { label: "Services", href: "/services" },
     { label: "Resources", href: "/resources" },
     { label: "News", href: "/news" },
-    { label: "Public Consultations", href: "/consultations" },
+    { label: "UAF", href: "/universal-access" },
   ] satisfies NavLink[],
   hero: {
     eyebrow: "National Telecommunications Regulator",

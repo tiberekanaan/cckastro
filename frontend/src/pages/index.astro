@@ -118,10 +118,8 @@ const blocks = page?.content ?? [];
   }
 
   {
-    blocks.map((block, index) => (
-      <div class={index % 2 === 0 ? "bg-surface" : "bg-surface-muted"}>
-        <BlockRenderer block={block} news={news} />
-      </div>
+    blocks.map((block) => (
+      <BlockRenderer block={block} news={news} />
     ))
   }
 </BaseLayout>

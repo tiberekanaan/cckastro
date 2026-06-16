@@ -22,40 +22,45 @@ const iconFor = (icon: string): IconName =>
       eyebrow={block.eyebrow ?? undefined}
       title={block.heading ?? "Our Services"}
     />
-    <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+    <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
         services.map((service) => (
           <li>
             <a
               href={service.href ?? "#"}
-              class="group flex items-center gap-4 rounded-card bg-primary p-4 text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-lg"
+              class="group flex h-full flex-col gap-4 rounded-card bg-surface p-6 shadow-[var(--shadow-soft)] ring-1 ring-border/60 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]"
             >
               <span
-                class="grid size-11 shrink-0 place-items-center rounded-lg bg-primary-foreground/10 text-secondary"
+                class="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
                 aria-hidden="true"
               >
                 <Icon name={iconFor(service.icon)} class="size-6" />
               </span>
-              <span class="min-w-0 flex-1">
-                <span class="block font-semibold leading-tight">{service.title}</span>
+              <span class="flex-1">
+                <span class="block text-lg font-bold leading-tight text-primary">
+                  {service.title}
+                </span>
                 {service.summary && (
-                  <span class="mt-0.5 block text-sm text-primary-foreground/70">
+                  <span class="mt-2 block text-sm leading-relaxed text-muted-foreground">
                     {service.summary}
                   </span>
                 )}
               </span>
-              <svg
-                class="size-5 shrink-0 text-primary-foreground/60 transition-transform group-hover:translate-x-1"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="m9 6 6 6-6 6" />
-              </svg>
+              <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                Learn more
+                <svg
+                  class="size-4 transition-transform group-hover:translate-x-1"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </span>
             </a>
           </li>
         ))

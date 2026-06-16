@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" fill="none" role="img" aria-label="News">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f2742"/>
+      <stop offset="1" stop-color="#0d9488"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="560" fill="url(#bg)"/>
+  <g opacity="0.12" stroke="#ffffff" stroke-width="2">
+    <circle cx="660" cy="120" r="180"/>
+    <circle cx="120" cy="460" r="140"/>
+  </g>
+  <g transform="translate(310 200)" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <rect x="6" y="10" width="168" height="148" rx="12"/>
+    <line x1="34" y1="46" x2="120" y2="46"/>
+    <line x1="34" y1="84" x2="146" y2="84"/>
+    <line x1="34" y1="120" x2="146" y2="120"/>
+  </g>
+</svg>

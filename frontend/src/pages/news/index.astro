@@ -1,0 +1,211 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { STRAPI_URL, mediaUrl, richTextToPlain } from "../../lib/strapi";
+import type { NewsItem } from "../../types/strapi";
+
+let items: NewsItem[] = [];
+let loadError = false;
+
+try {
+  const res = await fetch(`${STRAPI_URL}/api/news?populate=photo`);
+  if (!res.ok) throw new Error(`Strapi /api/news → ${res.status}`);
+  const json: { data: NewsItem[] } = await res.json();
+  items = json.data ?? [];
+} catch (err) {
+  console.error("[news/index] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+// Newest first.
+items.sort((a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime());
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const fmtDate = (d?: string | null): string => (d ? dateFmt.format(new Date(d)) : "");
+const excerpt = (n: NewsItem): string => richTextToPlain(n.description).slice(0, 180);
+---
+
+<BaseLayout
+  title="Latest News"
+  description="News, notices and announcements from the Commission."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+      <header class="max-w-2xl">
+        <h1 class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl">
+          Latest News
+        </h1>
+        <p class="mt-3 text-lg text-muted-foreground">
+          The latest notices, announcements and press releases from the Commission.
+        </p>
+      </header>
+
+      {
+        items.length > 0 ? (
+          <>
+            <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="relative w-full sm:max-w-sm">
+                <svg
+                  class="pointer-events-none absolute right-5 top-1/2 size-5 -translate-y-1/2 text-slate-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  id="news-search"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="Search by name or topic…"
+                  aria-label="Search news"
+                  class="w-full rounded-xl border-0 bg-white py-3 pl-4 pr-12 text-slate-900 shadow-md ring-1 ring-black/5 transition-shadow placeholder:text-slate-400 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                />
+              </div>
+
+              <label class="flex shrink-0 items-center gap-2 text-sm text-slate-600">
+                <span class="font-medium">Sort</span>
+                <select
+                  id="news-sort"
+                  class="rounded-xl border-0 bg-white py-3 pl-4 pr-9 font-medium text-slate-900 shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                >
+                  <option value="latest">Latest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </label>
+            </div>
+
+            <div
+              id="news-grid"
+              class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+              {items.map((item, index) => (
+                <a
+                  href={`/news/${item.documentId}`}
+                  data-reveal
+                  data-date={item.date ? new Date(item.date).getTime() : 0}
+                  data-search={`${item.title ?? ""} ${excerpt(item)}`.toLowerCase()}
+                  style={`animation-delay: ${index * 100}ms`}
+                  class="group flex h-full flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-lg ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                >
+                  <div class="overflow-hidden">
+                    <img
+                      src={mediaUrl(item.photo) ?? "/news-placeholder.svg"}
+                      alt={item.photo?.alternativeText ?? item.title ?? "News"}
+                      loading="lazy"
+                      class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                  </div>
+
+                  <div class="flex grow flex-col p-6">
+                    <span class="mb-3 text-sm font-semibold text-lime-600">
+                      {fmtDate(item.date)}
+                    </span>
+                    <h2 class="mb-2 line-clamp-2 text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
+                      {item.title}
+                    </h2>
+                    <p class="line-clamp-3 text-slate-600">{excerpt(item)}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <div
+              id="news-empty"
+              hidden
+              class="mt-8 rounded-2xl border border-slate-100 bg-white p-12 text-center"
+            >
+              <h2 class="font-serif text-2xl font-bold text-primary">No matches</h2>
+              <p class="mt-3 text-muted-foreground">
+                No articles match your search. Try a different term.
+              </p>
+            </div>
+          </>
+        ) : (
+          <div class="mt-12 rounded-2xl border border-slate-100 bg-white p-12 text-center">
+            <h2 class="font-serif text-2xl font-bold text-primary">
+              {loadError ? "News is unavailable" : "No news yet"}
+            </h2>
+            <p class="mt-3 text-muted-foreground">
+              {loadError
+                ? "We couldn't load the latest articles. Please try again shortly."
+                : "Check back soon for the latest notices and announcements."}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Zero-JS staggered entrance — per-card delay set inline via animation-delay.
+     `backwards` shows the initial frame during the delay, then reverts to normal
+     styles so the hover lift transform keeps working after entrance. */
+  [data-reveal] {
+    animation: reveal-up 0.6s ease-out backwards;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Live client-side search + sort over the SSR-rendered cards (no framework).
+  const grid = document.getElementById("news-grid");
+  const search = document.getElementById("news-search") as HTMLInputElement | null;
+  const sort = document.getElementById("news-sort") as HTMLSelectElement | null;
+  const empty = document.getElementById("news-empty");
+
+  if (grid && search && sort && empty) {
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-search]"));
+
+    const apply = () => {
+      const q = search.value.trim().toLowerCase();
+      const oldest = sort.value === "oldest";
+
+      const ordered = [...cards].sort((a, b) => {
+        const da = Number(a.dataset.date) || 0;
+        const db = Number(b.dataset.date) || 0;
+        return oldest ? da - db : db - da;
+      });
+
+      let visible = 0;
+      for (const card of ordered) {
+        const match = !q || (card.dataset.search ?? "").includes(q);
+        card.classList.toggle("hidden", !match);
+        if (match) visible++;
+        grid.appendChild(card); // re-order in the DOM
+      }
+
+      grid.classList.toggle("hidden", visible === 0);
+      empty.toggleAttribute("hidden", visible !== 0);
+    };
+
+    search.addEventListener("input", apply);
+    sort.addEventListener("change", apply);
+  }
+</script>

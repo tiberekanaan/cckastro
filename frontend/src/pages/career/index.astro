@@ -1,0 +1,118 @@
+---
+export const prerender = false;
+
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// Build-time mock today (file loader); swap-ready for the Strapi `job` collection.
+const allJobs = await getCollection("jobs");
+
+const now = new Date();
+const jobs = allJobs
+  .filter((job) => job.data.closingDate >= now)
+  .sort((a, b) => a.data.closingDate.getTime() - b.data.closingDate.getTime());
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+const fmtDate = (d: Date): string => dateFmt.format(d);
+---
+
+<BaseLayout
+  title="Careers"
+  description="Current job openings at the Communications Commission of Kiribati."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+      <header class="max-w-3xl">
+        <p class="text-sm font-semibold uppercase tracking-wide text-accent">
+          Work with us
+        </p>
+        <h1
+          class="mt-2 font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          Career Opportunities
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted-foreground">
+          Explore current openings and help shape the future of Kiribati's
+          telecommunications sector.
+        </p>
+      </header>
+
+      {
+        jobs.length > 0 ? (
+          <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {jobs.map((job, index) => (
+              <a
+                href={`/career/${job.data.slug}`}
+                data-reveal
+                style={`animation-delay: ${index * 100}ms`}
+                class="group flex flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+              >
+                <h2 class="text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
+                  {job.data.title}
+                </h2>
+
+                <dl class="mt-4 space-y-1.5 text-sm text-slate-600">
+                  <div class="flex justify-between gap-4">
+                    <dt class="font-medium text-slate-500">Opens</dt>
+                    <dd>{fmtDate(job.data.openingDate)}</dd>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <dt class="font-medium text-slate-500">Closes</dt>
+                    <dd>{fmtDate(job.data.closingDate)}</dd>
+                  </div>
+                </dl>
+
+                <span class="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-teal-600">
+                  View details
+                  <span class="transition-transform group-hover:translate-x-1">
+                    &rarr;
+                  </span>
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="mt-12 flex min-h-[40vh] items-center justify-center">
+            <div class="max-w-md rounded-2xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+              <h2 class="font-serif text-2xl font-bold text-primary">
+                No openings right now
+              </h2>
+              <p class="mt-3 text-muted-foreground">
+                There are currently no job openings. Please check back later.
+              </p>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Zero-JS staggered entrance — per-card delay set inline via animation-delay. */
+  [data-reveal] {
+    animation: reveal-up 0.6s ease-out backwards;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

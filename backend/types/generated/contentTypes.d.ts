@@ -532,6 +532,37 @@ export interface ApiDistressBeaconDistressBeacon
   };
 }
 
+export interface ApiJobJob extends Struct.CollectionTypeSchema {
+  collectionName: 'jobs';
+  info: {
+    displayName: 'Job';
+    pluralName: 'jobs';
+    singularName: 'job';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    applicationInstructions: Schema.Attribute.RichText &
+      Schema.Attribute.Required;
+    closingDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::job.job'> &
+      Schema.Attribute.Private;
+    openingDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNewNew extends Struct.CollectionTypeSchema {
   collectionName: 'news';
   info: {
@@ -1305,6 +1336,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
+      'api::job.job': ApiJobJob;
       'api::new.new': ApiNewNew;
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;
       'api::org-role.org-role': ApiOrgRoleOrgRole;

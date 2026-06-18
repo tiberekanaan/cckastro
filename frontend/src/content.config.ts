@@ -1,6 +1,11 @@
 import { defineCollection } from "astro:content";
 import { file } from "astro/loaders";
-import { serviceSchema, insightSchema, updateSchema } from "./types/content";
+import {
+  serviceSchema,
+  insightSchema,
+  updateSchema,
+  jobSchema,
+} from "./types/content";
 
 /**
  * Build-time content via the Content Loader API.
@@ -23,4 +28,9 @@ const updates = defineCollection({
   schema: updateSchema,
 });
 
-export const collections = { services, insights, updates };
+const jobs = defineCollection({
+  loader: file("src/data/jobs.json"),
+  schema: jobSchema,
+});
+
+export const collections = { services, insights, updates, jobs };

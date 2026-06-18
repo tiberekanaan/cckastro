@@ -44,7 +44,18 @@ export const updateSchema = z.object({
   href: z.string(),
 });
 
+export const jobSchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+  // Strapi `richtext` returns Markdown strings; rendered via `marked`.
+  description: z.string(),
+  openingDate: z.coerce.date(),
+  closingDate: z.coerce.date(),
+  applicationInstructions: z.string(),
+});
+
 export type Service = z.infer<typeof serviceSchema>;
 export type Insight = z.infer<typeof insightSchema>;
 export type Update = z.infer<typeof updateSchema>;
+export type Job = z.infer<typeof jobSchema>;
 export type IconName = (typeof iconNames)[number];

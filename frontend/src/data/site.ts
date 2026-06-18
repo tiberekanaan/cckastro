@@ -45,7 +45,7 @@ export const site = {
         links: [
           { label: "About Us", href: "/about" },
           { label: "Our Strategy", href: "/strategy" },
-          { label: "Careers", href: "/careers" },
+          { label: "Careers", href: "/career" },
           { label: "Contact", href: "/contact" },
         ],
       },

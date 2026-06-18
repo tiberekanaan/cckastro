@@ -39,8 +39,8 @@ const insights = block.insights ?? [];
           insights.length > 0 && (
             <dl class="mt-8 grid grid-cols-2 gap-4">
               {insights.map((insight) => (
-                <div class="rounded-card bg-surface p-5 shadow-soft ring-1 ring-border/60">
-                  <span class="mb-4 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                <div class="group rounded-card bg-surface p-5 shadow-soft ring-1 ring-border/60 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:ring-primary/40">
+                  <span class="mb-4 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary transition duration-300 ease-out group-hover:scale-110 group-hover:bg-primary group-hover:text-white">
                     <Icon name={insight.iconName || FALLBACK_ICON} class="h-6 w-6" />
                   </span>
                   <dd class="text-3xl font-extrabold text-primary">

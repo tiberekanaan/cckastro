@@ -1,0 +1,112 @@
+{
+  "kind": "collectionType",
+  "collectionName": "distress_beacons",
+  "info": {
+    "singularName": "distress-beacon",
+    "pluralName": "distress-beacons",
+    "displayName": "Distress Beacon"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "registrationType": {
+      "type": "string"
+    },
+    "beaconType": {
+      "type": "string"
+    },
+    "epirbUseType": {
+      "type": "string"
+    },
+    "uniqueId": {
+      "type": "string"
+    },
+    "checksum": {
+      "type": "string"
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "modelNumber": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "batteryExpiryDate": {
+      "type": "string"
+    },
+    "vesselName": {
+      "type": "string"
+    },
+    "vesselCallsign": {
+      "type": "string"
+    },
+    "vesselRegistrationNo": {
+      "type": "string"
+    },
+    "vesselMmsi": {
+      "type": "string"
+    },
+    "vesselHomePort": {
+      "type": "string"
+    },
+    "vesselDwt": {
+      "type": "string"
+    },
+    "vesselLength": {
+      "type": "string"
+    },
+    "vesselType": {
+      "type": "string"
+    },
+    "vesselInmarsatNo": {
+      "type": "string"
+    },
+    "vesselOtherEquipment": {
+      "type": "string"
+    },
+    "aircraftRegistrationNo": {
+      "type": "string"
+    },
+    "aircraftMakeType": {
+      "type": "string"
+    },
+    "aircraftType": {
+      "type": "string"
+    },
+    "aircraftSatelliteNumber": {
+      "type": "string"
+    },
+    "applicantEmail": {
+      "type": "email",
+      "required": true
+    },
+    "ownerName": {
+      "type": "string",
+      "required": true
+    },
+    "ownerAddress": {
+      "type": "string",
+      "required": true
+    },
+    "ownerPhone": {
+      "type": "string",
+      "required": true
+    },
+    "emergencyContactName": {
+      "type": "string",
+      "required": true
+    },
+    "emergencyContactPhone": {
+      "type": "string",
+      "required": true
+    },
+    "emergencyContactAddress": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

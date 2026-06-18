@@ -16,7 +16,7 @@ export const site = {
   address: "Bairiki, Tarawa, Kiribati",
   nav: [
     { label: "About Us", href: "/about" },
-    { label: "Services", href: "/services" },
+    { label: "Distress Beacon", href: "/distress-beacon" },
     { label: "Resources", href: "/resources" },
     { label: "News", href: "/news" },
     { label: "UAF", href: "/universal-access" },
@@ -31,7 +31,7 @@ export const site = {
   distress: {
     title: "Do you own a distress beacon?",
     body: "Registering your 406 MHz beacon helps search-and-rescue teams find you faster in an emergency. It's free and only takes a few minutes.",
-    cta: { label: "Register Now", href: "/beacon/register" },
+    cta: { label: "Register Now", href: "/distress-beacon" },
   },
   help: {
     title: "We are here to help",
@@ -64,7 +64,7 @@ export const site = {
           { label: "Public Consultations", href: "/consultations" },
           { label: "Reports", href: "/resources/reports" },
           { label: "Legislation", href: "/resources/legislation" },
-          { label: "Beacon Registry", href: "/beacon/register" },
+          { label: "Beacon Registry", href: "/distress-beacon" },
         ],
       },
     ],

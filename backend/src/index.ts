@@ -7,6 +7,8 @@ const PUBLIC_ACTIONS = [
   // Commissioner profiles: card grid (find) + detail page / dynamic-zone relation (findOne).
   'api::commissioner.commissioner.find',
   'api::commissioner.commissioner.findOne',
+  // Distress beacon: unauthenticated public form submissions.
+  'api::distress-beacon.distress-beacon.create',
 ];
 
 export default {

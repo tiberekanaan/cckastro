@@ -1,0 +1,382 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from "astro:actions";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const result = Astro.getActionResult(actions.distressBeacon.register);
+const success = result && !result.error;
+const inputError =
+  result?.error && isInputError(result.error) ? result.error : null;
+const fieldErrors = inputError?.fields ?? {};
+// Non-validation failure (e.g. Strapi unreachable / ActionError).
+const formError = result?.error && !inputError ? result.error.message : null;
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";
+const labelClass = "block text-sm font-medium text-foreground";
+const legendClass =
+  "text-lg font-semibold text-primary border-b border-border pb-2 mb-4";
+
+const registrationTypes = ["New", "Update information", "Replacement"];
+const beaconTypes = ["EPIBP/PLB", "ELT"];
+---
+
+<BaseLayout
+  title="Register a Distress Beacon | CCK"
+  description="Register your distress beacon with the Communications Commission of Kiribati to help rescue teams respond faster during emergencies."
+>
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <header class="mb-8">
+      <h1 class="font-serif text-3xl font-bold text-primary sm:text-4xl">
+        Distress Beacon Registration
+      </h1>
+      <p class="mt-3 text-muted-foreground">
+        Register your distress beacon to help rescue teams respond faster during
+        emergencies. Fields marked with an asterisk (*) are required.
+      </p>
+    </header>
+
+    {
+      success && (
+        <div
+          class="mb-8 rounded-card border border-accent bg-accent/10 p-4 text-sm font-medium text-foreground"
+          role="status"
+        >
+          Your distress beacon registration was submitted successfully. Thank
+          you.
+        </div>
+      )
+    }
+
+    {
+      formError && (
+        <div
+          class="mb-8 rounded-card border border-red-500/50 bg-red-500/10 p-4 text-sm font-medium text-red-700"
+          role="alert"
+        >
+          {formError}
+        </div>
+      )
+    }
+
+    <form
+      method="POST"
+      action={actions.distressBeacon.register}
+      data-astro-reload
+      class="grid gap-10 rounded-card border border-border bg-surface p-6 sm:p-8"
+    >
+      {/* Honeypot — hidden from users, bots fill it and get rejected. */}
+      <input
+        type="text"
+        name="bot_catch_field"
+        class="hidden absolute h-0 w-0 opacity-0"
+        tabindex="-1"
+        autocomplete="off"
+      />
+
+      {/* --- Base --- */}
+      <fieldset>
+        <legend class={legendClass}>Registration</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class={labelClass}>
+            Registration type
+            <select class={inputClass} name="registrationType">
+              {registrationTypes.map((t) => <option value={t}>{t}</option>)}
+            </select>
+          </label>
+          <label class={labelClass}>
+            Beacon type
+            <select class={inputClass} name="beaconType" id="beaconType">
+              {beaconTypes.map((t) => <option value={t}>{t}</option>)}
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      {/* --- EPIBP/PLB specific (Beacon + Vessel) --- */}
+      <div id="vessel-fields" class="hidden space-y-10">
+        <fieldset>
+          <legend class={legendClass}>Beacon Details (EPIBP/PLB)</legend>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class={labelClass}>
+              Unique ID
+              <input class={inputClass} type="text" name="uniqueId" />
+            </label>
+            <label class={labelClass}>
+              Checksum
+              <input class={inputClass} type="text" name="checksum" />
+            </label>
+            <label class={labelClass}>
+              Manufacturer
+              <input class={inputClass} type="text" name="manufacturer" />
+            </label>
+            <label class={labelClass}>
+              Model number
+              <input class={inputClass} type="text" name="modelNumber" />
+            </label>
+            <label class={labelClass}>
+              Serial number
+              <input class={inputClass} type="text" name="serialNumber" />
+            </label>
+            <label class={labelClass}>
+              Battery expiry date
+              <input class={inputClass} type="date" name="batteryExpiryDate" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class={legendClass}>Use Type</legend>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class={labelClass}>
+              Is this beacon for personal or vessel use?
+              <select class={inputClass} name="epirbUseType" id="epirbUseType">
+                <option value="Personal">Personal</option>
+                <option value="Vessel">Vessel</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="vessel-specific-details" class="hidden">
+          <fieldset>
+            <legend class={legendClass}>Vessel Details</legend>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class={labelClass}>
+              Vessel name
+              <input class={inputClass} type="text" name="vesselName" />
+            </label>
+            <label class={labelClass}>
+              Callsign
+              <input class={inputClass} type="text" name="vesselCallsign" />
+            </label>
+            <label class={labelClass}>
+              Registration no.
+              <input
+                class={inputClass}
+                type="text"
+                name="vesselRegistrationNo"
+              />
+            </label>
+            <label class={labelClass}>
+              MMSI
+              <input class={inputClass} type="text" name="vesselMmsi" />
+            </label>
+            <label class={labelClass}>
+              Home port
+              <input class={inputClass} type="text" name="vesselHomePort" />
+            </label>
+            <label class={labelClass}>
+              DWT
+              <input class={inputClass} type="text" name="vesselDwt" />
+            </label>
+            <label class={labelClass}>
+              Length
+              <input class={inputClass} type="text" name="vesselLength" />
+            </label>
+            <label class={labelClass}>
+              Vessel type
+              <input class={inputClass} type="text" name="vesselType" />
+            </label>
+            <label class={labelClass}>
+              Inmarsat no.
+              <input class={inputClass} type="text" name="vesselInmarsatNo" />
+            </label>
+            <label class={labelClass}>
+              Other equipment
+              <input
+                class={inputClass}
+                type="text"
+                name="vesselOtherEquipment"
+              />
+            </label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      {/* --- ELT specific (Aircraft) --- */}
+      <div id="aircraft-fields" class="hidden space-y-10">
+        <fieldset>
+          <legend class={legendClass}>Aircraft Details (ELT)</legend>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class={labelClass}>
+              Registration no.
+              <input
+                class={inputClass}
+                type="text"
+                name="aircraftRegistrationNo"
+              />
+            </label>
+            <label class={labelClass}>
+              Make / type
+              <input class={inputClass} type="text" name="aircraftMakeType" />
+            </label>
+            <label class={labelClass}>
+              Aircraft type
+              <input class={inputClass} type="text" name="aircraftType" />
+            </label>
+            <label class={labelClass}>
+              Satellite number
+              <input
+                class={inputClass}
+                type="text"
+                name="aircraftSatelliteNumber"
+              />
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      {/* --- Owner (mandatory) --- */}
+      <fieldset>
+        <legend class={legendClass}>Owner Details</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class={labelClass}>
+            Owner name *
+            <input class={inputClass} type="text" name="ownerName" required />
+            {
+              fieldErrors.ownerName && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.ownerName[0]}
+                </span>
+              )
+            }
+          </label>
+          <label class={labelClass}>
+            Email *
+            <input
+              class={inputClass}
+              type="email"
+              name="applicantEmail"
+              required
+            />
+            {
+              fieldErrors.applicantEmail && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.applicantEmail[0]}
+                </span>
+              )
+            }
+          </label>
+          <label class={labelClass}>
+            Phone *
+            <input class={inputClass} type="text" name="ownerPhone" required />
+            {
+              fieldErrors.ownerPhone && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.ownerPhone[0]}
+                </span>
+              )
+            }
+          </label>
+          <label class={`${labelClass} sm:col-span-2`}>
+            Address *
+            <input class={inputClass} type="text" name="ownerAddress" required />
+            {
+              fieldErrors.ownerAddress && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.ownerAddress[0]}
+                </span>
+              )
+            }
+          </label>
+        </div>
+      </fieldset>
+
+      {/* --- Emergency contact (mandatory) --- */}
+      <fieldset>
+        <legend class={legendClass}>Emergency Contact</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class={labelClass}>
+            Contact name *
+            <input
+              class={inputClass}
+              type="text"
+              name="emergencyContactName"
+              required
+            />
+            {
+              fieldErrors.emergencyContactName && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.emergencyContactName[0]}
+                </span>
+              )
+            }
+          </label>
+          <label class={labelClass}>
+            Contact phone *
+            <input
+              class={inputClass}
+              type="text"
+              name="emergencyContactPhone"
+              required
+            />
+            {
+              fieldErrors.emergencyContactPhone && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.emergencyContactPhone[0]}
+                </span>
+              )
+            }
+          </label>
+          <label class={`${labelClass} sm:col-span-2`}>
+            Contact address *
+            <input
+              class={inputClass}
+              type="text"
+              name="emergencyContactAddress"
+              required
+            />
+            {
+              fieldErrors.emergencyContactAddress && (
+                <span class="mt-1 block text-xs text-red-600">
+                  {fieldErrors.emergencyContactAddress[0]}
+                </span>
+              )
+            }
+          </label>
+        </div>
+      </fieldset>
+
+      <button
+        type="submit"
+        class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+      >
+        Submit Registration
+      </button>
+    </form>
+  </section>
+</BaseLayout>
+
+<script>
+  // Toggle conditional field groups based on the selected beacon + use type.
+  const beaconType = document.getElementById(
+    "beaconType",
+  ) as HTMLSelectElement | null;
+  const epirbUseType = document.getElementById(
+    "epirbUseType",
+  ) as HTMLSelectElement | null;
+  const vesselFields = document.getElementById("vessel-fields");
+  const vesselSpecific = document.getElementById("vessel-specific-details");
+  const aircraftFields = document.getElementById("aircraft-fields");
+
+  function syncBeaconFields() {
+    if (!beaconType || !vesselFields || !vesselSpecific || !aircraftFields)
+      return;
+    const isEpirb = beaconType.value === "EPIBP/PLB";
+    // General EPIBP/PLB wrapper (Beacon Details + Use Type selector).
+    vesselFields.classList.toggle("hidden", !isEpirb);
+    // Aircraft only for ELT.
+    aircraftFields.classList.toggle("hidden", isEpirb);
+    // Vessel-specific details only when EPIBP/PLB + Vessel use.
+    const showVesselSpecific = isEpirb && epirbUseType?.value === "Vessel";
+    vesselSpecific.classList.toggle("hidden", !showVesselSpecific);
+  }
+
+  beaconType?.addEventListener("change", syncBeaconFields);
+  epirbUseType?.addEventListener("change", syncBeaconFields);
+  // Run once on initialization.
+  syncBeaconFields();
+</script>

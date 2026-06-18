@@ -39,4 +39,13 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: no Astro `projects` Content collection (used SSR fetch like News, not `getCollection`); `project` schema has no `slug`/`image`/`project_status` (link by `documentId`, image from `photos[0]`, status pill omitted); no typography plugin (arbitrary-variant prose, not `prose`).
 - `astro check` + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
+#### Distress Beacon Registration (added — branch `feature/distress-beacon`)
+- Backend: new `distress-beacon` collection (`draftAndPublish:false`) — base, EPIBP/PLB beacon+vessel, ELT aircraft, mandatory owner+emergency string fields + router/controller/service factories.
+- Permissions: `index.ts` bootstrap now grants Public role `api::distress-beacon.distress-beacon.create` (unauthenticated form POST).
+- Frontend: new `src/actions/index.ts` — `distressBeacon.register` (`accept:"form"`, Zod 4; owner/emergency `.min(1)`, conditional fields `.optional()`); POSTs `{data}` to `/api/distress-beacons`, throws `ActionError` on non-OK.
+- Nav: `Services`→`/services` replaced with `Distress Beacon`→`/distress-beacon` in `site.ts`; legacy `/beacon/register` links (footer + distress CTA) repointed to `/distress-beacon`.
+- Page: new SSR `distress-beacon.astro` — intro + Tailwind v4 form, `#vessel-fields`/`#aircraft-fields` `hidden space-y-10` toggled by vanilla `<script>` on `beaconType` change (run once on init); `isInputError` field errors under mandatory inputs, success + ActionError banners.
+- Adaptations vs spec: header path was `components/empower/Header.astro` (nonexistent) — nav lives in `src/data/site.ts`; `hidden grid` swapped for `hidden space-y-10` (avoid display-utility conflict).
+- `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
+
 #### History

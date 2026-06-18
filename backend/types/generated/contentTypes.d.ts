@@ -473,6 +473,65 @@ export interface ApiCommissionerCommissioner
   };
 }
 
+export interface ApiDistressBeaconDistressBeacon
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'distress_beacons';
+  info: {
+    displayName: 'Distress Beacon';
+    pluralName: 'distress-beacons';
+    singularName: 'distress-beacon';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    aircraftMakeType: Schema.Attribute.String;
+    aircraftRegistrationNo: Schema.Attribute.String;
+    aircraftSatelliteNumber: Schema.Attribute.String;
+    aircraftType: Schema.Attribute.String;
+    applicantEmail: Schema.Attribute.Email & Schema.Attribute.Required;
+    batteryExpiryDate: Schema.Attribute.String;
+    beaconType: Schema.Attribute.String;
+    checksum: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    emergencyContactAddress: Schema.Attribute.String &
+      Schema.Attribute.Required;
+    emergencyContactName: Schema.Attribute.String & Schema.Attribute.Required;
+    emergencyContactPhone: Schema.Attribute.String & Schema.Attribute.Required;
+    epirbUseType: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::distress-beacon.distress-beacon'
+    > &
+      Schema.Attribute.Private;
+    manufacturer: Schema.Attribute.String;
+    modelNumber: Schema.Attribute.String;
+    ownerAddress: Schema.Attribute.String & Schema.Attribute.Required;
+    ownerName: Schema.Attribute.String & Schema.Attribute.Required;
+    ownerPhone: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    registrationType: Schema.Attribute.String;
+    serialNumber: Schema.Attribute.String;
+    uniqueId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vesselCallsign: Schema.Attribute.String;
+    vesselDwt: Schema.Attribute.String;
+    vesselHomePort: Schema.Attribute.String;
+    vesselInmarsatNo: Schema.Attribute.String;
+    vesselLength: Schema.Attribute.String;
+    vesselMmsi: Schema.Attribute.String;
+    vesselName: Schema.Attribute.String;
+    vesselOtherEquipment: Schema.Attribute.String;
+    vesselRegistrationNo: Schema.Attribute.String;
+    vesselType: Schema.Attribute.String;
+  };
+}
+
 export interface ApiNewNew extends Struct.CollectionTypeSchema {
   collectionName: 'news';
   info: {
@@ -1245,6 +1304,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
+      'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
       'api::new.new': ApiNewNew;
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;
       'api::org-role.org-role': ApiOrgRoleOrgRole;

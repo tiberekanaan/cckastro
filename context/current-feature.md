@@ -48,4 +48,13 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: header path was `components/empower/Header.astro` (nonexistent) — nav lives in `src/data/site.ts`; `hidden grid` swapped for `hidden space-y-10` (avoid display-utility conflict).
 - `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
 
+#### Career Section (added — branch `feature/career-section`)
+- Backend: new `job` collection (`title` String, `slug` UID→title, `description`/`applicationInstructions` RichText, `openingDate`/`closingDate` Date; `draftAndPublish:true`) + router/controller/service factories.
+- Frontend data: `jobSchema` in `types/content.ts` (Zod 4, `z.coerce.date()` for dates, markdown strings for richtext) + `jobs` collection in `content.config.ts` via `file()` loader + `src/data/jobs.json` mock (swap-ready for Strapi).
+- Nav: footer `Careers` link repointed `/careers`→`/career` in `site.ts` (footer is data-driven; no `empower/Footer.astro`).
+- Pages: new SSR `career/index.astro` (`prerender=false`) — `getCollection('jobs')`, filter `closingDate >= new Date()` + sort by soonest close, `data-reveal` stagger / group-hover cards (title + dates) linking to `/career/[slug]`, centered empty-state ("There are currently no job openings. Please check back later.").
+- Detail: new SSR `career/[slug].astro` (`prerender=false`) — find by slug (redirect to `/career` if missing), h1 + opening/closing dates, `marked` description in arbitrary-variant prose, teal "How to Apply" panel (`border-l-4 border-teal-600 bg-teal-50 rounded-r-lg`) with `marked` applicationInstructions.
+- Adaptations vs spec: Footer path is `components/layout/Footer.astro` (data-driven via `site.ts`, not `empower/`); `getCollection` uses local JSON mock via `file()` (existing pattern); no typography plugin — "prose" = arbitrary-variant utilities like `universal-access.astro`.
+- `astro check` (0 errors) + `npm run build` pass clean. Committed + pushed to `origin/feature/career-section`. Strapi schema sync requires `yarn develop` restart elsewhere. Awaiting browser review + merge.
+
 #### History

@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_blocks_distress_beacon_ctas",
+  "info": {
+    "displayName": "Distress Beacon Cta",
+    "icon": "broadcast"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "buttonText": {
+      "type": "string"
+    },
+    "buttonLink": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}

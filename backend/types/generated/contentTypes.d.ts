@@ -649,6 +649,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.form',
         'blocks.org-chart',
         'blocks.commissioner-profiles',
+        'blocks.distress-beacon-cta',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;

@@ -36,7 +36,8 @@
         "blocks.rich-text",
         "blocks.form",
         "blocks.org-chart",
-        "blocks.commissioner-profiles"
+        "blocks.commissioner-profiles",
+        "blocks.distress-beacon-cta"
       ]
     }
   }

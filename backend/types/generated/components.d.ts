@@ -33,6 +33,22 @@ export interface BlocksCta extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksDistressBeaconCta extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_distress_beacon_ctas';
+  info: {
+    displayName: 'Distress Beacon Cta';
+    icon: 'broadcast';
+  };
+  attributes: {
+    buttonLink: Schema.Attribute.String;
+    buttonText: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksFaq extends Struct.ComponentSchema {
   collectionName: 'components_blocks_faqs';
   info: {
@@ -200,6 +216,7 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'blocks.commissioner-profiles': BlocksCommissionerProfiles;
       'blocks.cta': BlocksCta;
+      'blocks.distress-beacon-cta': BlocksDistressBeaconCta;
       'blocks.faq': BlocksFaq;
       'blocks.featured-services': BlocksFeaturedServices;
       'blocks.form': BlocksForm;

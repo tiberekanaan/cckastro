@@ -171,6 +171,16 @@ export interface CommissionerProfilesBlock extends BlockBase {
   commissioners?: Commissioner[];
 }
 
+export interface DistressBeaconCtaBlock extends BlockBase {
+  __component: "blocks.distress-beacon-cta";
+  title?: string | null;
+  subtitle?: string | null;
+  description?: string | null;
+  buttonText?: string | null;
+  buttonLink?: string | null;
+  image?: StrapiMedia | null;
+}
+
 export type PageBlock =
   | HeroBlock
   | ServicesGridBlock
@@ -184,7 +194,8 @@ export type PageBlock =
   | FaqBlock
   | FormBlock
   | OrgChartBlock
-  | CommissionerProfilesBlock;
+  | CommissionerProfilesBlock
+  | DistressBeaconCtaBlock;
 
 /* --- Collection types --- */
 export interface StrapiPage {

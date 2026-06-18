@@ -1,0 +1,81 @@
+---
+import type { DistressBeaconCtaBlock } from "../../types/strapi";
+import { mediaUrl } from "../../lib/strapi";
+
+interface Props {
+  block: DistressBeaconCtaBlock;
+}
+
+const { block } = Astro.props;
+const img = mediaUrl(block.image);
+
+// Emphasize the phrase "distress beacon" (case-insensitive) in brand blue,
+// without innerHTML — split the title around the match into safe text parts.
+const title = block.title ?? "";
+const phrase = "distress beacon";
+const matchAt = title.toLowerCase().indexOf(phrase);
+const titleParts =
+  matchAt === -1
+    ? null
+    : {
+        before: title.slice(0, matchAt),
+        match: title.slice(matchAt, matchAt + phrase.length),
+        after: title.slice(matchAt + phrase.length),
+      };
+---
+
+<div class="mx-auto max-w-6xl px-4 sm:px-6">
+  <section
+    class="grid grid-cols-1 items-center gap-8 py-16 md:grid-cols-2"
+  >
+    <div>
+      {
+        title && (
+          <h2 class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            {titleParts ? (
+              <>
+                {titleParts.before}
+                <span class="text-accent">{titleParts.match}</span>
+                {titleParts.after}
+              </>
+            ) : (
+              title
+            )}
+          </h2>
+        )
+      }
+      {
+        block.subtitle && (
+          <p class="mt-3 text-lg font-bold text-foreground">{block.subtitle}</p>
+        )
+      }
+      {
+        block.description && (
+          <p class="mt-4 max-w-prose text-muted-foreground">
+            {block.description}
+          </p>
+        )
+      }
+      {
+        block.buttonText && block.buttonLink && (
+          <a
+            href={block.buttonLink}
+            class="mt-7 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+          >
+            {block.buttonText}
+          </a>
+        )
+      }
+    </div>
+
+    {
+      img && (
+        <img
+          src={img}
+          alt={block.image?.alternativeText ?? block.title ?? ""}
+          class="mx-auto max-h-80 w-full object-contain"
+        />
+      )
+    }
+  </section>
+</div>

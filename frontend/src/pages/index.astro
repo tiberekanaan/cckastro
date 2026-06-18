@@ -27,6 +27,7 @@ const blockPopulate: Record<string, string[]> = {
   "blocks.rich-text": ["*"],
   "blocks.faq": ["*"],
   "blocks.form": ["*"],
+  "blocks.distress-beacon-cta": ["image"],
 };
 // Media nested inside a repeatable component (insights → icon) needs the
 // object-form populate; the flat array form above can't express that depth.
@@ -81,6 +82,18 @@ try {
 }
 
 const blocks = page?.content ?? [];
+
+// Visual hierarchy: the page stays white; every other section after the Hero
+// becomes a large muted rounded card, while the sections between them stay
+// clean and full-width so the layout breathes. The Hero is never wrapped;
+// alternation (index % 2 !== 0) starts on the blocks following it.
+let bandIndex = 0;
+const bandedBlocks = blocks.map((block) => {
+  if (block.__component === "blocks.hero") return { block, card: false };
+  const card = bandIndex % 2 !== 0;
+  bandIndex++;
+  return { block, card };
+});
 ---
 
 <BaseLayout
@@ -118,8 +131,17 @@ const blocks = page?.content ?? [];
   }
 
   {
-    blocks.map((block) => (
-      <BlockRenderer block={block} news={news} />
-    ))
+    bandedBlocks.map(({ block, card }) =>
+      card ? (
+        /* Muted rounded card on the white page — large radius + generous
+           inset so alternating sections read as distinct panels. */
+        <div class="mx-4 my-12 rounded-[2.5rem] bg-surface-muted px-6 py-16 md:mx-8 md:px-16 lg:mx-auto lg:max-w-7xl">
+          <BlockRenderer block={block} news={news} />
+        </div>
+      ) : (
+        /* Non-alternating section: clean, full-width white. */
+        <BlockRenderer block={block} news={news} />
+      ),
+    )
   }
 </BaseLayout>

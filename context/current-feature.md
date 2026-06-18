@@ -48,4 +48,11 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: header path was `components/empower/Header.astro` (nonexistent) — nav lives in `src/data/site.ts`; `hidden grid` swapped for `hidden space-y-10` (avoid display-utility conflict).
 - `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
 
+#### Distress Beacon CTA block (added — branch `feature/distress-beacon-cta`)
+- Backend: new `blocks.distress-beacon-cta` component (`title`/`subtitle`/`buttonText`/`buttonLink` String, `description` Text, `image` single Media); registered in `page.content` dynamic zone.
+- Data: `index.astro` `blockPopulate` adds `"blocks.distress-beacon-cta": ["image"]` → auto-emits `populate[content][on][blocks.distress-beacon-cta][populate]=image`. Astro dev confirmed the live query returns 200.
+- Frontend: new `src/components/blocks/DistressBeaconCTA.astro` — 50/50 `md:grid-cols-2` grid, `object-contain` image; `DistressBeaconCtaBlock` type + PageBlock union; mapped in `BlockRenderer.astro`.
+- Adaptations vs spec: component lives in `components/blocks/` (not `components/`) for renderer consistency; blue uses semantic `accent` token (theme `primary` is green) — "distress beacon" emphasized via safe text-split span, button `bg-accent`/`hover:bg-accent-hover`.
+- `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
+
 #### History

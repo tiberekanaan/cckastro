@@ -1,0 +1,212 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from "astro:actions";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const result = Astro.getActionResult(actions.contact.submit);
+const success = result && !result.error;
+const inputError =
+  result?.error && isInputError(result.error) ? result.error : null;
+const fieldErrors = inputError?.fields ?? {};
+// Non-validation failure (e.g. Strapi unreachable / ActionError / honeypot).
+const formError = result?.error && !inputError ? result.error.message : null;
+
+// CCK contact details (per spec — kept inline to this page).
+const contact = {
+  address: "Communications Commission of Kiribati, Temakin, Betio, Tarawa, Kiribati",
+  phone: "75125431",
+  email: "info@cck.ki",
+};
+const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(
+  "Temakin, Betio, Tarawa, Kiribati",
+)}&output=embed`;
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";
+const labelClass = "block text-sm font-medium text-foreground";
+const errorClass = "mt-1 block text-xs text-red-600";
+---
+
+<BaseLayout
+  title="Contact Us | CCK"
+  description="Get in touch with the Communications Commission of Kiribati — address, phone, email, and a contact form."
+>
+  <section class="mx-auto max-w-6xl px-4 sm:px-6">
+    <header class="pt-16">
+      <h1 class="font-serif text-3xl font-bold text-primary sm:text-4xl">
+        Contact Us
+      </h1>
+      <p class="mt-3 max-w-2xl text-muted-foreground">
+        Have a question about licensing, consumer rights, or telecom services in
+        Kiribati? Reach out using the details below or send us a message.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-12 py-16 lg:grid-cols-2">
+      <!-- Left: contact details + map -->
+      <div>
+        <h2 class="text-xl font-semibold text-primary">Get in touch</h2>
+        <dl class="mt-6 space-y-6">
+          <div>
+            <dt class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Address
+            </dt>
+            <dd class="mt-1 text-foreground">{contact.address}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Phone
+            </dt>
+            <dd class="mt-1 text-foreground">
+              <a
+                href={`tel:${contact.phone}`}
+                class="text-accent hover:text-accent-hover hover:underline"
+              >
+                {contact.phone}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Email
+            </dt>
+            <dd class="mt-1 text-foreground">
+              <a
+                href={`mailto:${contact.email}`}
+                class="text-accent hover:text-accent-hover hover:underline"
+              >
+                {contact.email}
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="mt-8 overflow-hidden rounded-card border border-border shadow-soft">
+          <iframe
+            src={mapSrc}
+            title="CCK location — Temakin, Betio, Tarawa, Kiribati"
+            width="100%"
+            height="320"
+            style="border:0;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- Right: contact form -->
+      <div>
+        <h2 class="text-xl font-semibold text-primary">Send a message</h2>
+
+        {
+          success && (
+            <div
+              class="mt-6 rounded-card border border-accent bg-accent/10 p-4 text-sm font-medium text-foreground"
+              role="status"
+            >
+              Thank you — your message has been sent. We'll be in touch shortly.
+            </div>
+          )
+        }
+
+        {
+          formError && (
+            <div
+              class="mt-6 rounded-card border border-red-500/50 bg-red-500/10 p-4 text-sm font-medium text-red-700"
+              role="alert"
+            >
+              {formError}
+            </div>
+          )
+        }
+
+        <form
+          method="POST"
+          action={actions.contact.submit}
+          class="mt-6 space-y-5"
+        >
+          <!-- Honeypot: hidden from humans, tempts bots. Must stay empty. -->
+          <input
+            type="text"
+            name="bot_catch_field"
+            class="absolute h-0 w-0 opacity-0"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          />
+
+          <div>
+            <label for="fullName" class={labelClass}>Full Name *</label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              required
+              class={inputClass}
+            />
+            {fieldErrors.fullName && (
+              <span class={errorClass}>{fieldErrors.fullName[0]}</span>
+            )}
+          </div>
+
+          <div>
+            <label for="email" class={labelClass}>Email *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class={inputClass}
+            />
+            {fieldErrors.email && (
+              <span class={errorClass}>{fieldErrors.email[0]}</span>
+            )}
+          </div>
+
+          <div>
+            <label for="phone" class={labelClass}>Phone</label>
+            <input type="tel" id="phone" name="phone" class={inputClass} />
+            {fieldErrors.phone && (
+              <span class={errorClass}>{fieldErrors.phone[0]}</span>
+            )}
+          </div>
+
+          <div>
+            <label for="subject" class={labelClass}>Subject *</label>
+            <input
+              type="text"
+              id="subject"
+              name="subject"
+              required
+              class={inputClass}
+            />
+            {fieldErrors.subject && (
+              <span class={errorClass}>{fieldErrors.subject[0]}</span>
+            )}
+          </div>
+
+          <div>
+            <label for="message" class={labelClass}>Message *</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              class={inputClass}></textarea>
+            {fieldErrors.message && (
+              <span class={errorClass}>{fieldErrors.message[0]}</span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-soft transition-all hover:bg-accent-hover hover:-translate-y-0.5"
+          >
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -78,4 +78,46 @@ export const server = {
       },
     }),
   },
+  contact: {
+    submit: defineAction({
+      accept: "form",
+      input: z.object({
+        // Spam honeypot — must stay empty.
+        bot_catch_field: optional,
+        fullName: required,
+        email: z.email(),
+        phone: optional,
+        subject: required,
+        message: required,
+      }),
+      handler: async (input) => {
+        // Honeypot filled → silently reject the bot.
+        const { bot_catch_field, ...data } = input;
+        if (bot_catch_field) {
+          throw new ActionError({
+            code: "BAD_REQUEST",
+            message: "Invalid submission.",
+          });
+        }
+
+        const res = await fetch(
+          `${import.meta.env.STRAPI_URL}/api/contact-submissions`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data }),
+          },
+        );
+
+        if (!res.ok) {
+          throw new ActionError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Could not send your message. Please try again.",
+          });
+        }
+
+        return { success: true as const };
+      },
+    }),
+  },
 };

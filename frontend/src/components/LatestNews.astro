@@ -2,6 +2,7 @@
 import type { NewsItem, LatestNewsBlock } from "../types/strapi";
 import { mediaUrl } from "../lib/strapi";
 import SectionHeading from "./ui/SectionHeading.astro";
+import Button from "./ui/Button.astro";
 
 interface Props {
   block: LatestNewsBlock;
@@ -73,6 +74,10 @@ const fmtDate = (d?: string | null): string =>
             ))
           }
         </ul>
+
+        <div class="mt-6">
+          <Button href="/news" variant="outline">Browse All News &rarr;</Button>
+        </div>
       </div>
     </div>
   </div>

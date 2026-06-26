@@ -110,10 +110,15 @@ const introHtml = page?.intro
                         {fmtDate(job.deadline)}
                       </span>
                     </td>
-                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-accent">
-                      <span class="inline-flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
-                        View <span aria-hidden="true">&rarr;</span>
-                      </span>
+                    <td class="whitespace-nowrap px-6 py-4 text-right">
+                      <a
+                        href={`/careers/${job.documentId}`}
+                        class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+                      >
+                        <span class="inline-flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+                          View <span aria-hidden="true">&rarr;</span>
+                        </span>
+                      </a>
                     </td>
                   </tr>
                 ))}

@@ -11,4 +11,4 @@ interface ImportMeta {
 
 // Side-effect CSS imports from Fontsource packages.
 declare module "@fontsource-variable/inter";
-declare module "@fontsource/fraunces/*";
+declare module "@fontsource/lora/*";

@@ -3,11 +3,18 @@ export const prerender = false;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlockRenderer from "../components/blocks/BlockRenderer.astro";
+import ServicesGrid from "../components/blocks/ServicesGrid.astro";
+import ServicesAccordion from "../components/ServicesAccordion.astro";
+import MarketInsightsSection from "../components/blocks/MarketInsightsSection.astro";
 import { STRAPI_URL } from "../lib/strapi";
 import type {
   StrapiCollectionResponse,
   StrapiPage,
   NewsItem,
+  PageBlock,
+  ServicesGridBlock,
+  FeaturedServicesBlock,
+  MarketInsightsSectionBlock,
 } from "../types/strapi";
 
 // Deep-populate each dynamic-zone block. `populate=*` does NOT descend into a
@@ -83,22 +90,66 @@ try {
 
 const blocks = page?.content ?? [];
 
+// Home hero is full-bleed: float a transparent header over it.
+const heroOverlay = blocks[0]?.__component === "blocks.hero";
+
+// Render items: most blocks render solo, but a services block (`services-grid`
+// or `featured-services`) immediately followed by a `market-insights-section`
+// is fused into one two-column row (services accordion left, market-at-a-glance
+// right) — mirroring the live CCK site. Purely presentational; no CMS change.
+type ServicesBlock = ServicesGridBlock | FeaturedServicesBlock;
+const SERVICES_COMPONENTS = new Set([
+  "blocks.services-grid",
+  "blocks.featured-services",
+]);
+const isServicesBlock = (b: PageBlock): b is ServicesBlock =>
+  SERVICES_COMPONENTS.has(b.__component);
+
+type RenderItem =
+  | { kind: "block"; block: PageBlock; card: boolean }
+  | {
+      kind: "pair";
+      services: ServicesBlock;
+      market: MarketInsightsSectionBlock;
+      card: boolean;
+    };
+
 // Visual hierarchy: the page stays white; every other section after the Hero
 // becomes a large muted rounded card, while the sections between them stay
 // clean and full-width so the layout breathes. The Hero is never wrapped;
-// alternation (index % 2 !== 0) starts on the blocks following it.
+// alternation (index % 2 !== 0) starts on the items following it.
 let bandIndex = 0;
-const bandedBlocks = blocks.map((block) => {
-  if (block.__component === "blocks.hero") return { block, card: false };
-  const card = bandIndex % 2 !== 0;
+const items: RenderItem[] = [];
+for (let i = 0; i < blocks.length; i++) {
+  const block = blocks[i];
+  if (block.__component === "blocks.hero") {
+    items.push({ kind: "block", block, card: false });
+    continue;
+  }
+  const next = blocks[i + 1];
+  if (
+    isServicesBlock(block) &&
+    next?.__component === "blocks.market-insights-section"
+  ) {
+    items.push({
+      kind: "pair",
+      services: block,
+      market: next,
+      card: bandIndex % 2 !== 0,
+    });
+    bandIndex++;
+    i++; // consume the market block
+    continue;
+  }
+  items.push({ kind: "block", block, card: bandIndex % 2 !== 0 });
   bandIndex++;
-  return { block, card };
-});
+}
 ---
 
 <BaseLayout
   title={page?.title ?? "CCK — Regulating Kiribati's telecommunication market"}
   description={page?.description ?? undefined}
+  heroOverlay={heroOverlay}
 >
   {
     loadError && (
@@ -131,17 +182,47 @@ const bandedBlocks = blocks.map((block) => {
   }
 
   {
-    bandedBlocks.map(({ block, card }) =>
-      card ? (
-        /* Muted rounded card on the white page — large radius + generous
-           inset so alternating sections read as distinct panels. */
-        <div class="mx-4 my-12 rounded-[2.5rem] bg-surface-muted px-6 py-16 md:mx-8 md:px-16 lg:mx-auto lg:max-w-7xl">
-          <BlockRenderer block={block} news={news} />
-        </div>
+    items.map((item) => {
+      /* Paired services + market-at-a-glance two-column row. */
+      const inner =
+        item.kind === "pair" ? (
+          <div class="grid grid-cols-1 items-start gap-10 md:grid-cols-2">
+            {item.services.__component === "blocks.services-grid" ? (
+              <ServicesGrid block={item.services} paired />
+            ) : (
+              <ServicesAccordion block={item.services} paired />
+            )}
+            <MarketInsightsSection block={item.market} paired />
+          </div>
+        ) : (
+          <BlockRenderer block={item.block} news={news} />
+        );
+
+      /* Pairs bring their own section padding; solo blocks already do. */
+      const body =
+        item.kind === "pair" ? (
+          <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">{inner}</section>
+        ) : (
+          inner
+        );
+
+      /* Latest News always reads as a muted band; alternating sections do too. */
+      const isLatestNews =
+        item.kind === "block" &&
+        item.block.__component === "blocks.latest-news";
+
+      /* The closing CTA is a self-contained white card — never a muted band. */
+      const isCta =
+        item.kind === "block" && item.block.__component === "blocks.cta";
+
+      return (item.card && !isCta) || isLatestNews ? (
+        /* Full-bleed muted band — tinted background spans the viewport
+           end-to-end; inner content stays centered by its own container. */
+        <div class="bg-surface-muted">{body}</div>
       ) : (
         /* Non-alternating section: clean, full-width white. */
-        <BlockRenderer block={block} news={news} />
-      ),
-    )
+        body
+      );
+    })
   }
 </BaseLayout>

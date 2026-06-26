@@ -1,5 +1,3 @@
-import type { IconName } from "./content";
-
 /**
  * Strapi 5 API response types (flattened — no `.attributes` wrappers).
  * Entries are keyed by a 24-char alphanumeric `documentId`.
@@ -59,7 +57,7 @@ export interface ServiceItem {
   id: number;
   title: string;
   summary?: string | null;
-  icon: IconName;
+  icon: string;
   href?: string | null;
 }
 

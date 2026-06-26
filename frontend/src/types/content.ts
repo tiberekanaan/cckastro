@@ -7,23 +7,10 @@ import { z } from "astro/zod";
  * (Document Service API, flattened responses keyed by `documentId`).
  */
 
-export const iconNames = [
-  "network",
-  "approval",
-  "antenna",
-  "domain",
-  "hash",
-  "license",
-  "mobile",
-  "globe",
-  "coverage",
-  "users",
-] as const;
-
 export const serviceSchema = z.object({
   title: z.string(),
   summary: z.string(),
-  icon: z.enum(iconNames),
+  icon: z.string(),
   href: z.string(),
 });
 
@@ -31,7 +18,7 @@ export const insightSchema = z.object({
   label: z.string(),
   value: z.string(),
   unit: z.string().optional(),
-  icon: z.enum(iconNames),
+  icon: z.string(),
   note: z.string().optional(),
 });
 
@@ -47,4 +34,3 @@ export const updateSchema = z.object({
 export type Service = z.infer<typeof serviceSchema>;
 export type Insight = z.infer<typeof insightSchema>;
 export type Update = z.infer<typeof updateSchema>;
-export type IconName = (typeof iconNames)[number];

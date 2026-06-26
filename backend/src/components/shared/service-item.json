@@ -14,20 +14,8 @@
       "type": "text"
     },
     "icon": {
-      "type": "enumeration",
-      "enum": [
-        "network",
-        "approval",
-        "antenna",
-        "domain",
-        "hash",
-        "license",
-        "mobile",
-        "globe",
-        "coverage",
-        "users"
-      ],
-      "default": "network"
+      "type": "string",
+      "default": "lucide:network"
     },
     "href": {
       "type": "string"

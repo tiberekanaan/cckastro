@@ -191,21 +191,8 @@ export interface SharedServiceItem extends Struct.ComponentSchema {
   };
   attributes: {
     href: Schema.Attribute.String;
-    icon: Schema.Attribute.Enumeration<
-      [
-        'network',
-        'approval',
-        'antenna',
-        'domain',
-        'hash',
-        'license',
-        'mobile',
-        'globe',
-        'coverage',
-        'users',
-      ]
-    > &
-      Schema.Attribute.DefaultTo<'network'>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'lucide:network'>;
     summary: Schema.Attribute.Text;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };

@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import Icon from "../ui/Icon.astro";
+import { Icon } from "astro-icon/components";
 import SectionHeading from "../ui/SectionHeading.astro";
 
 interface Props {
@@ -8,6 +8,10 @@ interface Props {
 }
 
 const { services } = Astro.props;
+
+// Normalize CMS values to a full Iconify name; default to the lucide set.
+const iconFor = (icon?: string | null): string =>
+  !icon ? "lucide:network" : icon.includes(":") ? icon : `lucide:${icon}`;
 ---
 
 <div>
@@ -24,7 +28,7 @@ const { services } = Astro.props;
               class="grid size-11 shrink-0 place-items-center rounded-lg bg-primary-foreground/10 text-secondary"
               aria-hidden="true"
             >
-              <Icon name={data.icon} class="size-6" />
+              <Icon name={iconFor(data.icon)} class="size-6" />
             </span>
             <span class="min-w-0 flex-1">
               <span class="block font-semibold leading-tight">{data.title}</span>

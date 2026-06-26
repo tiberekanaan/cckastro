@@ -1,7 +1,6 @@
 ---
 import type { CtaBlock } from "../../types/strapi";
 import { mediaUrl } from "../../lib/strapi";
-import Button from "../ui/Button.astro";
 
 interface Props {
   block: CtaBlock;
@@ -18,7 +17,7 @@ const img = mediaUrl(block.image);
       <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div class="grid items-center gap-8 rounded-[var(--radius-panel)] bg-surface p-8 shadow-soft ring-1 ring-border/60 sm:p-12 lg:grid-cols-[1fr_auto]">
           <div class="max-w-xl">
-            <h2 class="text-2xl font-extrabold tracking-tight text-primary sm:text-3xl">
+            <h2 class="font-serif text-2xl font-bold tracking-tight text-primary sm:text-3xl">
               {block.title}
             </h2>
             {block.body && <p class="mt-3 text-muted-foreground">{block.body}</p>}
@@ -44,18 +43,25 @@ const img = mediaUrl(block.image);
   ) : (
     <section class="py-16">
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="relative isolate overflow-hidden rounded-[var(--radius-panel)] bg-gradient-to-br from-primary to-accent px-6 py-16 text-center text-primary-foreground shadow-soft sm:px-12">
-          <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{block.title}</h2>
+        <div class="relative isolate overflow-hidden rounded-[var(--radius-panel)] bg-white px-6 py-16 text-center shadow-xl ring-1 ring-border/60 sm:px-12 sm:py-20">
+          <span class="mx-auto mb-6 block h-1.5 w-16 rounded-full bg-primary/25" />
+
+          <h2 class="font-serif text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+            {block.title}
+          </h2>
           {block.body && (
-            <p class="mx-auto mt-3 max-w-xl text-primary-foreground/75">
+            <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-foreground/70">
               {block.body}
             </p>
           )}
           {block.ctaLabel && block.ctaHref && (
-            <div class="mt-7 flex justify-center">
-              <Button href={block.ctaHref} variant="primary">
+            <div class="mt-8 flex justify-center">
+              <a
+                href={block.ctaHref}
+                class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-[var(--shadow-lift)] focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
                 {block.ctaLabel}
-              </Button>
+              </a>
             </div>
           )}
         </div>

@@ -5,54 +5,72 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
   block: MarketInsightsSectionBlock;
+  // When paired beside another block, drop the image + outer section/padding
+  // and render heading + stats only (fills a single column).
+  paired?: boolean;
 }
 
 // Fallback when an insight has no iconName set in the CMS.
 const FALLBACK_ICON = "lucide:bar-chart-3";
 
-const { block } = Astro.props;
+const { block, paired = false } = Astro.props;
 const image = mediaUrl(block.image);
 const insights = block.insights ?? [];
 ---
 
-<section>
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-    <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-      {
-        image && (
-          <img
-            src={image}
-            alt={block.image?.alternativeText ?? block.title ?? ""}
-            class="h-full w-full rounded-[var(--radius-panel)] object-cover shadow-soft"
-          />
-        )
-      }
+{/* Inner content: heading + stats. Reused bare (paired) or in its own grid. */}
+{
+  (() => {
+    // Paired layout matches the live CCK site: centered heading + 3-up centered
+    // stat cards. Solo layout keeps the left-aligned 2-up grid.
+    const headingClass = paired
+      ? "text-center font-serif text-3xl font-bold tracking-tight text-primary sm:text-4xl"
+      : "font-serif text-3xl font-bold tracking-tight text-primary sm:text-4xl";
+    const gridClass = paired
+      ? "mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3"
+      : "mt-8 grid grid-cols-2 gap-4";
+    const cardClass = paired
+      ? "group flex flex-col items-center rounded-card bg-surface p-5 text-center shadow-soft ring-1 ring-border/60 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:ring-primary/40"
+      : "group rounded-card bg-surface p-5 shadow-soft ring-1 ring-border/60 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:ring-primary/40";
+
+    const Insights = (
       <div>
-        {
-          block.title && (
-            <h2 class="text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">
-              {block.title}
-            </h2>
-          )
-        }
-        {
-          insights.length > 0 && (
-            <dl class="mt-8 grid grid-cols-2 gap-4">
-              {insights.map((insight) => (
-                <div class="group rounded-card bg-surface p-5 shadow-soft ring-1 ring-border/60 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:ring-primary/40">
-                  <span class="mb-4 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary transition duration-300 ease-out group-hover:scale-110 group-hover:bg-primary group-hover:text-white">
-                    <Icon name={insight.iconName || FALLBACK_ICON} class="h-6 w-6" />
-                  </span>
-                  <dd class="text-3xl font-extrabold text-primary">
-                    {insight.value}
-                  </dd>
-                  <dt class="mt-1 text-sm text-muted-foreground">{insight.label}</dt>
-                </div>
-              ))}
-            </dl>
-          )
-        }
+        {block.title && <h2 class={headingClass}>{block.title}</h2>}
+        {insights.length > 0 && (
+          <dl class={gridClass}>
+            {insights.map((insight) => (
+              <div class={cardClass}>
+                <span class="mb-4 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary transition duration-300 ease-out group-hover:scale-110 group-hover:bg-primary group-hover:text-white">
+                  <Icon name={insight.iconName || FALLBACK_ICON} class="h-6 w-6" />
+                </span>
+                <dd class="font-serif text-3xl font-bold text-primary">
+                  {insight.value}
+                </dd>
+                <dt class="mt-1 text-sm text-muted-foreground">{insight.label}</dt>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
-    </div>
-  </div>
-</section>
+    );
+
+    if (paired) return Insights;
+
+    return (
+      <section>
+        <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+            {image && (
+              <img
+                src={image}
+                alt={block.image?.alternativeText ?? block.title ?? ""}
+                class="h-full w-full rounded-[var(--radius-panel)] object-cover shadow-soft"
+              />
+            )}
+            {Insights}
+          </div>
+        </div>
+      </section>
+    );
+  })()
+}

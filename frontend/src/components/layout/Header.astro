@@ -1,10 +1,22 @@
 ---
 import { site } from "../../data/site";
 import Button from "../ui/Button.astro";
+
+interface Props {
+  /* Transparent overlay mode: header floats over a full-bleed hero. */
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
 ---
 
 <header
-  class="sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur"
+  class:list={[
+    "z-40",
+    overlay
+      ? "absolute inset-x-0 top-0"
+      : "sticky top-0 border-b border-border bg-surface/90 backdrop-blur",
+  ]}
 >
   <div
     class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6"
@@ -18,11 +30,17 @@ import Button from "../ui/Button.astro";
         class="h-10 w-10 shrink-0"
       />
       <span class="leading-tight">
-        <span class="block text-lg font-extrabold tracking-tight text-primary"
-          >{site.shortName}</span
+        <span
+          class:list={[
+            "block text-lg font-extrabold tracking-tight",
+            overlay ? "text-white" : "text-primary",
+          ]}>{site.shortName}</span
         >
-        <span class="block text-[11px] text-muted-foreground"
-          >Comms Commission of Kiribati</span
+        <span
+          class:list={[
+            "block text-[11px]",
+            overlay ? "text-white/70" : "text-muted-foreground",
+          ]}>Comms Commission of Kiribati</span
         >
       </span>
     </a>
@@ -32,7 +50,12 @@ import Button from "../ui/Button.astro";
         site.nav.map((link) => (
           <a
             href={link.href}
-            class="text-sm font-medium text-foreground/80 transition-colors hover:text-accent"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              overlay
+                ? "text-white/85 hover:text-white"
+                : "text-foreground/80 hover:text-accent",
+            ]}
           >
             {link.label}
           </a>
@@ -49,7 +72,10 @@ import Button from "../ui/Button.astro";
     <!-- Mobile menu: CSS-only disclosure, Zero-JS -->
     <details class="group relative lg:hidden">
       <summary
-        class="flex cursor-pointer items-center rounded-md border border-border p-2 text-primary [&::-webkit-details-marker]:hidden"
+        class:list={[
+          "flex cursor-pointer items-center rounded-md border p-2 [&::-webkit-details-marker]:hidden",
+          overlay ? "border-white/30 text-white" : "border-border text-primary",
+        ]}
         aria-label="Toggle menu"
       >
         <svg

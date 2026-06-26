@@ -109,7 +109,7 @@ const excerpt = (n: NewsItem): string => richTextToPlain(n.description).slice(0,
                     <span class="mb-3 text-sm font-semibold text-lime-600">
                       {fmtDate(item.date)}
                     </span>
-                    <h2 class="mb-2 line-clamp-2 text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
+                    <h2 class="mb-2 line-clamp-2 font-serif text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
                       {item.title}
                     </h2>
                     <p class="line-clamp-3 text-slate-600">{excerpt(item)}</p>

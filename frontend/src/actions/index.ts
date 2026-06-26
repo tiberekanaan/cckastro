@@ -5,6 +5,34 @@ const optional = z.string().optional();
 const required = z.string().min(1);
 
 export const server = {
+  contact: {
+    send: defineAction({
+      accept: "form",
+      input: z.object({
+        // Spam honeypot — must stay empty.
+        bot_catch_field: optional,
+        name: required,
+        email: z.email(),
+        subject: required,
+        message: z.string().min(10, "Please provide at least 10 characters."),
+      }),
+      handler: async (input) => {
+        const { bot_catch_field, ...data } = input;
+        // Honeypot filled → silently reject the bot.
+        if (bot_catch_field) {
+          throw new ActionError({
+            code: "BAD_REQUEST",
+            message: "Invalid submission.",
+          });
+        }
+
+        // Validate-only: log server-side. Wire real delivery (email/Strapi) later.
+        console.info("[contact] submission:", data);
+
+        return { success: true as const };
+      },
+    }),
+  },
   distressBeacon: {
     register: defineAction({
       accept: "form",

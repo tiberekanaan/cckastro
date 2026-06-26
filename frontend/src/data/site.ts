@@ -16,10 +16,9 @@ export const site = {
   address: "Bairiki, Tarawa, Kiribati",
   nav: [
     { label: "About Us", href: "/about" },
-    { label: "Distress Beacon", href: "/distress-beacon" },
+    { label: "Universal Access", href: "/universal-access" },
     { label: "Resources", href: "/resources" },
     { label: "News", href: "/news" },
-    { label: "UAF", href: "/universal-access" },
   ] satisfies NavLink[],
   hero: {
     eyebrow: "National Telecommunications Regulator",

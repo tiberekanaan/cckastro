@@ -55,12 +55,13 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: component lives in `components/blocks/` (not `components/`) for renderer consistency; blue uses semantic `accent` token (theme `primary` is green) — "distress beacon" emphasized via safe text-split span, button `bg-accent`/`hover:bg-accent-hover`.
 - `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
 
-#### Careers Page (added — branch `feature/careers-page`)
-- Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + new `careers-page` single type (`title`/`intro`/`applicationInfo` richtext — editable page copy) + router/controller/service factories for both.
-- Frontend: SSR `careers/index.astro` (`prerender=false`) — parallel fetch of `/api/careers-page` (editable heading+intro, default fallbacks) + `/api/careers?filters[deadline][$gte]={today}&sort=deadline:asc` (open roles only); jobs render as a **table** (Position / Application Deadline), title links to detail, lime deadline pill, "No job openings" empty state.
-- Frontend: SSR detail route `careers/[documentId].astro` — full `marked`-rendered description (styled prose), deadline pill (auto "Closed" if past), hardcoded "How to apply" → `recruit@cck.ki` callout, back link; 404 + "Job not found" state.
-- Types: added `Career` + `CareersPage` interfaces to `types/strapi.ts`. Footer already linked `/careers` — no nav change needed.
-- Note: `applicationInfo` field on the single type is currently unused by the frontend (detail page hardcodes the apply callout) — kept for future wiring.
-- `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart + publishing the single type. Awaiting browser review.
-
 #### History
+- **Careers Page** (branch `feature/careers-page`, merged to `main`) — ✅ Completed.
+  - Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + `careers-page` single type (`title`/`intro`/`applicationInfo` richtext — editable page copy) + router/controller/service factories for both.
+  - Permissions: `backend/src/index.ts` bootstrap grants Public role `api::career.career.find` + `findOne` and `api::careers-page.careers-page.find` (fixes initial 403 on the public listing/detail fetches).
+  - Frontend: SSR `careers/index.astro` — parallel fetch of `/api/careers-page` (editable heading+intro, default fallbacks) + `/api/careers?filters[deadline][$gte]={today}&sort=deadline:asc` (open roles only); jobs render as a **table** (Position / Application Deadline), title + "View" both link to detail, lime deadline pill, "No job openings" empty state.
+  - Frontend: SSR detail route `careers/[documentId].astro` — full `marked`-rendered description (styled prose), deadline pill (auto "Closed" if past), "How to apply" → `recruit@cck.ki` callout, back link; 404 + "Job not found" state.
+  - Types: `Career` + `CareersPage` added to `types/strapi.ts`. Footer already linked `/careers`.
+  - Note: `applicationInfo` single-type field currently unused by the frontend (detail page hardcodes the apply callout) — kept for future wiring.
+  - Verified: Strapi restart applied the bootstrap; `/api/careers` → 200, `/careers` page renders (200) with the "No job openings" state until entries are published.
+- **More News section** (branch `feature/news-more-news`, merged to `main`) — ✅ Completed. `news/[documentId].astro` appends a 3-col "More News" grid (image/date/title cards) of the 3 latest other articles.

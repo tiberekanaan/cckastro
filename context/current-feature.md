@@ -56,9 +56,11 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
 
 #### Careers Page (added — branch `feature/careers-page`)
-- Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + router/controller/service factories.
-- Frontend: new SSR `careers/index.astro` (`prerender=false`) — fetch `/api/careers?filters[deadline][$gte]={today}&sort=deadline:asc` (open roles only), `marked`-rendered description, "Apply by" deadline pill, stacked card list mirroring resources design; "No job openings" empty state when none.
-- Types: added `Career` interface to `types/strapi.ts`. Footer already linked `/careers` — no nav change needed.
-- `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
+- Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + new `careers-page` single type (`title`/`intro`/`applicationInfo` richtext — editable page copy) + router/controller/service factories for both.
+- Frontend: SSR `careers/index.astro` (`prerender=false`) — parallel fetch of `/api/careers-page` (editable heading+intro, default fallbacks) + `/api/careers?filters[deadline][$gte]={today}&sort=deadline:asc` (open roles only); jobs render as a **table** (Position / Application Deadline), title links to detail, lime deadline pill, "No job openings" empty state.
+- Frontend: SSR detail route `careers/[documentId].astro` — full `marked`-rendered description (styled prose), deadline pill (auto "Closed" if past), hardcoded "How to apply" → `recruit@cck.ki` callout, back link; 404 + "Job not found" state.
+- Types: added `Career` + `CareersPage` interfaces to `types/strapi.ts`. Footer already linked `/careers` — no nav change needed.
+- Note: `applicationInfo` field on the single type is currently unused by the frontend (detail page hardcodes the apply callout) — kept for future wiring.
+- `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart + publishing the single type. Awaiting browser review.
 
 #### History

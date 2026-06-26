@@ -470,6 +470,36 @@ export interface ApiCareerCareer extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCareersPageCareersPage extends Struct.SingleTypeSchema {
+  collectionName: 'careers_page';
+  info: {
+    displayName: 'Careers Page';
+    pluralName: 'careers-pages';
+    singularName: 'careers-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    applicationInfo: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    intro: Schema.Attribute.RichText;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::careers-page.careers-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCommissionerCommissioner
   extends Struct.CollectionTypeSchema {
   collectionName: 'commissioners';
@@ -1335,6 +1365,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::career.career': ApiCareerCareer;
+      'api::careers-page.careers-page': ApiCareersPageCareersPage;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
       'api::new.new': ApiNewNew;

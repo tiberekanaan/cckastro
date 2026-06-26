@@ -2,28 +2,45 @@
 export const prerender = false;
 
 import { marked } from "marked";
-import { Icon } from "astro-icon/components";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { STRAPI_URL } from "../../lib/strapi";
-import type { Career, StrapiCollectionResponse } from "../../types/strapi";
+import type {
+  Career,
+  CareersPage,
+  StrapiCollectionResponse,
+} from "../../types/strapi";
 
 // Open roles only: deadline today or later (compare on date, not time).
 const today = new Date().toISOString().slice(0, 10);
 
-const query = new URLSearchParams();
-query.set("filters[deadline][$gte]", today);
-query.set("sort", "deadline:asc");
-
+let page: CareersPage | null = null;
 let careers: Career[] = [];
 let loadError = false;
 
+// Editable page copy — a missing/unpublished single type (404) must not blank
+// out the jobs table, so it's fetched independently from the listings.
 try {
+  const res = await fetch(`${STRAPI_URL}/api/careers-page`);
+  if (res.ok) {
+    const json: { data: CareersPage | null } = await res.json();
+    page = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/careers-page → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[careers] page-copy fetch failed:", err);
+}
+
+try {
+  const query = new URLSearchParams();
+  query.set("filters[deadline][$gte]", today);
+  query.set("sort", "deadline:asc");
   const res = await fetch(`${STRAPI_URL}/api/careers?${query}`);
   if (!res.ok) throw new Error(`Strapi /api/careers → ${res.status}`);
   const json: StrapiCollectionResponse<Career> = await res.json();
   careers = json.data ?? [];
 } catch (err) {
-  console.error("[careers] Strapi fetch failed:", err);
+  console.error("[careers] listings fetch failed:", err);
   loadError = true;
 }
 
@@ -32,78 +49,88 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
   month: "long",
   year: "numeric",
 });
+const fmtDate = (d?: string | null): string =>
+  d ? dateFmt.format(new Date(d)) : "";
 
-const cards = await Promise.all(
-  careers.map(async (job) => ({
-    ...job,
-    bodyHtml: job.description ? await marked.parse(job.description) : "",
-    deadlineLabel: dateFmt.format(new Date(job.deadline)),
-  })),
-);
+const heading = page?.title ?? "Careers";
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const introHtml = page?.intro
+  ? await marked.parse(page.intro)
+  : "<p>Join the team shaping Kiribati's communications future. Browse our current openings below.</p>";
 ---
 
 <BaseLayout
-  title="Careers — Join the Commission | CCK"
+  title={heading}
   description="Current job openings at the Communications Commission of Kiribati. Explore vacancies and apply before the deadline."
 >
-  <section class="bg-surface">
-    <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
-      <header class="max-w-2xl">
-        <h1 class="font-serif text-4xl font-bold leading-tight text-primary">
-          Careers
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+      <header class="max-w-3xl">
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          {heading}
         </h1>
-        <p class="mt-3 text-muted-foreground">
-          Join the team shaping Kiribati's communications future. Browse our
-          current openings below.
-        </p>
+        <div
+          class="prose-cck mt-3 text-lg text-muted-foreground [&_a]:text-accent [&_a:hover]:underline [&_p]:mt-3 first:[&_p]:mt-0"
+          set:html={introHtml}
+        />
       </header>
 
       {
-        loadError && (
-          <p class="mt-10 rounded-card border border-danger/30 bg-danger/5 p-4 text-sm text-danger">
-            We couldn't reach the content service. Please try again shortly.
-          </p>
-        )
-      }
-
-      {
-        !loadError && cards.length === 0 && (
-          <div class="mt-12 flex flex-col items-center justify-center rounded-card border border-dashed border-border bg-surface-muted px-6 py-16 text-center">
-            <Icon
-              name="lucide:briefcase"
-              class="h-10 w-10 text-muted-foreground/60"
-            />
-            <p class="mt-4 text-lg font-semibold text-foreground">
-              No job openings
-            </p>
-            <p class="mt-1 text-sm text-muted-foreground">
-              There are no vacancies at the moment. Please check back later.
+        careers.length > 0 ? (
+          <div class="mt-10 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-slate-100 bg-slate-50">
+                  <th class="px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    Position
+                  </th>
+                  <th class="whitespace-nowrap px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    Application Deadline
+                  </th>
+                  <th class="px-6 py-4">
+                    <span class="sr-only">View</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {careers.map((job) => (
+                  <tr class="group border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/60">
+                    <td class="px-6 py-4">
+                      <a
+                        href={`/careers/${job.documentId}`}
+                        class="font-serif text-lg font-bold text-slate-900 transition-colors hover:text-teal-600 group-hover:text-teal-600"
+                      >
+                        {job.title}
+                      </a>
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4">
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-50 px-3 py-1 text-sm font-semibold text-lime-700">
+                        {fmtDate(job.deadline)}
+                      </span>
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-accent">
+                      <span class="inline-flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+                        View <span aria-hidden="true">&rarr;</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div class="mt-10 rounded-2xl border border-slate-100 bg-white p-12 text-center">
+            <h2 class="font-serif text-2xl font-bold text-primary">
+              {loadError ? "Careers are unavailable" : "No job openings"}
+            </h2>
+            <p class="mt-3 text-muted-foreground">
+              {loadError
+                ? "We couldn't load current vacancies. Please try again shortly."
+                : "There are no vacancies at the moment. Please check back later."}
             </p>
           </div>
-        )
-      }
-
-      {
-        !loadError && cards.length > 0 && (
-          <ul class="mt-10 space-y-6">
-            {cards.map((job) => (
-              <li class="rounded-card border border-border bg-surface p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
-                <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <h2 class="font-serif text-xl font-bold leading-snug text-primary">
-                    {job.title}
-                  </h2>
-                  <span class="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                    <Icon name="lucide:calendar-clock" class="h-3.5 w-3.5" />
-                    Apply by {job.deadlineLabel}
-                  </span>
-                </div>
-                <div
-                  class="prose-cck mt-4 text-foreground/80 [&_a]:text-accent [&_a:hover]:underline [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 [&_strong]:font-semibold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5"
-                  set:html={job.bodyHtml}
-                />
-              </li>
-            ))}
-          </ul>
         )
       }
     </div>

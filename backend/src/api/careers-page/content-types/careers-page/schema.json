@@ -1,0 +1,24 @@
+{
+  "kind": "singleType",
+  "collectionName": "careers_page",
+  "info": {
+    "singularName": "careers-page",
+    "pluralName": "careers-pages",
+    "displayName": "Careers Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "richtext"
+    },
+    "applicationInfo": {
+      "type": "richtext"
+    }
+  }
+}

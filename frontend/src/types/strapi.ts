@@ -248,6 +248,15 @@ export interface Career {
   deadline: string;
 }
 
+/** Careers single type — editable page copy (all `richtext` → Markdown). */
+export interface CareersPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  intro?: string | null;
+  applicationInfo?: string | null;
+}
+
 export interface StrapiPagination {
   page: number;
   pageSize: number;

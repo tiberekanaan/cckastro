@@ -1,0 +1,117 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { STRAPI_URL } from "../../lib/strapi";
+import type { Career } from "../../types/strapi";
+
+const { documentId } = Astro.params;
+
+let job: Career | null = null;
+let loadError = false;
+
+try {
+  const res = await fetch(`${STRAPI_URL}/api/careers/${documentId}`);
+  if (res.ok) {
+    const json: { data: Career | null } = await res.json();
+    job = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/careers/${documentId} → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[careers/[documentId]] Strapi fetch failed:", err);
+  loadError = true;
+}
+
+if (!job && !loadError) Astro.response.status = 404;
+
+const dateFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const deadlineLabel = job?.deadline ? dateFmt.format(new Date(job.deadline)) : "";
+// Closed when the deadline date has already passed (date-only comparison).
+const isClosed = job?.deadline
+  ? job.deadline < new Date().toISOString().slice(0, 10)
+  : false;
+
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const bodyHtml = job?.description ? await marked.parse(job.description) : "";
+---
+
+<BaseLayout title={job?.title ?? "Job not found"}>
+  <article class="bg-surface">
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+      <a
+        href="/careers"
+        class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+      >
+        <span aria-hidden="true">&larr;</span> Back to Careers
+      </a>
+
+      {
+        job ? (
+          <>
+            <header class="mt-6">
+              <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                Career Opportunity
+              </span>
+              <h1 class="mt-2 font-serif text-4xl font-bold leading-tight text-primary">
+                {job.title}
+              </h1>
+              <span
+                class={`mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${
+                  isClosed
+                    ? "bg-slate-100 text-slate-500"
+                    : "bg-lime-50 text-lime-700"
+                }`}
+              >
+                {isClosed
+                  ? `Closed — deadline was ${deadlineLabel}`
+                  : `Apply by ${deadlineLabel}`}
+              </span>
+            </header>
+
+            <div
+              class="prose-cck mt-8 text-foreground/80 [&_a]:text-accent [&_a:hover]:underline [&_h2]:mt-6 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h3]:mt-5 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-primary [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-3 [&_strong]:font-semibold [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5"
+              set:html={bodyHtml}
+            />
+
+            <div class="mt-10 rounded-2xl border border-accent/20 bg-accent/5 p-6">
+              <h2 class="font-serif text-lg font-bold text-primary">
+                How to apply
+              </h2>
+              <p class="mt-2 text-foreground/90">
+                Submit your CV and an Expression of Interest letter to{" "}
+                <a
+                  href="mailto:recruit@cck.ki"
+                  class="font-semibold text-accent hover:underline"
+                >
+                  recruit@cck.ki
+                </a>
+                {!isClosed && deadlineLabel ? ` before ${deadlineLabel}.` : "."}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div class="py-16 text-center">
+            <h1 class="font-serif text-3xl font-bold text-primary">
+              Job not found
+            </h1>
+            <p class="mt-3 text-muted-foreground">
+              This opening may have been filled or unpublished.
+            </p>
+            <a
+              href="/careers"
+              class="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:text-accent-hover"
+            >
+              View all openings
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

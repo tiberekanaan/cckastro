@@ -55,4 +55,10 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: component lives in `components/blocks/` (not `components/`) for renderer consistency; blue uses semantic `accent` token (theme `primary` is green) — "distress beacon" emphasized via safe text-split span, button `bg-accent`/`hover:bg-accent-hover`.
 - `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
 
+#### Careers Page (added — branch `feature/careers-page`)
+- Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + router/controller/service factories.
+- Frontend: new SSR `careers/index.astro` (`prerender=false`) — fetch `/api/careers?filters[deadline][$gte]={today}&sort=deadline:asc` (open roles only), `marked`-rendered description, "Apply by" deadline pill, stacked card list mirroring resources design; "No job openings" empty state when none.
+- Types: added `Career` interface to `types/strapi.ts`. Footer already linked `/careers` — no nav change needed.
+- `astro check` (0 errors) + `npm run build` pass clean. Strapi schema sync requires `yarn develop` restart. Awaiting commit approval + browser review.
+
 #### History

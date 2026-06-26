@@ -238,6 +238,16 @@ export interface OfficialDocument {
   file?: StrapiMedia | null;
 }
 
+export interface Career {
+  id: number;
+  documentId: string;
+  title: string;
+  /** Strapi `richtext` field → Markdown string (rendered via `marked`). */
+  description: string;
+  /** ISO date (YYYY-MM-DD). */
+  deadline: string;
+}
+
 export interface StrapiPagination {
   page: number;
   pageSize: number;

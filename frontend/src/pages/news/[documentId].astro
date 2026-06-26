@@ -25,6 +25,25 @@ try {
 
 if (!article && !loadError) Astro.response.status = 404;
 
+// Other recent stories for the "More News" section (newest first, current excluded).
+let moreNews: NewsItem[] = [];
+if (article) {
+  try {
+    const query = new URLSearchParams();
+    query.set("populate", "photo");
+    query.set("sort", "date:desc");
+    query.set("filters[documentId][$ne]", documentId ?? "");
+    query.set("pagination[limit]", "3");
+    const res = await fetch(`${STRAPI_URL}/api/news?${query}`);
+    if (res.ok) {
+      const json: { data: NewsItem[] } = await res.json();
+      moreNews = json.data ?? [];
+    }
+  } catch (err) {
+    console.error("[news/[documentId]] more-news fetch failed:", err);
+  }
+}
+
 const dateFmt = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "long",
@@ -91,4 +110,41 @@ const body = article?.description ?? [];
       }
     </div>
   </article>
+
+  {
+    article && moreNews.length > 0 && (
+      <section class="border-t border-border bg-surface-muted">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-16">
+          <h2 class="font-serif text-2xl font-bold text-primary sm:text-3xl">
+            More News
+          </h2>
+          <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {moreNews.map((item) => (
+              <a
+                href={`/news/${item.documentId}`}
+                class="group flex h-full flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-lg ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              >
+                <div class="overflow-hidden">
+                  <img
+                    src={mediaUrl(item.photo) ?? "/news-placeholder.svg"}
+                    alt={item.photo?.alternativeText ?? item.title ?? "News"}
+                    loading="lazy"
+                    class="aspect-[16/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                </div>
+                <div class="flex grow flex-col p-6">
+                  <span class="mb-2 text-sm font-semibold text-lime-600">
+                    {fmtDate(item.date)}
+                  </span>
+                  <h3 class="line-clamp-2 font-serif text-xl font-bold text-slate-900 transition-colors group-hover:text-teal-600">
+                    {item.title}
+                  </h3>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 </BaseLayout>

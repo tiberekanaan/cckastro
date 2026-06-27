@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "tenders_page",
+  "info": {
+    "singularName": "tenders-page",
+    "pluralName": "tenders-pages",
+    "displayName": "Tenders Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "buttonText": {
+      "type": "string"
+    },
+    "buttonLink": {
+      "type": "string"
+    }
+  }
+}

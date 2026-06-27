@@ -14,6 +14,8 @@ const PUBLIC_ACTIONS = [
   'api::career.career.findOne',
   // Careers page: editable page copy single type.
   'api::careers-page.careers-page.find',
+  // Tenders page: editable application-process copy single type.
+  'api::tenders-page.tenders-page.find',
 ];
 
 export default {

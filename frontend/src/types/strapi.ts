@@ -230,6 +230,16 @@ export interface UafPage {
   description?: string | null;
 }
 
+/** Tenders single type — application-process copy + Customer Portal CTA. */
+export interface TendersPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  description?: string | null;
+  buttonText?: string | null;
+  buttonLink?: string | null;
+}
+
 export interface OfficialDocument {
   id: number;
   documentId: string;

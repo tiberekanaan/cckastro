@@ -278,3 +278,25 @@ export interface StrapiCollectionResponse<T> {
   data: T[];
   meta: { pagination?: StrapiPagination };
 }
+
+/** Single header/footer link (Strapi `shared.nav-link` component). */
+export interface NavLinkItem {
+  id?: number;
+  label: string;
+  href: string;
+}
+
+/** Footer column with heading + links (Strapi `shared.footer-column` component). */
+export interface FooterColumnItem {
+  id?: number;
+  heading: string;
+  links: NavLinkItem[];
+}
+
+/** Navigation single type — editable header links + footer columns. */
+export interface Navigation {
+  id: number;
+  documentId: string;
+  headerLinks: NavLinkItem[];
+  footerColumns: FooterColumnItem[];
+}

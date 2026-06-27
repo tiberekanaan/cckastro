@@ -592,6 +592,35 @@ export interface ApiDistressBeaconDistressBeacon
   };
 }
 
+export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
+  collectionName: 'navigation';
+  info: {
+    displayName: 'Navigation';
+    pluralName: 'navigations';
+    singularName: 'navigation';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    footerColumns: Schema.Attribute.Component<'shared.footer-column', true>;
+    headerLinks: Schema.Attribute.Component<'shared.nav-link', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::navigation.navigation'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNewNew extends Struct.CollectionTypeSchema {
   collectionName: 'news';
   info: {
@@ -1399,6 +1428,7 @@ declare module '@strapi/strapi' {
       'api::careers-page.careers-page': ApiCareersPageCareersPage;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
+      'api::navigation.navigation': ApiNavigationNavigation;
       'api::new.new': ApiNewNew;
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;
       'api::org-role.org-role': ApiOrgRoleOrgRole;

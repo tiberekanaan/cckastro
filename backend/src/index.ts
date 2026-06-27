@@ -16,6 +16,8 @@ const PUBLIC_ACTIONS = [
   'api::careers-page.careers-page.find',
   // Tenders page: editable application-process copy single type.
   'api::tenders-page.tenders-page.find',
+  // Navigation: editable header links + footer columns single type.
+  'api::navigation.navigation.find',
 ];
 
 export default {

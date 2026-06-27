@@ -55,7 +55,19 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: component lives in `components/blocks/` (not `components/`) for renderer consistency; blue uses semantic `accent` token (theme `primary` is green) — "distress beacon" emphasized via safe text-split span, button `bg-accent`/`hover:bg-accent-hover`.
 - `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
 
+#### Editable Navigation (added — branch `feature/editable-navigation`)
+- Backend: new `navigation` **single type** (`headerLinks` repeatable `shared.nav-link`, `footerColumns` repeatable `shared.footer-column`) + two new components — `shared.nav-link` (`label`/`href` required) and `shared.footer-column` (`heading` required + repeatable `nav-link` `links`) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::navigation.navigation.find`.
+- Frontend: new `getNavigation()` in `lib/strapi.ts` — fetches `/api/navigation?populate[headerLinks]=true&populate[footerColumns][populate]=links`, returns `{headerLinks, footerColumns}`, falls back to `site.ts` values on 404/unpublished/unreachable **or** empty section (same pattern as `tenders.astro`). `Navigation`/`NavLinkItem`/`FooterColumnItem` types added.
+- Frontend: `Header.astro` maps `headerLinks` (desktop + mobile nav) and `Footer.astro` maps `footerColumns` instead of `site.nav`/`site.footer.columns`. `site.ts` retained as fallback + non-nav chrome (name/email/hero/CTAs).
+- Note: client adds/edits/removes header links + footer columns/links from Strapi. Prerendered pages pick up changes on rebuild; SSR pages reflect live. Schema sync requires `yarn develop` restart + publishing the single type.
+- `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Awaiting commit approval + browser review.
+
 #### History
+- **Tenders Page + Playfair font** (branch `feature/tenders-page`, merged to `main`, branch deleted) — ✅ Completed.
+  - Backend: new `tenders-page` **single type** (`title` string, `description` richtext, `buttonText` string, `buttonLink` string) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::tenders-page.tenders-page.find`.
+  - Frontend: new SSR `tenders.astro` (`prerender=false`) — fetches `/api/tenders-page`, `marked`-renders the application-process copy (with a built-in default-copy fallback when the single type is unpublished/404), `bg-accent` CTA button (`buttonText`→`buttonLink`, defaults to "Visit the Customer Portal" → `#`). Explains the process; does **not** list open tenders, per spec. `TendersPage` type added; `Tenders`→`/tenders` added to `site.ts` main nav (Header + Footer).
+  - Font: heading `--font-serif` token switched from Lora to **Playfair Display** (site-wide); self-hosted via `@fontsource/playfair-display` (500/600/700), `@fontsource/lora` uninstalled, `env.d.ts` module declaration updated.
+  - Verified: Strapi 5.48 restart synced schema (`/api/tenders-page` → 200-shaped 404 `data:null`, confirming perm applied, not 403); `/tenders` renders 200 with default copy; `astro check` + `npm run build` pass clean. Two focused commits (`feat` page, `style` font).
 - **Careers Page** (branch `feature/careers-page`, merged to `main`) — ✅ Completed.
   - Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + `careers-page` single type (`title`/`intro`/`applicationInfo` richtext — editable page copy) + router/controller/service factories for both.
   - Permissions: `backend/src/index.ts` bootstrap grants Public role `api::career.career.find` + `findOne` and `api::careers-page.careers-page.find` (fixes initial 403 on the public listing/detail fetches).

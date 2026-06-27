@@ -1,5 +1,6 @@
 ---
 import { site } from "../../data/site";
+import { getNavigation } from "../../lib/strapi";
 import Button from "../ui/Button.astro";
 
 interface Props {
@@ -8,6 +9,9 @@ interface Props {
 }
 
 const { overlay = false } = Astro.props;
+
+// Editable header links from Strapi (falls back to site.ts).
+const { headerLinks } = await getNavigation();
 ---
 
 <header
@@ -47,7 +51,7 @@ const { overlay = false } = Astro.props;
 
     <nav class="hidden items-center gap-6 lg:flex" aria-label="Primary">
       {
-        site.nav.map((link) => (
+        headerLinks.map((link) => (
           <a
             href={link.href}
             class:list={[
@@ -96,7 +100,7 @@ const { overlay = false } = Astro.props;
       >
         <nav class="flex flex-col" aria-label="Mobile">
           {
-            site.nav.map((link) => (
+            headerLinks.map((link) => (
               <a
                 href={link.href}
                 class="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-surface-muted hover:text-accent"

@@ -74,7 +74,7 @@ const excerpt = (p: Project): string =>
           <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
               <a
-                href={`/projects/${project.documentId}`}
+                href={`/projects/${project.slug ?? project.documentId}`}
                 data-reveal
                 data-reveal-delay={`${index * 100}ms`}
                 style={`animation-delay: ${index * 100}ms`}

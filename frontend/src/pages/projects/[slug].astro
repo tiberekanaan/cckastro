@@ -4,23 +4,36 @@ export const prerender = false;
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RichTextNode from "../../components/blocks/RichTextNode.astro";
 import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
-import type { Project } from "../../types/strapi";
+import type { Project, StrapiCollectionResponse } from "../../types/strapi";
 
-const { documentId } = Astro.params;
+const { slug } = Astro.params;
 
 let project: Project | null = null;
 let loadError = false;
 
 try {
+  // Look up by clean slug first.
   const res = await fetch(
-    `${STRAPI_URL}/api/projects/${documentId}?populate=photos`,
+    `${STRAPI_URL}/api/projects?filters[slug][$eq]=${slug}&populate=photos`,
   );
-  if (!res.ok)
-    throw new Error(`Strapi /api/projects/${documentId} → ${res.status}`);
-  const json: { data: Project | null } = await res.json();
-  project = json.data ?? null;
+  if (!res.ok) throw new Error(`Strapi /api/projects → ${res.status}`);
+  const json: StrapiCollectionResponse<Project> = await res.json();
+  project = json.data?.[0] ?? null;
+
+  // Legacy fallback: treat the param as a documentId for old links.
+  if (!project) {
+    const byId = await fetch(
+      `${STRAPI_URL}/api/projects/${slug}?populate=photos`,
+    );
+    if (byId.ok) {
+      const j: { data: Project | null } = await byId.json();
+      const found = j.data ?? null;
+      if (found?.slug) return Astro.redirect(`/projects/${found.slug}`, 301);
+      project = found;
+    }
+  }
 } catch (err) {
-  console.error("[projects/[documentId]] Strapi fetch failed:", err);
+  console.error("[projects/[slug]] Strapi fetch failed:", err);
   loadError = true;
 }
 

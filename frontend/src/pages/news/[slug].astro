@@ -4,22 +4,37 @@ export const prerender = false;
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RichTextNode from "../../components/blocks/RichTextNode.astro";
 import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
-import type { NewsItem } from "../../types/strapi";
+import type { NewsItem, StrapiCollectionResponse } from "../../types/strapi";
 
-const { documentId } = Astro.params;
+const { slug } = Astro.params;
 
 let article: NewsItem | null = null;
 let loadError = false;
 
 try {
+  // Look up by clean slug first.
   const res = await fetch(
-    `${STRAPI_URL}/api/news/${documentId}?populate=photo`,
+    `${STRAPI_URL}/api/news?filters[slug][$eq]=${slug}&populate=photo`,
   );
-  if (!res.ok) throw new Error(`Strapi /api/news/${documentId} → ${res.status}`);
-  const json: { data: NewsItem | null } = await res.json();
-  article = json.data ?? null;
+  if (!res.ok) throw new Error(`Strapi /api/news → ${res.status}`);
+  const json: StrapiCollectionResponse<NewsItem> = await res.json();
+  article = json.data?.[0] ?? null;
+
+  // Legacy fallback: treat the param as a documentId for old links.
+  if (!article) {
+    const byId = await fetch(
+      `${STRAPI_URL}/api/news/${slug}?populate=photo`,
+    );
+    if (byId.ok) {
+      const j: { data: NewsItem | null } = await byId.json();
+      const found = j.data ?? null;
+      // Redirect to the clean URL when the entry now has a slug.
+      if (found?.slug) return Astro.redirect(`/news/${found.slug}`, 301);
+      article = found;
+    }
+  }
 } catch (err) {
-  console.error("[news/[documentId]] Strapi fetch failed:", err);
+  console.error("[news/[slug]] Strapi fetch failed:", err);
   loadError = true;
 }
 
@@ -32,7 +47,7 @@ if (article) {
     const query = new URLSearchParams();
     query.set("populate", "photo");
     query.set("sort", "date:desc");
-    query.set("filters[documentId][$ne]", documentId ?? "");
+    query.set("filters[documentId][$ne]", article.documentId ?? "");
     query.set("pagination[limit]", "3");
     const res = await fetch(`${STRAPI_URL}/api/news?${query}`);
     if (res.ok) {
@@ -40,7 +55,7 @@ if (article) {
       moreNews = json.data ?? [];
     }
   } catch (err) {
-    console.error("[news/[documentId]] more-news fetch failed:", err);
+    console.error("[news/[slug]] more-news fetch failed:", err);
   }
 }
 
@@ -121,7 +136,7 @@ const body = article?.description ?? [];
           <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {moreNews.map((item) => (
               <a
-                href={`/news/${item.documentId}`}
+                href={`/news/${item.slug ?? item.documentId}`}
                 class="group flex h-full flex-col overflow-hidden rounded-2xl border-0 bg-white shadow-lg ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
               >
                 <div class="overflow-hidden">

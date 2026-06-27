@@ -4,23 +4,34 @@ export const prerender = false;
 import { marked } from "marked";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { STRAPI_URL } from "../../lib/strapi";
-import type { Career } from "../../types/strapi";
+import type { Career, StrapiCollectionResponse } from "../../types/strapi";
 
-const { documentId } = Astro.params;
+const { slug } = Astro.params;
 
 let job: Career | null = null;
 let loadError = false;
 
 try {
-  const res = await fetch(`${STRAPI_URL}/api/careers/${documentId}`);
-  if (res.ok) {
-    const json: { data: Career | null } = await res.json();
-    job = json.data ?? null;
-  } else if (res.status !== 404) {
-    throw new Error(`Strapi /api/careers/${documentId} → ${res.status}`);
+  // Look up by clean slug first.
+  const res = await fetch(
+    `${STRAPI_URL}/api/careers?filters[slug][$eq]=${slug}`,
+  );
+  if (!res.ok) throw new Error(`Strapi /api/careers → ${res.status}`);
+  const json: StrapiCollectionResponse<Career> = await res.json();
+  job = json.data?.[0] ?? null;
+
+  // Legacy fallback: treat the param as a documentId for old links.
+  if (!job) {
+    const byId = await fetch(`${STRAPI_URL}/api/careers/${slug}`);
+    if (byId.ok) {
+      const j: { data: Career | null } = await byId.json();
+      const found = j.data ?? null;
+      if (found?.slug) return Astro.redirect(`/careers/${found.slug}`, 301);
+      job = found;
+    }
   }
 } catch (err) {
-  console.error("[careers/[documentId]] Strapi fetch failed:", err);
+  console.error("[careers/[slug]] Strapi fetch failed:", err);
   loadError = true;
 }
 

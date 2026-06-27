@@ -209,6 +209,7 @@ export interface NewsItem {
   id: number;
   documentId: string;
   title?: string | null;
+  slug?: string | null;
   date?: string | null;
   description?: StrapiRichText;
   photo?: StrapiMedia | null;
@@ -218,6 +219,7 @@ export interface Project {
   id: number;
   documentId: string;
   title?: string | null;
+  slug?: string | null;
   description?: StrapiRichText;
   photos?: StrapiMedia[] | null;
 }
@@ -252,6 +254,7 @@ export interface Career {
   id: number;
   documentId: string;
   title: string;
+  slug?: string | null;
   /** Strapi `richtext` field → Markdown string (rendered via `marked`). */
   description: string;
   /** ISO date (YYYY-MM-DD). */

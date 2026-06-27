@@ -14,6 +14,12 @@
 *   **Routing & Transitions:** Use the `<ClientRouter />` component for view transitions.
 *   Keep components focused - one job per component.
 
+#### Clean URLs (Slugs)
+*   **MANDATORY:** Every collection type with a detail page must have a `slug` UID field (`{ "type": "uid", "targetField": "title" }`) — never expose the 24-char `documentId` in a URL.
+*   **Routes:** Name detail routes `[slug].astro`; fetch via `filters[slug][$eq]={slug}`.
+*   **Legacy fallback:** If the slug lookup misses, retry as `documentId` (`/api/<plural>/{param}`) and `Astro.redirect` (301) to the clean slug URL so old links never 404.
+*   **Links:** Build hrefs as `` `/<route>/${item.slug ?? item.documentId}` `` so entries render before their slug is regenerated.
+
 #### Data Fetching & Content Management
 *   **Build-Time Fetching:** Fetch static content from Strapi using Astro's **Content Loader API** inside `src/content.config.ts`.
 *   **Dynamic/SSR Fetching:** Use `prerender = false` on dynamic pages and fetch data directly utilizing `documentId` and `locale` search parameters.

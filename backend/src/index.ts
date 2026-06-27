@@ -23,6 +23,68 @@ const PUBLIC_ACTIONS = [
   'api::terms-page.terms-page.find',
 ];
 
+// Collections whose `slug` UID must be backfilled for pre-existing entries.
+const SLUGGED_TYPES = [
+  'api::new.new',
+  'api::project.project',
+  'api::career.career',
+] as const;
+
+// Mirror Strapi's UID generation (lowercase, alphanumeric, hyphen-separated).
+const slugify = (input: string): string =>
+  input
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'item';
+
+const uniqueSlug = (base: string, used: Set<string>): string => {
+  let slug = base;
+  let i = 2;
+  while (used.has(slug)) slug = `${base}-${i++}`;
+  return slug;
+};
+
+// Generate a clean slug from the title for any entry still missing one.
+async function backfillSlugs(strapi: Core.Strapi): Promise<void> {
+  for (const uid of SLUGGED_TYPES) {
+    try {
+      const docService = strapi.documents(uid as any) as any;
+      const docs = await docService.findMany({
+        status: 'draft',
+        fields: ['title', 'slug'],
+        limit: 1000,
+      });
+
+      const used = new Set<string>(
+        docs.map((d: any) => d.slug).filter(Boolean),
+      );
+
+      for (const doc of docs as any[]) {
+        if (doc.slug || !doc.title) continue;
+        const slug = uniqueSlug(slugify(doc.title), used);
+        used.add(slug);
+
+        await docService.update({ documentId: doc.documentId, data: { slug } });
+
+        // Propagate to the live version only if the entry was already published.
+        const published = await docService.findOne({
+          documentId: doc.documentId,
+          status: 'published',
+          fields: ['id'],
+        });
+        if (published) {
+          await docService.publish({ documentId: doc.documentId });
+        }
+
+        strapi.log.info(`[slug-backfill] ${uid} ${doc.documentId} → "${slug}"`);
+      }
+    } catch (err) {
+      strapi.log.error(`[slug-backfill] failed for ${uid}: ${err}`);
+    }
+  }
+}
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -56,5 +118,8 @@ export default {
           .create({ data: { action, role: publicRole.id } });
       }
     }
+
+    // Backfill clean slugs for entries created before the `slug` field existed.
+    await backfillSlugs(strapi);
   },
 };

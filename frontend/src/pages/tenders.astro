@@ -1,0 +1,76 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { STRAPI_URL } from "../lib/strapi";
+import type { TendersPage } from "../types/strapi";
+
+let page: TendersPage | null = null;
+
+// A missing/unpublished single type (404) falls back to the default copy below.
+try {
+  const res = await fetch(`${STRAPI_URL}/api/tenders-page`);
+  if (res.ok) {
+    const json: { data: TendersPage | null } = await res.json();
+    page = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/tenders-page → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[tenders] page fetch failed:", err);
+}
+
+const heading = page?.title ?? "Tenders";
+const defaultDescription = `## How to apply for CCK tenders
+
+The Communications Commission of Kiribati publishes procurement and supply
+opportunities through our Customer Portal. To take part in an open tender:
+
+1. **Register** for a free account on the CCK Customer Portal.
+2. **Browse** the list of currently open tenders and download the bid documents.
+3. **Prepare** your submission in line with the requirements set out in each notice.
+4. **Submit** your bid through the portal before the published closing date.
+
+All tenders are evaluated transparently and on equal terms. Late or incomplete
+submissions cannot be accepted, so we encourage you to register early and review
+each tender's instructions carefully.`;
+
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const descriptionHtml = await marked.parse(
+  page?.description ?? defaultDescription,
+);
+const buttonText = page?.buttonText ?? "Visit the Customer Portal";
+const buttonLink = page?.buttonLink ?? "#";
+---
+
+<BaseLayout
+  title={heading}
+  description="Learn how to apply for tenders and procurement opportunities with the Communications Commission of Kiribati."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
+      <header>
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          {heading}
+        </h1>
+      </header>
+
+      <div
+        class="mt-6 text-lg leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h3]:mt-6 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-primary [&_li]:mt-2 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+        set:html={descriptionHtml}
+      />
+
+      <div class="mt-10">
+        <a
+          href={buttonLink}
+          class="inline-flex items-center justify-center rounded-full bg-accent px-8 py-4 text-base font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-lg"
+        >
+          {buttonText}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

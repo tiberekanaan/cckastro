@@ -824,6 +824,37 @@ export interface ApiServiceService extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
+  collectionName: 'tenders_page';
+  info: {
+    displayName: 'Tenders Page';
+    pluralName: 'tenders-pages';
+    singularName: 'tenders-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    buttonLink: Schema.Attribute.String;
+    buttonText: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tenders-page.tenders-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiUafPageUafPage extends Struct.SingleTypeSchema {
   collectionName: 'uaf_page';
   info: {
@@ -1375,6 +1406,7 @@ declare module '@strapi/strapi' {
       'api::project.project': ApiProjectProject;
       'api::resource.resource': ApiResourceResource;
       'api::service.service': ApiServiceService;
+      'api::tenders-page.tenders-page': ApiTendersPageTendersPage;
       'api::uaf-page.uaf-page': ApiUafPageUafPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

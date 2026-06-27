@@ -17,6 +17,7 @@ export const site = {
   nav: [
     { label: "About Us", href: "/about" },
     { label: "Universal Access", href: "/universal-access" },
+    { label: "Tenders", href: "/tenders" },
     { label: "Resources", href: "/resources" },
     { label: "News", href: "/news" },
   ] satisfies NavLink[],

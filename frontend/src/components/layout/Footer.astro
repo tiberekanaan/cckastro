@@ -1,7 +1,11 @@
 ---
 import { site } from "../../data/site";
+import { getNavigation } from "../../lib/strapi";
 
 const year = new Date().getFullYear();
+
+// Editable footer columns from Strapi (falls back to site.ts).
+const { footerColumns } = await getNavigation();
 ---
 
 <footer class="border-t border-border bg-primary text-primary-foreground">
@@ -31,7 +35,7 @@ const year = new Date().getFullYear();
       </div>
 
       {
-        site.footer.columns.map((col) => (
+        footerColumns.map((col) => (
           <div>
             <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-foreground/90">
               {col.heading}

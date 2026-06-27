@@ -3,7 +3,11 @@ import type {
   StrapiRichText,
   StrapiInlineNode,
   StrapiBlockNode,
+  Navigation,
+  NavLinkItem,
+  FooterColumnItem,
 } from "../types/strapi";
+import { site } from "../data/site";
 
 /** Strapi base URL — inlined from .env at build time (Astro 6 `import.meta.env`). */
 export const STRAPI_URL: string =
@@ -30,4 +34,44 @@ export function richTextToPlain(blocks?: StrapiRichText): string {
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/** Hard-coded fallback used when the Navigation single type is unpublished/unreachable. */
+const FALLBACK_NAV: { headerLinks: NavLinkItem[]; footerColumns: FooterColumnItem[] } = {
+  headerLinks: site.nav.map((l) => ({ label: l.label, href: l.href })),
+  footerColumns: site.footer.columns.map((c) => ({
+    heading: c.heading,
+    links: c.links.map((l) => ({ label: l.label, href: l.href })),
+  })),
+};
+
+/**
+ * Editable header links + footer columns from the Strapi `navigation` single type.
+ * Falls back to `site.ts` values on 404/unpublished/unreachable, or when the CMS
+ * entry leaves a section empty.
+ */
+export async function getNavigation(): Promise<{
+  headerLinks: NavLinkItem[];
+  footerColumns: FooterColumnItem[];
+}> {
+  try {
+    const res = await fetch(
+      `${STRAPI_URL}/api/navigation?populate[headerLinks]=true&populate[footerColumns][populate]=links`,
+    );
+    if (!res.ok) {
+      if (res.status !== 404) throw new Error(`Strapi /api/navigation → ${res.status}`);
+      return FALLBACK_NAV;
+    }
+    const json: { data: Navigation | null } = await res.json();
+    const data = json.data;
+    return {
+      headerLinks: data?.headerLinks?.length ? data.headerLinks : FALLBACK_NAV.headerLinks,
+      footerColumns: data?.footerColumns?.length
+        ? data.footerColumns
+        : FALLBACK_NAV.footerColumns,
+    };
+  } catch (err) {
+    console.error("[navigation] fetch failed:", err);
+    return FALLBACK_NAV;
+  }
 }

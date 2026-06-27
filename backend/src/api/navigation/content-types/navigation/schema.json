@@ -1,0 +1,25 @@
+{
+  "kind": "singleType",
+  "collectionName": "navigation",
+  "info": {
+    "singularName": "navigation",
+    "pluralName": "navigations",
+    "displayName": "Navigation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "headerLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.nav-link"
+    },
+    "footerColumns": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.footer-column"
+    }
+  }
+}

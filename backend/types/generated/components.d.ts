@@ -183,6 +183,30 @@ export interface BlocksServicesGrid extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedFooterColumn extends Struct.ComponentSchema {
+  collectionName: 'components_shared_footer_columns';
+  info: {
+    displayName: 'FooterColumn';
+    icon: 'bulletList';
+  };
+  attributes: {
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
+    links: Schema.Attribute.Component<'shared.nav-link', true>;
+  };
+}
+
+export interface SharedNavLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_nav_links';
+  info: {
+    displayName: 'NavLink';
+    icon: 'link';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedServiceItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_service_items';
   info: {
@@ -215,6 +239,8 @@ declare module '@strapi/strapi' {
       'blocks.profile-card': BlocksProfileCard;
       'blocks.rich-text': BlocksRichText;
       'blocks.services-grid': BlocksServicesGrid;
+      'shared.footer-column': SharedFooterColumn;
+      'shared.nav-link': SharedNavLink;
       'shared.service-item': SharedServiceItem;
     }
   }

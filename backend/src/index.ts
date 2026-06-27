@@ -18,6 +18,9 @@ const PUBLIC_ACTIONS = [
   'api::tenders-page.tenders-page.find',
   // Navigation: editable header links + footer columns single type.
   'api::navigation.navigation.find',
+  // Legal pages: editable Privacy + Terms copy single types.
+  'api::privacy-page.privacy-page.find',
+  'api::terms-page.terms-page.find',
 ];
 
 export default {

@@ -62,6 +62,12 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Note: client adds/edits/removes header links + footer columns/links from Strapi. Prerendered pages pick up changes on rebuild; SSR pages reflect live. Schema sync requires `yarn develop` restart + publishing the single type.
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Awaiting commit approval + browser review.
 
+#### Privacy + Terms Pages (added — branch `feature/legal-pages`)
+- Backend: two new **single types** `privacy-page` + `terms-page` (each `title` string + `content` richtext) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::privacy-page.privacy-page.find` + `api::terms-page.terms-page.find`.
+- Frontend: new SSR `privacy.astro` + `terms.astro` (`prerender=false`) — fetch their single type, `marked`-render `content` with a built-in default-copy fallback when unpublished/404 (same pattern as `tenders.astro`), shared arbitrary-variant prose container. `PrivacyPage` + `TermsPage` types added.
+- Footer already linked `/privacy` + `/terms` (bottom bar) — no nav change needed.
+- Schema sync requires `yarn develop` restart + publishing each single type (renders default copy until then). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval + browser review.
+
 #### History
 - **Tenders Page + Playfair font** (branch `feature/tenders-page`, merged to `main`, branch deleted) — ✅ Completed.
   - Backend: new `tenders-page` **single type** (`title` string, `description` richtext, `buttonText` string, `buttonLink` string) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::tenders-page.tenders-page.find`.

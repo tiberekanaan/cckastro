@@ -1,0 +1,77 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { STRAPI_URL } from "../lib/strapi";
+import type { PrivacyPage } from "../types/strapi";
+
+let page: PrivacyPage | null = null;
+
+// A missing/unpublished single type (404) falls back to the default copy below.
+try {
+  const res = await fetch(`${STRAPI_URL}/api/privacy-page`);
+  if (res.ok) {
+    const json: { data: PrivacyPage | null } = await res.json();
+    page = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/privacy-page → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[privacy] page fetch failed:", err);
+}
+
+const heading = page?.title ?? "Privacy Policy";
+const defaultContent = `The Communications Commission of Kiribati (CCK) is committed to protecting
+the privacy of visitors to our website and users of our services.
+
+## Information we collect
+
+We may collect personal information you provide directly — such as your name,
+email address, and phone number — when you contact us, register a distress
+beacon, or apply for a job or tender.
+
+## How we use your information
+
+We use the information we collect to respond to your enquiries, deliver and
+improve our services, and meet our regulatory and legal obligations.
+
+## Sharing your information
+
+We do not sell your personal information. We may share it with government
+agencies or service providers only where necessary to deliver our services or
+as required by law.
+
+## Your rights
+
+You may request access to, correction of, or deletion of your personal
+information by contacting us using the details on our Contact page.
+
+This policy may be updated from time to time. Please check this page for the
+latest version.`;
+
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const contentHtml = await marked.parse(page?.content ?? defaultContent);
+---
+
+<BaseLayout
+  title={heading}
+  description="How the Communications Commission of Kiribati collects, uses, and protects your personal information."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
+      <header>
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          {heading}
+        </h1>
+      </header>
+
+      <div
+        class="mt-6 text-lg leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h3]:mt-6 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-primary [&_li]:mt-2 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+        set:html={contentHtml}
+      />
+    </div>
+  </section>
+</BaseLayout>

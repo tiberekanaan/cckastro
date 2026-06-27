@@ -99,7 +99,7 @@ const introHtml = page?.intro
                   <tr class="group border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/60">
                     <td class="px-6 py-4">
                       <a
-                        href={`/careers/${job.documentId}`}
+                        href={`/careers/${job.slug ?? job.documentId}`}
                         class="font-serif text-lg font-bold text-slate-900 transition-colors hover:text-teal-600 group-hover:text-teal-600"
                       >
                         {job.title}
@@ -112,7 +112,7 @@ const introHtml = page?.intro
                     </td>
                     <td class="whitespace-nowrap px-6 py-4 text-right">
                       <a
-                        href={`/careers/${job.documentId}`}
+                        href={`/careers/${job.slug ?? job.documentId}`}
                         class="inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
                       >
                         <span class="inline-flex items-center gap-1 transition-transform group-hover:translate-x-0.5">

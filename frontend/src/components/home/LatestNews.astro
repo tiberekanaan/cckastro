@@ -34,7 +34,7 @@ const [lead, ...rest] = items;
       {
         lead && (
           <a
-            href={`/news/${lead.documentId}`}
+            href={`/news/${lead.slug ?? lead.documentId}`}
             class="group flex flex-col overflow-hidden rounded-card border border-border bg-surface transition-shadow hover:shadow-lg"
           >
             <div class="aspect-[16/9] overflow-hidden bg-surface-muted">
@@ -65,7 +65,7 @@ const [lead, ...rest] = items;
           rest.map((item) => (
             <li>
               <a
-                href={`/news/${item.documentId}`}
+                href={`/news/${item.slug ?? item.documentId}`}
                 class="group flex gap-4 rounded-card border border-border bg-surface p-3 transition-shadow hover:shadow-md"
               >
                 <div class="size-24 shrink-0 overflow-hidden rounded-lg bg-surface-muted">

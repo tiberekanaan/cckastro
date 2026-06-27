@@ -89,7 +89,7 @@ const excerpt = (n: NewsItem): string => richTextToPlain(n.description).slice(0,
             >
               {items.map((item, index) => (
                 <a
-                  href={`/news/${item.documentId}`}
+                  href={`/news/${item.slug ?? item.documentId}`}
                   data-reveal
                   data-date={item.date ? new Date(item.date).getTime() : 0}
                   data-search={`${item.title ?? ""} ${excerpt(item)}`.toLowerCase()}

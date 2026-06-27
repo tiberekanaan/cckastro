@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "terms_page",
+  "info": {
+    "singularName": "terms-page",
+    "pluralName": "terms-pages",
+    "displayName": "Terms Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "richtext"
+    }
+  }
+}

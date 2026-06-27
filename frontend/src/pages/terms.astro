@@ -1,0 +1,81 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { STRAPI_URL } from "../lib/strapi";
+import type { TermsPage } from "../types/strapi";
+
+let page: TermsPage | null = null;
+
+// A missing/unpublished single type (404) falls back to the default copy below.
+try {
+  const res = await fetch(`${STRAPI_URL}/api/terms-page`);
+  if (res.ok) {
+    const json: { data: TermsPage | null } = await res.json();
+    page = json.data ?? null;
+  } else if (res.status !== 404) {
+    throw new Error(`Strapi /api/terms-page → ${res.status}`);
+  }
+} catch (err) {
+  console.error("[terms] page fetch failed:", err);
+}
+
+const heading = page?.title ?? "Terms of Use";
+const defaultContent = `These terms govern your use of the Communications Commission of Kiribati (CCK)
+website and online services. By accessing this website, you agree to these
+terms.
+
+## Use of this website
+
+You may use this website for lawful purposes only. You must not use it in any
+way that damages, disables, or impairs the site or interferes with another
+party's use of it.
+
+## Intellectual property
+
+All content on this website — including text, graphics, logos, and documents —
+is owned by or licensed to CCK and is protected by applicable laws. You may not
+reproduce it without permission, except as allowed by law.
+
+## Accuracy of information
+
+We make every effort to keep the information on this website accurate and up to
+date, but we do not warrant that it is complete or error-free. Information is
+provided for general purposes and does not constitute legal advice.
+
+## Limitation of liability
+
+CCK is not liable for any loss or damage arising from your use of, or inability
+to use, this website or any information it contains.
+
+## Changes to these terms
+
+We may revise these terms at any time. Continued use of the website after
+changes are published constitutes acceptance of the revised terms.`;
+
+// Strapi `richtext` returns Markdown; render to HTML (CMS-authored, trusted).
+const contentHtml = await marked.parse(page?.content ?? defaultContent);
+---
+
+<BaseLayout
+  title={heading}
+  description="The terms governing use of the Communications Commission of Kiribati website and services."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
+      <header>
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          {heading}
+        </h1>
+      </header>
+
+      <div
+        class="mt-6 text-lg leading-relaxed text-muted-foreground [&_a]:text-accent [&_a]:underline [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h3]:mt-6 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-primary [&_li]:mt-2 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-4 [&_strong]:text-primary [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6"
+        set:html={contentHtml}
+      />
+    </div>
+  </section>
+</BaseLayout>

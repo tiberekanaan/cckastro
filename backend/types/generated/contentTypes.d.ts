@@ -728,6 +728,64 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPrivacyPagePrivacyPage extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_page';
+  info: {
+    displayName: 'Privacy Page';
+    pluralName: 'privacy-pages';
+    singularName: 'privacy-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-page.privacy-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPrivacyPagePrivacyPage extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_page';
+  info: {
+    displayName: 'Privacy Page';
+    pluralName: 'privacy-pages';
+    singularName: 'privacy-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-page.privacy-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProjectProject extends Struct.CollectionTypeSchema {
   collectionName: 'projects';
   info: {
@@ -845,6 +903,64 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::tenders-page.tenders-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTermsPageTermsPage extends Struct.SingleTypeSchema {
+  collectionName: 'terms_page';
+  info: {
+    displayName: 'Terms Page';
+    pluralName: 'terms-pages';
+    singularName: 'terms-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::terms-page.terms-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTermsPageTermsPage extends Struct.SingleTypeSchema {
+  collectionName: 'terms_page';
+  info: {
+    displayName: 'Terms Page';
+    pluralName: 'terms-pages';
+    singularName: 'terms-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::terms-page.terms-page'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -1403,10 +1519,14 @@ declare module '@strapi/strapi' {
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;
       'api::org-role.org-role': ApiOrgRoleOrgRole;
       'api::page.page': ApiPagePage;
+      'api::privacy-page.privacy-page': ApiPrivacyPagePrivacyPage;
+      'api::privacy-page.privacy-page': ApiPrivacyPagePrivacyPage;
       'api::project.project': ApiProjectProject;
       'api::resource.resource': ApiResourceResource;
       'api::service.service': ApiServiceService;
       'api::tenders-page.tenders-page': ApiTendersPageTendersPage;
+      'api::terms-page.terms-page': ApiTermsPageTermsPage;
+      'api::terms-page.terms-page': ApiTermsPageTermsPage;
       'api::uaf-page.uaf-page': ApiUafPageUafPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

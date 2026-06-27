@@ -55,6 +55,12 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: component lives in `components/blocks/` (not `components/`) for renderer consistency; blue uses semantic `accent` token (theme `primary` is green) — "distress beacon" emphasized via safe text-split span, button `bg-accent`/`hover:bg-accent-hover`.
 - `astro check` (0 errors) + `npm run build` pass clean. Renders once an editor adds the block to the home Page entry. Awaiting commit approval + browser review.
 
+#### Privacy + Terms Pages (added — branch `feature/legal-pages`)
+- Backend: two new **single types** `privacy-page` + `terms-page` (each `title` string + `content` richtext) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::privacy-page.privacy-page.find` + `api::terms-page.terms-page.find`.
+- Frontend: new SSR `privacy.astro` + `terms.astro` (`prerender=false`) — fetch their single type, `marked`-render `content` with a built-in default-copy fallback when unpublished/404 (same pattern as `tenders.astro`), shared arbitrary-variant prose container. `PrivacyPage` + `TermsPage` types added.
+- Footer already linked `/privacy` + `/terms` (bottom bar) — no nav change needed.
+- Schema sync requires `yarn develop` restart + publishing each single type (renders default copy until then). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval + browser review.
+
 #### History
 - **Careers Page** (branch `feature/careers-page`, merged to `main`) — ✅ Completed.
   - Backend: new `career` collection (`title` String, `description` richtext, `deadline` Date; all required; `draftAndPublish:true`) + `careers-page` single type (`title`/`intro`/`applicationInfo` richtext — editable page copy) + router/controller/service factories for both.

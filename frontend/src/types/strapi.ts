@@ -278,3 +278,19 @@ export interface StrapiCollectionResponse<T> {
   data: T[];
   meta: { pagination?: StrapiPagination };
 }
+
+/** Privacy single type — editable page copy (`content` richtext → Markdown). */
+export interface PrivacyPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  content?: string | null;
+}
+
+/** Terms single type — editable page copy (`content` richtext → Markdown). */
+export interface TermsPage {
+  id: number;
+  documentId: string;
+  title?: string | null;
+  content?: string | null;
+}

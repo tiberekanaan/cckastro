@@ -593,6 +593,39 @@ export interface ApiDistressBeaconDistressBeacon
   };
 }
 
+export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
+  collectionName: 'global_setting';
+  info: {
+    displayName: 'Global Setting';
+    pluralName: 'global-settings';
+    singularName: 'global-setting';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contactAddress: Schema.Attribute.Text;
+    contactEmail: Schema.Attribute.String;
+    contactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    favicon: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::global-setting.global-setting'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    siteName: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
   collectionName: 'navigation';
   info: {
@@ -1489,6 +1522,7 @@ declare module '@strapi/strapi' {
       'api::careers-page.careers-page': ApiCareersPageCareersPage;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
+      'api::global-setting.global-setting': ApiGlobalSettingGlobalSetting;
       'api::navigation.navigation': ApiNavigationNavigation;
       'api::new.new': ApiNewNew;
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;

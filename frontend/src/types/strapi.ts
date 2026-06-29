@@ -304,6 +304,30 @@ export interface Navigation {
   footerColumns: FooterColumnItem[];
 }
 
+/** Global Setting single type — editable site assets + contact info (raw Strapi shape). */
+export interface GlobalSetting {
+  id: number;
+  documentId: string;
+  siteName?: string | null;
+  contactAddress?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  logo?: StrapiMedia | null;
+  favicon?: StrapiMedia | null;
+}
+
+/** Resolved global settings consumed by layout/components (always populated via fallbacks). */
+export interface GlobalSettings {
+  siteName: string;
+  contactAddress: string;
+  contactPhone: string;
+  contactEmail: string;
+  /** Absolute logo URL, or undefined to use the static fallback. */
+  logoUrl?: string;
+  /** Absolute favicon URL, or undefined to use the static fallback. */
+  faviconUrl?: string;
+}
+
 /** Privacy single type — editable page copy (`content` richtext → Markdown). */
 export interface PrivacyPage {
   id: number;

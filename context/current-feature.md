@@ -68,6 +68,13 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Footer already linked `/privacy` + `/terms` (bottom bar) — no nav change needed.
 - Schema sync requires `yarn develop` restart + publishing each single type (renders default copy until then). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval + browser review.
 
+#### Global Settings (added — branch `feature/global-settings`)
+- Backend: new `global-setting` **single type** (`siteName` String, `contactAddress` Text, `contactPhone`/`contactEmail` String, `logo`+`favicon` single image Media) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::global-setting.global-setting.find`.
+- Frontend: new `getGlobalSettings()` in `lib/strapi.ts` — fetches `/api/global-setting?populate=logo,favicon`, returns resolved `GlobalSettings` (absolute `logoUrl`/`faviconUrl` via `mediaUrl`), falls back to `site.ts` per-field on 404/unpublished/empty. `GlobalSetting` (raw) + `GlobalSettings` (resolved) types added.
+- Wire-up: `BaseLayout.astro` fetches once → dynamic `<link rel="icon">` (falls back to `/favicon.svg`) + passes `settings` prop to `Header`/`Footer` (per user choice; not self-fetching). `Header`/`Footer` use dynamic logo (`logoUrl ?? /cck-logo.png`) + `siteName`; `Footer` + `contact.astro` use dynamic `contactAddress`/`contactPhone`/`contactEmail`.
+- Adaptations vs spec: spec's `empower` template paths don't exist — real files are `layouts/BaseLayout.astro`, `components/layout/{Header,Footer}.astro`, logo `/cck-logo.png` (not `empower-logo-*.webp`); contact data already flowed from `site.ts`, not hardcoded strings. Logo falls back to `/cck-logo.png` (user choice).
+- `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
+
 #### History
 - **Tenders Page + Playfair font** (branch `feature/tenders-page`, merged to `main`, branch deleted) — ✅ Completed.
   - Backend: new `tenders-page` **single type** (`title` string, `description` richtext, `buttonText` string, `buttonLink` string) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::tenders-page.tenders-page.find`.

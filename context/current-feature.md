@@ -76,6 +76,12 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
 #### History
+- **Mobile Coverage filters** (branch `feature/mobile-coverage-filter`, merged to `main`, branch deleted) — ✅ Completed.
+  - Frontend-only change to SSR `mobile-coverage.astro` — no backend/schema/data changes.
+  - Filter form (zero-JS GET → SSR re-render) above the island-card grid: **Island**, **Quality of service** (Good/Average/Poor enum), **Network type**. Conditional Reset; filtered-empty state.
+  - Options: `islandOptions` + `networkOptions` derived from the *unfiltered* record set; rows filtered before grouping so each island card shows only matching providers.
+  - Island is a **live client-side typeahead** (`type="search"` + `<datalist>`): a small `<script>` substring-matches `data-island` cards as the user types and toggles a "No islands match …" message. Server-side island match switched to substring so live + submitted (after QoS/network Apply) results agree; `name="island"` retained so the typed value survives a GET submit.
+  - `astro check` (0 errors) + `npm run build` pass clean.
 - **Tenders Page + Playfair font** (branch `feature/tenders-page`, merged to `main`, branch deleted) — ✅ Completed.
   - Backend: new `tenders-page` **single type** (`title` string, `description` richtext, `buttonText` string, `buttonLink` string) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::tenders-page.tenders-page.find`.
   - Frontend: new SSR `tenders.astro` (`prerender=false`) — fetches `/api/tenders-page`, `marked`-renders the application-process copy (with a built-in default-copy fallback when the single type is unpublished/404), `bg-accent` CTA button (`buttonText`→`buttonLink`, defaults to "Visit the Customer Portal" → `#`). Explains the process; does **not** list open tenders, per spec. `TendersPage` type added; `Tenders`→`/tenders` added to `site.ts` main nav (Header + Footer).

@@ -21,6 +21,8 @@ const PUBLIC_ACTIONS = [
   // Legal pages: editable Privacy + Terms copy single types.
   'api::privacy-page.privacy-page.find',
   'api::terms-page.terms-page.find',
+  // Mobile coverage: public island/village coverage table.
+  'api::mobile-coverage.mobile-coverage.find',
 ];
 
 // Collections whose `slug` UID must be backfilled for pre-existing entries.

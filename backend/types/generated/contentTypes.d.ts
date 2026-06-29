@@ -593,6 +593,45 @@ export interface ApiDistressBeaconDistressBeacon
   };
 }
 
+export interface ApiMobileCoverageMobileCoverage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'mobile_coverages';
+  info: {
+    displayName: 'Mobile Coverage';
+    pluralName: 'mobile-coverages';
+    singularName: 'mobile-coverage';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    island: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::mobile-coverage.mobile-coverage'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
+    networkType: Schema.Attribute.String;
+    populationCoverage: Schema.Attribute.Integer;
+    provider: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    qos: Schema.Attribute.Enumeration<['Good', 'Average', 'Poor']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    villagesAverage: Schema.Attribute.Text;
+    villagesNoCoverage: Schema.Attribute.Text;
+    villagesStrong: Schema.Attribute.Text;
+    villagesWeak: Schema.Attribute.Text;
+    yearInspected: Schema.Attribute.Integer;
+  };
+}
+
 export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
   collectionName: 'navigation';
   info: {
@@ -1489,6 +1528,7 @@ declare module '@strapi/strapi' {
       'api::careers-page.careers-page': ApiCareersPageCareersPage;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
+      'api::mobile-coverage.mobile-coverage': ApiMobileCoverageMobileCoverage;
       'api::navigation.navigation': ApiNavigationNavigation;
       'api::new.new': ApiNewNew;
       'api::official-document.official-document': ApiOfficialDocumentOfficialDocument;

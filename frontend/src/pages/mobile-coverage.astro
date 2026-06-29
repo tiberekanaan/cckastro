@@ -1,0 +1,384 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { softFetchStrapi, mediaUrl } from "../lib/strapi";
+import { mobileCoverageSchema, type MobileCoverage } from "../types/content";
+
+// Live SSR fetch — reflects Strapi edits on refresh, soft-fails to an empty grid.
+const rows = await softFetchStrapi(
+  "/api/mobile-coverages?populate=logo&pagination[pageSize]=200&sort=island:asc",
+);
+const records = rows
+  .map((row) => mobileCoverageSchema.safeParse(row))
+  .filter((r) => r.success)
+  .map((r) => r.data);
+
+/** Group provider rows under their island — one card per island, a tab per provider. */
+const slugify = (s: string): string =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "island";
+
+const islandGroups = [
+  ...records.reduce((map, row) => {
+    const list = map.get(row.island) ?? [];
+    list.push(row);
+    return map.set(row.island, list);
+  }, new Map<string, MobileCoverage[]>()),
+].map(([island, providers]) => ({
+  island,
+  slug: slugify(island),
+  providers: [...providers].sort((a, b) =>
+    (a.provider ?? "").localeCompare(b.provider ?? ""),
+  ),
+}));
+
+/** Split a village field into a clean list (tolerates commas and newlines). */
+const villages = (value?: string | null): string[] =>
+  (value ?? "")
+    .split(/[,\n]/)
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+/** Initials + deterministic colour for a provider's monogram (logo fallback). */
+const initials = (name?: string | null): string =>
+  (name ?? "?")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+const avatarColors = [
+  "bg-sky-600",
+  "bg-violet-600",
+  "bg-emerald-600",
+  "bg-rose-600",
+  "bg-amber-600",
+  "bg-indigo-600",
+];
+const avatarColor = (name?: string | null): string => {
+  let h = 0;
+  for (const ch of name ?? "") h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return avatarColors[h % avatarColors.length];
+};
+
+/** Tailwind classes for the QoS badge by quality level. */
+const qosBadge: Record<NonNullable<MobileCoverage["qos"]>, string> = {
+  Good: "bg-emerald-100 text-emerald-700 ring-emerald-600/20",
+  Average: "bg-amber-100 text-amber-700 ring-amber-600/20",
+  Poor: "bg-rose-100 text-rose-700 ring-rose-600/20",
+};
+
+const breakdowns = [
+  { key: "villagesStrong", label: "Strong", dot: "bg-emerald-400" },
+  { key: "villagesAverage", label: "Average", dot: "bg-amber-400" },
+  { key: "villagesWeak", label: "Weak", dot: "bg-orange-400" },
+  { key: "villagesNoCoverage", label: "No Coverage", dot: "bg-rose-400" },
+] as const;
+---
+
+<BaseLayout
+  title="Mobile Coverage"
+  description="Island-by-island mobile network coverage across Kiribati, with village-level quality detail."
+>
+  <section class="bg-surface-muted">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+      <header class="max-w-3xl">
+        <h1
+          class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl"
+        >
+          Mobile Coverage
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted-foreground">
+          Mobile network coverage assessed island by island. Switch between
+          providers with the tabs, and expand any card for village-level detail.
+        </p>
+      </header>
+
+      {
+        islandGroups.length > 0 ? (
+          <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {islandGroups.map((group, index) => (
+              <article
+                data-reveal
+                style={`animation-delay: ${index * 100}ms`}
+                class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div class="flex items-center justify-between gap-3 px-6 pt-6">
+                  <h2 class="font-serif text-2xl font-bold text-slate-900">
+                    {group.island}
+                  </h2>
+                  {group.providers.length > 1 && (
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
+                      {group.providers.length} providers
+                    </span>
+                  )}
+                </div>
+
+                {/* Radio state holders — siblings of .tab-bar / .tab-panels (zero-JS tabs). */}
+                {group.providers.map((_, i) => (
+                  <input
+                    type="radio"
+                    name={`prov-${group.slug}`}
+                    id={`prov-${group.slug}-${i}`}
+                    class="tab-input"
+                    checked={i === 0}
+                  />
+                ))}
+
+                {group.providers.length > 1 && (
+                  <div class="tab-bar mt-4 flex flex-wrap gap-2 px-6">
+                    {group.providers.map((provider, i) => (
+                      <label
+                        for={`prov-${group.slug}-${i}`}
+                        class="tab flex cursor-pointer items-center gap-2 rounded-full py-1 pl-1 pr-3 text-xs font-semibold text-slate-500 ring-1 ring-inset ring-slate-200 transition-colors hover:text-slate-700"
+                      >
+                        {provider.logo?.url ? (
+                          <img
+                            src={mediaUrl(provider.logo)}
+                            alt={provider.logo.alternativeText ?? provider.provider ?? "Provider"}
+                            class="h-5 w-5 rounded-full bg-white object-contain"
+                          />
+                        ) : (
+                          <span
+                            class={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white ${avatarColor(provider.provider)}`}
+                          >
+                            {initials(provider.provider)}
+                          </span>
+                        )}
+                        <span>{provider.provider ?? "Provider"}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                <div class="tab-panels mt-4 grow">
+                  {group.providers.map((provider) => {
+                    const cats = breakdowns.map((b) => ({
+                      ...b,
+                      list: villages(provider[b.key]),
+                    }));
+                    const totalVillages = cats.reduce(
+                      (n, c) => n + c.list.length,
+                      0,
+                    );
+                    const cov = provider.populationCoverage;
+                    return (
+                      <div class="tab-panel px-6 pb-6">
+                        {/* Provider header */}
+                        <div class="flex items-center gap-3">
+                          {provider.logo?.url ? (
+                            <img
+                              src={mediaUrl(provider.logo)}
+                              alt={provider.logo.alternativeText ?? provider.provider ?? "Provider"}
+                              class="h-11 w-11 shrink-0 rounded-xl bg-white object-contain ring-1 ring-slate-200"
+                            />
+                          ) : (
+                            <span
+                              class={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white ${avatarColor(provider.provider)}`}
+                            >
+                              {initials(provider.provider)}
+                            </span>
+                          )}
+                          <div class="min-w-0">
+                            <p class="truncate font-semibold text-slate-800">
+                              {provider.provider ?? "Provider"}
+                            </p>
+                            <p class="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+                              {provider.networkType && (
+                                <span>{provider.networkType}</span>
+                              )}
+                              {provider.networkType && provider.yearInspected && (
+                                <span class="text-slate-300">·</span>
+                              )}
+                              {provider.yearInspected && (
+                                <span>Inspected {provider.yearInspected}</span>
+                              )}
+                            </p>
+                          </div>
+                          {provider.qos && (
+                            <span
+                              class={`ml-auto shrink-0 self-start rounded-md px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${qosBadge[provider.qos]}`}
+                            >
+                              {provider.qos}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Population coverage */}
+                        {cov != null && (
+                          <div class="mt-5">
+                            <div class="flex items-baseline justify-between">
+                              <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Population coverage
+                              </span>
+                              <span class="font-serif text-2xl font-bold text-primary">
+                                {cov}%
+                              </span>
+                            </div>
+                            <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                class="h-full rounded-full bg-primary"
+                                style={`width:${Math.max(0, Math.min(100, cov))}%`}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Village distribution */}
+                        {totalVillages > 0 && (
+                          <div class="mt-5">
+                            <div class="flex items-baseline justify-between">
+                              <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Village coverage
+                              </span>
+                              <span class="text-xs text-slate-400">
+                                {totalVillages} villages
+                              </span>
+                            </div>
+                            <div class="mt-2 flex h-2.5 overflow-hidden rounded-full bg-slate-100">
+                              {cats.map(
+                                (c) =>
+                                  c.list.length > 0 && (
+                                    <div
+                                      class={c.dot}
+                                      style={`width:${(c.list.length / totalVillages) * 100}%`}
+                                    />
+                                  ),
+                              )}
+                            </div>
+                            <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
+                              {cats.map((c) => (
+                                <div class="flex items-center gap-2 text-xs">
+                                  <span class={`h-2 w-2 rounded-full ${c.dot}`} />
+                                  <span class="text-slate-500">{c.label}</span>
+                                  <span class="ml-auto font-semibold text-slate-700">
+                                    {c.list.length}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+
+                            <details class="mt-4 border-t border-slate-100 pt-3">
+                              <summary class="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-500 transition-colors hover:text-slate-700">
+                                <span>View villages</span>
+                                <svg
+                                  class="chevron h-4 w-4 transition-transform duration-200"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              </summary>
+                              <div class="mt-3 space-y-3">
+                                {cats.map(
+                                  (c) =>
+                                    c.list.length > 0 && (
+                                      <div>
+                                        <p class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                                          <span
+                                            class={`h-1.5 w-1.5 rounded-full ${c.dot}`}
+                                          />
+                                          {c.label}
+                                        </p>
+                                        <p class="mt-1 text-sm leading-relaxed text-slate-600">
+                                          {c.list.join(", ")}
+                                        </p>
+                                      </div>
+                                    ),
+                                )}
+                              </div>
+                            </details>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="mt-12 rounded-2xl border border-slate-100 bg-white p-12 text-center">
+            <h2 class="font-serif text-2xl font-bold text-primary">
+              No coverage data yet
+            </h2>
+            <p class="mt-3 text-muted-foreground">
+              Mobile coverage assessments will appear here once published.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Zero-JS provider tabs: a hidden radio per provider drives which panel +
+     tab label is active via :checked + sibling selectors. nth rules cover up
+     to 6 providers per island; the `~` combinator scopes them to one card. */
+  .tab-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-input:nth-of-type(1):checked ~ .tab-panels > .tab-panel:nth-child(1),
+  .tab-input:nth-of-type(2):checked ~ .tab-panels > .tab-panel:nth-child(2),
+  .tab-input:nth-of-type(3):checked ~ .tab-panels > .tab-panel:nth-child(3),
+  .tab-input:nth-of-type(4):checked ~ .tab-panels > .tab-panel:nth-child(4),
+  .tab-input:nth-of-type(5):checked ~ .tab-panels > .tab-panel:nth-child(5),
+  .tab-input:nth-of-type(6):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+    display: block;
+  }
+
+  .tab-input:nth-of-type(1):checked ~ .tab-bar > .tab:nth-child(1),
+  .tab-input:nth-of-type(2):checked ~ .tab-bar > .tab:nth-child(2),
+  .tab-input:nth-of-type(3):checked ~ .tab-bar > .tab:nth-child(3),
+  .tab-input:nth-of-type(4):checked ~ .tab-bar > .tab:nth-child(4),
+  .tab-input:nth-of-type(5):checked ~ .tab-bar > .tab:nth-child(5),
+  .tab-input:nth-of-type(6):checked ~ .tab-bar > .tab:nth-child(6) {
+    background-color: oklch(0.28 0.04 256);
+    color: white;
+    --tw-ring-color: oklch(0.28 0.04 256);
+  }
+
+  /* Chevron flips when the village disclosure is open. */
+  details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Zero-JS staggered entrance — per-card delay set inline via animation-delay. */
+  [data-reveal] {
+    animation: reveal-up 0.6s ease-out backwards;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

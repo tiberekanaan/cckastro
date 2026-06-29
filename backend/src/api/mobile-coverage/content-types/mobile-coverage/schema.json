@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mobile_coverages",
+  "info": {
+    "singularName": "mobile-coverage",
+    "pluralName": "mobile-coverages",
+    "displayName": "Mobile Coverage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "island": {
+      "type": "string",
+      "required": true
+    },
+    "provider": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "yearInspected": {
+      "type": "integer"
+    },
+    "networkType": {
+      "type": "string"
+    },
+    "qos": {
+      "type": "enumeration",
+      "enum": [
+        "Good",
+        "Average",
+        "Poor"
+      ]
+    },
+    "populationCoverage": {
+      "type": "integer"
+    },
+    "villagesStrong": {
+      "type": "text"
+    },
+    "villagesAverage": {
+      "type": "text"
+    },
+    "villagesWeak": {
+      "type": "text"
+    },
+    "villagesNoCoverage": {
+      "type": "text"
+    }
+  }
+}

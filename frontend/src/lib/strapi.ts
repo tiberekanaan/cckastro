@@ -36,6 +36,26 @@ export function richTextToPlain(blocks?: StrapiRichText): string {
     .trim();
 }
 
+/**
+ * Soft fetch a Strapi collection: returns the `data` array, or `[]` on
+ * 404/unpublished/unreachable. Never throws on a missing endpoint, so a
+ * not-yet-synced content type degrades to an empty collection at build time.
+ */
+export async function softFetchStrapi<T = unknown>(path: string): Promise<T[]> {
+  try {
+    const res = await fetch(`${STRAPI_URL}${path}`);
+    if (!res.ok) {
+      if (res.status !== 404) throw new Error(`Strapi ${path} → ${res.status}`);
+      return [];
+    }
+    const json: { data: T[] | null } = await res.json();
+    return json.data ?? [];
+  } catch (err) {
+    console.error(`[softFetchStrapi] ${path} failed:`, err);
+    return [];
+  }
+}
+
 /** Hard-coded fallback used when the Navigation single type is unpublished/unreachable. */
 const FALLBACK_NAV: { headerLinks: NavLinkItem[]; footerColumns: FooterColumnItem[] } = {
   headerLinks: site.nav.map((l) => ({ label: l.label, href: l.href })),

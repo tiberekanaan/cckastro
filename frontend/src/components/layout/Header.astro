@@ -1,14 +1,17 @@
 ---
 import { site } from "../../data/site";
 import { getNavigation } from "../../lib/strapi";
+import type { GlobalSettings } from "../../types/strapi";
 import Button from "../ui/Button.astro";
 
 interface Props {
   /* Transparent overlay mode: header floats over a full-bleed hero. */
   overlay?: boolean;
+  settings: GlobalSettings;
 }
 
-const { overlay = false } = Astro.props;
+const { overlay = false, settings } = Astro.props;
+const logoSrc = settings.logoUrl ?? "/cck-logo.png";
 
 // Editable header links from Strapi (falls back to site.ts).
 const { headerLinks } = await getNavigation();
@@ -25,13 +28,13 @@ const { headerLinks } = await getNavigation();
   <div
     class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6"
   >
-    <a href="/" class="flex items-center gap-3" aria-label={site.name}>
+    <a href="/" class="flex items-center gap-3" aria-label={settings.siteName}>
       <img
-        src="/cck-logo.png"
+        src={logoSrc}
         alt=""
         width="40"
         height="40"
-        class="h-10 w-10 shrink-0"
+        class="h-10 w-10 shrink-0 object-contain"
       />
       <span class="leading-tight">
         <span

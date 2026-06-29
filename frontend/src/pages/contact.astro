@@ -3,7 +3,10 @@ export const prerender = false;
 
 import { actions, isInputError } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { site } from "../data/site";
+import { getGlobalSettings } from "../lib/strapi";
+
+// Editable contact info from Strapi (falls back to site.ts).
+const settings = await getGlobalSettings();
 
 const result = Astro.getActionResult(actions.contact.send);
 const success = result && !result.error;
@@ -21,11 +24,15 @@ const labelClass = "block text-sm font-medium text-foreground";
 const mapSrc =
   "https://www.google.com/maps?q=1.3539794,172.9209376&z=17&output=embed";
 
-const phoneHref = `tel:${site.phone.replace(/\s/g, "")}`;
+const phoneHref = `tel:${settings.contactPhone.replace(/\s/g, "")}`;
 const details = [
-  { heading: "Email", value: site.email, href: `mailto:${site.email}` },
-  { heading: "Phone", value: site.phone, href: phoneHref },
-  { heading: "Address", value: site.address, href: null },
+  {
+    heading: "Email",
+    value: settings.contactEmail,
+    href: `mailto:${settings.contactEmail}`,
+  },
+  { heading: "Phone", value: settings.contactPhone, href: phoneHref },
+  { heading: "Address", value: settings.contactAddress, href: null },
 ];
 ---
 
@@ -64,7 +71,7 @@ const details = [
                     </a>
                   </dd>
                 ) : (
-                  <dd class="text-foreground">{item.value}</dd>
+                  <dd class="whitespace-pre-line text-foreground">{item.value}</dd>
                 )}
               </div>
             ))

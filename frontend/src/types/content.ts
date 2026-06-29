@@ -31,6 +31,24 @@ export const updateSchema = z.object({
   href: z.string(),
 });
 
+/** Mobile coverage rows from the Strapi `mobile-coverage` collection (flattened). */
+export const mobileCoverageSchema = z.object({
+  island: z.string(),
+  provider: z.string().nullish(),
+  logo: z
+    .object({ url: z.string(), alternativeText: z.string().nullish() })
+    .nullish(),
+  yearInspected: z.number().nullish(),
+  networkType: z.string().nullish(),
+  qos: z.enum(["Good", "Average", "Poor"]).nullish(),
+  populationCoverage: z.number().nullish(),
+  villagesStrong: z.string().nullish(),
+  villagesAverage: z.string().nullish(),
+  villagesWeak: z.string().nullish(),
+  villagesNoCoverage: z.string().nullish(),
+});
+
 export type Service = z.infer<typeof serviceSchema>;
 export type Insight = z.infer<typeof insightSchema>;
 export type Update = z.infer<typeof updateSchema>;
+export type MobileCoverage = z.infer<typeof mobileCoverageSchema>;

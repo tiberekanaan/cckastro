@@ -23,6 +23,8 @@ const PUBLIC_ACTIONS = [
   'api::terms-page.terms-page.find',
   // Global settings: editable site assets + contact info single type.
   'api::global-setting.global-setting.find',
+  // Mobile coverage: public island/village coverage table.
+  'api::mobile-coverage.mobile-coverage.find',
 ];
 
 // Collections whose `slug` UID must be backfilled for pre-existing entries.

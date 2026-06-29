@@ -1,80 +1,20 @@
 /**
- * One-off seed for the Mobile Coverage collection.
- * - Inserts published island/provider coverage rows with village-level detail.
- * - Idempotent: skips if any published rows already exist.
+ * Import the Mobile Coverage collection from the 2026 summary.
+ * - Source data: ./mobile-coverage-2026.json (parsed from the CCK 2026
+ *   "Mobile Coverage Summary" spreadsheet). populationCoverage is a percent
+ *   integer; village fields are comma-separated lists.
+ * - REPLACE semantics: deletes all existing rows, then inserts published ones.
  * Uses the Document Service API (Strapi 5).
- *
- * NOTE: This is representative sample data — edit the figures in the Strapi
- * admin (Content Manager → Mobile Coverage) to match the real assessment.
  *
  * Run with the dev server stopped:  node scripts/seed-mobile-coverage.js
  */
+const fs = require("fs");
+const path = require("path");
 const { compileStrapi, createStrapi } = require("@strapi/strapi");
 
-// island / provider rows. Village fields are comma-separated lists; the
-// frontend splits on commas + newlines. qos ∈ Good | Average | Poor.
-const ROWS = [
-  {
-    island: "South Tarawa",
-    provider: "ATHKL (Vodafone)",
-    networkType: "4G LTE",
-    yearInspected: 2024,
-    qos: "Good",
-    populationCoverage: 96,
-    villagesStrong: "Betio, Bairiki, Bikenibeu, Teaoraereke, Eita",
-    villagesAverage: "Bonriki, Temaiku",
-    villagesWeak: "Buota",
-    villagesNoCoverage: "",
-  },
-  {
-    island: "South Tarawa",
-    provider: "Ocean Link",
-    networkType: "3G/4G",
-    yearInspected: 2024,
-    qos: "Average",
-    populationCoverage: 78,
-    villagesStrong: "Betio, Bairiki",
-    villagesAverage: "Bikenibeu, Teaoraereke, Eita",
-    villagesWeak: "Bonriki, Temaiku",
-    villagesNoCoverage: "Buota",
-  },
-  {
-    island: "Kiritimati",
-    provider: "ATHKL (Vodafone)",
-    networkType: "4G LTE",
-    yearInspected: 2023,
-    qos: "Average",
-    populationCoverage: 82,
-    villagesStrong: "London, Tabwakea",
-    villagesAverage: "Banana",
-    villagesWeak: "Poland",
-    villagesNoCoverage: "",
-  },
-  {
-    island: "Abaiang",
-    provider: "ATHKL (Vodafone)",
-    networkType: "3G",
-    yearInspected: 2023,
-    qos: "Poor",
-    populationCoverage: 54,
-    villagesStrong: "Tuarabu",
-    villagesAverage: "Tabontebike, Koinawa",
-    villagesWeak: "Tebunginako",
-    villagesNoCoverage: "Ribono, Nuotaea",
-  },
-  {
-    island: "Tabiteuea North",
-    provider: "ATHKL (Vodafone)",
-    networkType: "3G",
-    yearInspected: 2022,
-    qos: "Poor",
-    populationCoverage: 41,
-    villagesStrong: "Utiroa",
-    villagesAverage: "Tanaeang",
-    villagesWeak: "Eita, Aiwa",
-    villagesNoCoverage: "Tekabwibwi, Buariki",
-  },
-];
+const ROWS = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "mobile-coverage-2026.json"), "utf-8"),
+);
 
 async function main() {
   const app = await createStrapi(await compileStrapi()).load();
@@ -82,14 +22,12 @@ async function main() {
 
   const docs = app.documents("api::mobile-coverage.mobile-coverage");
 
-  const existing = await docs.findMany({ status: "published" });
-  if (existing.length > 0) {
-    console.log(
-      `Mobile coverage rows already exist (${existing.length}); skipping seed.`,
-    );
-    await app.destroy();
-    return;
+  // Clear existing rows (drafts + published) so re-running is a clean re-import.
+  const existing = await docs.findMany({ status: "draft", fields: ["documentId"] });
+  for (const row of existing) {
+    await docs.delete({ documentId: row.documentId });
   }
+  if (existing.length) console.log(`Removed ${existing.length} existing rows.`);
 
   for (const row of ROWS) {
     const created = await docs.create({ data: row, status: "published" });
@@ -98,7 +36,7 @@ async function main() {
     );
   }
 
-  console.log(`Seeded ${ROWS.length} mobile coverage rows.`);
+  console.log(`Imported ${ROWS.length} mobile coverage rows.`);
   await app.destroy();
 }
 

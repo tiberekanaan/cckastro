@@ -11,6 +11,7 @@ export interface NavLink {
 export const site = {
   name: "Communications Commission of Kiribati",
   shortName: "CCK",
+  tagline: "Comms Commission of Kiribati",
   email: "info@cck.gov.ki",
   phone: "+686 7501 0000",
   address: "Bairiki, Tarawa, Kiribati",

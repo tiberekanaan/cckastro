@@ -620,6 +620,7 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
     logo: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
     siteName: Schema.Attribute.String;
+    tagline: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

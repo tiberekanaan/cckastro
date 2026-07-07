@@ -14,6 +14,9 @@
     "siteName": {
       "type": "string"
     },
+    "tagline": {
+      "type": "string"
+    },
     "contactAddress": {
       "type": "text"
     },

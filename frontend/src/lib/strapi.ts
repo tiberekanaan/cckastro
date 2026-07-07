@@ -101,6 +101,7 @@ export async function getNavigation(): Promise<{
 /** Hard-coded fallback used when the Global Setting single type is unpublished/unreachable. */
 const FALLBACK_GLOBAL: GlobalSettings = {
   siteName: site.name,
+  tagline: site.tagline,
   contactAddress: site.address,
   contactPhone: site.phone,
   contactEmail: site.email,
@@ -127,6 +128,7 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
     if (!data) return FALLBACK_GLOBAL;
     return {
       siteName: data.siteName || FALLBACK_GLOBAL.siteName,
+      tagline: data.tagline || FALLBACK_GLOBAL.tagline,
       contactAddress: data.contactAddress || FALLBACK_GLOBAL.contactAddress,
       contactPhone: data.contactPhone || FALLBACK_GLOBAL.contactPhone,
       contactEmail: data.contactEmail || FALLBACK_GLOBAL.contactEmail,

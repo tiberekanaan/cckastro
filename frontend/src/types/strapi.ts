@@ -309,6 +309,7 @@ export interface GlobalSetting {
   id: number;
   documentId: string;
   siteName?: string | null;
+  tagline?: string | null;
   contactAddress?: string | null;
   contactPhone?: string | null;
   contactEmail?: string | null;
@@ -319,6 +320,8 @@ export interface GlobalSetting {
 /** Resolved global settings consumed by layout/components (always populated via fallbacks). */
 export interface GlobalSettings {
   siteName: string;
+  /** Short tagline under the logo in the header. */
+  tagline: string;
   contactAddress: string;
   contactPhone: string;
   contactEmail: string;

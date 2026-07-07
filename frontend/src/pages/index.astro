@@ -90,9 +90,6 @@ try {
 
 const blocks = page?.content ?? [];
 
-// Home hero is full-bleed: float a transparent header over it.
-const heroOverlay = blocks[0]?.__component === "blocks.hero";
-
 // Render items: most blocks render solo, but a services block (`services-grid`
 // or `featured-services`) immediately followed by a `market-insights-section`
 // is fused into one two-column row (services accordion left, market-at-a-glance
@@ -149,7 +146,6 @@ for (let i = 0; i < blocks.length; i++) {
 <BaseLayout
   title={page?.title ?? "CCK — Regulating Kiribati's telecommunication market"}
   description={page?.description ?? undefined}
-  heroOverlay={heroOverlay}
 >
   {
     loadError && (

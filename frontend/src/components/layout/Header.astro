@@ -32,9 +32,9 @@ const { headerLinks } = await getNavigation();
       <img
         src={logoSrc}
         alt=""
-        width="40"
-        height="40"
-        class="h-10 w-10 shrink-0 object-contain"
+        width="56"
+        height="56"
+        class="h-14 w-14 shrink-0 object-contain"
       />
       <span class="leading-tight">
         <span
@@ -47,7 +47,7 @@ const { headerLinks } = await getNavigation();
           class:list={[
             "block text-[11px]",
             overlay ? "text-white/70" : "text-muted-foreground",
-          ]}>Comms Commission of Kiribati</span
+          ]}>{settings.tagline}</span
         >
       </span>
     </a>

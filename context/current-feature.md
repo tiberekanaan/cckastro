@@ -75,6 +75,15 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: spec's `empower` template paths don't exist — real files are `layouts/BaseLayout.astro`, `components/layout/{Header,Footer}.astro`, logo `/cck-logo.png` (not `empower-logo-*.webp`); contact data already flowed from `site.ts`, not hardcoded strings. Logo falls back to `/cck-logo.png` (user choice).
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
+#### Sticky White Navbar (added — branch `fix/sticky-white-navbar`)
+- Frontend-only style fix: home page navbar switched from transparent overlay to the sticky white variant used on every other page.
+- `index.astro`: removed the `heroOverlay` computation + prop → `Header` always renders `sticky top-0 border-b bg-surface/90 backdrop-blur`.
+- `Hero.astro`: top padding no longer clears an absolute header — `pb-24 pt-32 lg:pb-40 lg:pt-44` → symmetric `py-24 lg:py-40`.
+- `Header.astro`/`BaseLayout.astro` overlay props left in place (default `false`, now unused) for easy revert.
+- Logo enlarged: header logo `h-10 w-10` (40px) → `h-14 w-14` (56px, width/height attrs matched); source PNG is 500×500 so no image change needed. Footer logo untouched.
+- Editable tagline: new `tagline` String on `global-setting` single type (backend schema); threaded through `GlobalSetting`/`GlobalSettings` types + `getGlobalSettings()` (falls back to new `site.tagline` = "Comms Commission of Kiribati"); `Header.astro` renders `{settings.tagline}` instead of hardcoded text. Strapi auto-restarted, `/api/global-setting` returns the field.
+- Verified in dev (home page renders sticky header markup, 56px logo, tagline via fallback); `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval + browser review.
+
 #### History
 - **Mobile Coverage filters** (branch `feature/mobile-coverage-filter`, merged to `main`, branch deleted) — ✅ Completed.
   - Frontend-only change to SSR `mobile-coverage.astro` — no backend/schema/data changes.

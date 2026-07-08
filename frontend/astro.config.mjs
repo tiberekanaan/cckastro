@@ -13,7 +13,11 @@ export default defineConfig({
   image: {
     // Authorize the Strapi host so <Image /> can optimize remote media.
     // Add the production Strapi hostname here before deploying.
-    remotePatterns: [{ protocol: 'http', hostname: 'localhost' }],
+    //remotePatterns: [{ protocol: 'http', hostname: 'localhost' }],
+    remotePatterns: [
+    { protocol: 'http', hostname: 'localhost' },
+    { protocol: 'https', hostname: 'cckastrobackend-nys32.ondigitalocean.app' } // Add your production Strapi domain here
+  ],
   },
   security: {
     // Content Security Policy on by default to protect against XSS.

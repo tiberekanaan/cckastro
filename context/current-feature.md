@@ -76,6 +76,11 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
 #### History
+- **Strapi CORS restriction** (branch `chore/strapi-cors`, merged to `main`, branch deleted) — ✅ Completed.
+  - `backend/config/middlewares.ts`: `'strapi::cors'` → object form with `config.origin` allowlist: `http://localhost:4321`, the Vercel frontend URL, `https://cck.gov.ki`.
+  - Trailing slash stripped from the Vercel origin (CORS matches the browser `Origin` header exactly — never has one).
+  - ⚠️ Allowlisted Vercel URL is deployment-specific (`cckastro-j8mj3yb9c-…`); swap for the stable project domain once known or CORS breaks on next deploy.
+  - Verified live: Strapi auto-restarted, `Access-Control-Allow-Origin: http://localhost:4321` returned for dev origin.
 - **Vercel Adapter** (branch `chore/vercel-adapter`, merged to `main`, branch deleted) — ✅ Completed.
   - Swapped SSR adapter for Vercel hosting: `@astrojs/node` → `@astrojs/vercel@^10.0.8` (v10 is the Astro 6-compatible major; v11 requires Astro 7). `adapter: vercel()` in `astro.config.mjs`; `.vercel/` gitignored.
   - `image.remotePatterns` now authorizes the production Strapi host (`cckastrobackend-nys32.ondigitalocean.app`) alongside `localhost`.

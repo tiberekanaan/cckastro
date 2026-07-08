@@ -75,13 +75,12 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: spec's `empower` template paths don't exist — real files are `layouts/BaseLayout.astro`, `components/layout/{Header,Footer}.astro`, logo `/cck-logo.png` (not `empower-logo-*.webp`); contact data already flowed from `site.ts`, not hardcoded strings. Logo falls back to `/cck-logo.png` (user choice).
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
-#### Vercel Adapter (added — branch `chore/vercel-adapter`)
-- Swapped SSR adapter for Vercel hosting: `@astrojs/node` → `@astrojs/vercel@^10.0.8` (v10 is the Astro 6-compatible major; v11 requires Astro 7).
-- `astro.config.mjs`: `adapter: vercel()` (import from `@astrojs/vercel`); `@astrojs/node` uninstalled. `.vercel/` build output gitignored.
-- Deploy notes: set `STRAPI_URL` env var in Vercel project settings; add the production Strapi hostname to `image.remotePatterns` (currently `localhost` only) before go-live.
-- `astro check` (0 errors) + `npm run build` pass clean (emits `.vercel/output`). Awaiting commit approval.
-
 #### History
+- **Vercel Adapter** (branch `chore/vercel-adapter`, merged to `main`, branch deleted) — ✅ Completed.
+  - Swapped SSR adapter for Vercel hosting: `@astrojs/node` → `@astrojs/vercel@^10.0.8` (v10 is the Astro 6-compatible major; v11 requires Astro 7). `adapter: vercel()` in `astro.config.mjs`; `.vercel/` gitignored.
+  - `image.remotePatterns` now authorizes the production Strapi host (`cckastrobackend-nys32.ondigitalocean.app`) alongside `localhost`.
+  - Deploy note: set `STRAPI_URL` env var in Vercel project settings (inlined at build time; defaults to `http://localhost:1337`).
+  - `astro check` (0 errors) + `npm run build` pass clean (emits `.vercel/output`).
 - **Sticky White Navbar + header logo/tagline** (branch `fix/sticky-white-navbar`, merged to `main`, branch deleted) — ✅ Completed.
   - Home page navbar switched from transparent overlay to the sticky white variant used on every other page: `index.astro` no longer computes/passes `heroOverlay`; `Hero.astro` padding evened to `py-24 lg:py-40` (no absolute header to clear). Overlay props left in `Header.astro`/`BaseLayout.astro` (default `false`, unused) for easy revert.
   - Header logo enlarged `h-10 w-10` (40px) → `h-14 w-14` (56px); source PNG is 500×500 so no image change. Footer logo untouched.

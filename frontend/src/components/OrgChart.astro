@@ -45,7 +45,7 @@ try {
 
   <div
     id="org-chart-container"
-    class="mt-8 w-full overflow-x-auto rounded-[var(--radius-panel)] bg-surface p-4 shadow-soft ring-1 ring-border/60"
+    class="mt-8 w-full overflow-x-auto rounded-[var(--radius-panel)] bg-surface p-4 shadow-soft ring-1 ring-border/60 [color-scheme:light]"
     data-links={JSON.stringify(links)}
     data-nodes={JSON.stringify(nodes)}
   >
@@ -67,7 +67,11 @@ try {
     }[];
 
     const options: Highcharts.Options = {
-      chart: { inverted: true, height: Math.max(400, nodes.length * 60) },
+      chart: {
+        inverted: true,
+        height: Math.max(400, nodes.length * 60),
+        backgroundColor: "#ffffff",
+      },
       title: { text: undefined },
       accessibility: { enabled: false },
       credits: { enabled: false },

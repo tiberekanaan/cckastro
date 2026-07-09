@@ -76,6 +76,10 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
 #### History
+- **Org chart black background in dark mode** (branch `fix/org-chart-dark-mode`, merged to `main`, branch deleted) — ✅ Completed.
+  - Highcharts 13 auto-themes from the page CSS `color-scheme`; visitors with OS dark mode saw a black chart canvas on `/about` (Organisation Structure).
+  - Fix in `OrgChart.astro`: `[color-scheme:light]` on the chart container + explicit `chart.backgroundColor: "#ffffff"`.
+  - Verified in browser; `astro check` (0 errors) + `npm run build` pass clean. Pushed to origin.
 - **Strapi CORS restriction** (branch `chore/strapi-cors`, merged to `main`, branch deleted) — ✅ Completed.
   - `backend/config/middlewares.ts`: `'strapi::cors'` → object form with `config.origin` allowlist: `http://localhost:4321`, the Vercel frontend URL, `https://cck.gov.ki`.
   - Trailing slash stripped from the Vercel origin (CORS matches the browser `Origin` header exactly — never has one).

@@ -75,6 +75,14 @@ try {
       title: { text: undefined },
       accessibility: { enabled: false },
       credits: { enabled: false },
+      // Highcharts 13 themes defaults via prefers-color-scheme CSS variables,
+      // so every color must be explicit or dark-mode visitors get invisible
+      // links and a black tooltip.
+      tooltip: {
+        backgroundColor: "#ffffff",
+        borderColor: "#004722",
+        style: { color: "#1a202c" },
+      },
       series: [
         {
           type: "organization",
@@ -86,6 +94,7 @@ try {
           color: "#004722",
           dataLabels: { color: "#ffffff" },
           borderColor: "#004722",
+          link: { color: "#94a3b8", lineWidth: 1 },
           nodeWidth: 65,
         } as Highcharts.SeriesOrganizationOptions,
       ],

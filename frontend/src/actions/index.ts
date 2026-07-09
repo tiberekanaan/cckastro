@@ -26,8 +26,21 @@ export const server = {
           });
         }
 
-        // Validate-only: log server-side. Wire real delivery (email/Strapi) later.
-        console.info("[contact] submission:", data);
+        const res = await fetch(
+          `${import.meta.env.STRAPI_URL}/api/contact-messages`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data }),
+          },
+        );
+
+        if (!res.ok) {
+          throw new ActionError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Could not send your message. Please try again.",
+          });
+        }
 
         return { success: true as const };
       },

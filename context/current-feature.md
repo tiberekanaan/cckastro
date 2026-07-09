@@ -75,10 +75,18 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Adaptations vs spec: spec's `empower` template paths don't exist — real files are `layouts/BaseLayout.astro`, `components/layout/{Header,Footer}.astro`, logo `/cck-logo.png` (not `empower-logo-*.webp`); contact data already flowed from `site.ts`, not hardcoded strings. Logo falls back to `/cck-logo.png` (user choice).
 - `astro check` (0 errors) + `npm run build` pass clean (Strapi offline → fallback exercised). Schema sync requires `yarn develop` restart + publishing the single type. Awaiting commit approval + browser review.
 
+#### Contact Form Submissions (added — branch `feature/contact-messages`)
+- Backend: new `contact-message` collection (`name` String, `email` Email, `subject` String — all required; `message` Text required; `draftAndPublish:false`) + router/controller/service factories. Bootstrap (`backend/src/index.ts`) grants Public `api::contact-message.contact-message.create`.
+- Frontend: `contact.send` action handler in `src/actions/index.ts` — replaced the validate-only `console.info` with a POST of `{data}` to `/api/contact-messages` (same pattern as `distressBeacon.register`); throws `ActionError` on non-OK. Honeypot + Zod validation unchanged.
+- Submissions now appear in Strapi Content Manager → **Contact Message**. No email notification (future wiring).
+- Verified in browser (Playwright against local Strapi): submit → success banner + entry persisted; short-message Zod error + honeypot rejection hold; public `find` correctly 403. 3 test entries left in **local** dev DB — delete from Content Manager. `astro check` (0 errors) + `npm run build` pass clean.
+- ⚠️ Deploy note: `frontend/.env` points `STRAPI_URL` at Strapi Cloud (`brave-acoustics-674445e63c.strapiapp.com`) — the form errors ("Could not send your message") until the backend changes are deployed there (POST currently 405s). Bootstrap grants the Public create permission on cloud startup automatically.
+
 #### History
 - **Org chart black background in dark mode** (branch `fix/org-chart-dark-mode`, merged to `main`, branch deleted) — ✅ Completed.
   - Highcharts 13 auto-themes from the page CSS `color-scheme`; visitors with OS dark mode saw a black chart canvas on `/about` (Organisation Structure).
   - Fix in `OrgChart.astro`: `[color-scheme:light]` on the chart container + explicit `chart.backgroundColor: "#ffffff"`.
+  - Follow-up (branch `fix/org-chart-explicit-colors`, merged, deleted): dark theme sits behind an OS-level `@media (prefers-color-scheme: dark)` rule that container `color-scheme` can't override — connector links were invisible + tooltip black for dark-mode visitors. Explicit `link: {color:"#94a3b8"}` + white tooltip added.
   - Verified in browser; `astro check` (0 errors) + `npm run build` pass clean. Pushed to origin.
 - **Strapi CORS restriction** (branch `chore/strapi-cors`, merged to `main`, branch deleted) — ✅ Completed.
   - `backend/config/middlewares.ts`: `'strapi::cors'` → object form with `config.origin` allowlist: `http://localhost:4321`, the Vercel frontend URL, `https://cck.gov.ki`.

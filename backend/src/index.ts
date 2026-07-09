@@ -9,6 +9,8 @@ const PUBLIC_ACTIONS = [
   'api::commissioner.commissioner.findOne',
   // Distress beacon: unauthenticated public form submissions.
   'api::distress-beacon.distress-beacon.create',
+  // Contact form: unauthenticated public form submissions.
+  'api::contact-message.contact-message.create',
   // Careers: job listings (find) + detail page (findOne).
   'api::career.career.find',
   'api::career.career.findOne',

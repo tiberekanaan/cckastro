@@ -223,7 +223,7 @@ export interface SharedServiceItem extends Struct.ComponentSchema {
 }
 
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ComponentSchemas {
       'blocks.commissioner-profiles': BlocksCommissionerProfiles;
       'blocks.cta': BlocksCta;

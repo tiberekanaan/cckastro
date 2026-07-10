@@ -105,6 +105,7 @@ const FALLBACK_GLOBAL: GlobalSettings = {
   contactAddress: site.address,
   contactPhone: site.phone,
   contactEmail: site.email,
+  googleAnalyticsId: undefined,
   logoUrl: undefined,
   faviconUrl: undefined,
 };
@@ -132,6 +133,7 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
       contactAddress: data.contactAddress || FALLBACK_GLOBAL.contactAddress,
       contactPhone: data.contactPhone || FALLBACK_GLOBAL.contactPhone,
       contactEmail: data.contactEmail || FALLBACK_GLOBAL.contactEmail,
+      googleAnalyticsId: data.googleAnalyticsId || undefined,
       logoUrl: mediaUrl(data.logo),
       faviconUrl: mediaUrl(data.favicon),
     };

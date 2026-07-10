@@ -313,6 +313,7 @@ export interface GlobalSetting {
   contactAddress?: string | null;
   contactPhone?: string | null;
   contactEmail?: string | null;
+  googleAnalyticsId?: string | null;
   logo?: StrapiMedia | null;
   favicon?: StrapiMedia | null;
 }
@@ -325,6 +326,8 @@ export interface GlobalSettings {
   contactAddress: string;
   contactPhone: string;
   contactEmail: string;
+  /** GA4 measurement ID (e.g. G-XXXXXXX); analytics disabled when unset. */
+  googleAnalyticsId?: string;
   /** Absolute logo URL, or undefined to use the static fallback. */
   logoUrl?: string;
   /** Absolute favicon URL, or undefined to use the static fallback. */

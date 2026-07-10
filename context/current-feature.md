@@ -1,17 +1,9 @@
 #### Current Feature
 
-**Feature:** CCK Landing Page rebuild (Astro 6 frontend)
+**Feature:** _None in progress — next feature TBD._
 
 #### Status
-Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit approval + browser review.
-
-#### Goals
-- Rebuild the CCK telecom-regulator landing page in a new Astro 6 app at `frontend/`.
-- Keep the professional navy/blue brand; improve overall UI/UX.
-- Theming: semantic OKLCH tokens via `@theme` in `src/styles/global.css` (Tailwind v4, no JS config).
-- Zero-JS `.astro` components in `src/components/{layout,home,ui}`.
-- Typed, Zod-validated content layer (Content Loader API + local JSON mock), swap-ready for Strapi 5.
-- Full page: Header, Hero, Our Services, Market Insight, Latest Updates, Distress Beacon CTA, Help CTA, Footer.
+Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
 #### Strapi Dynamic Zone Wiring (added)
 - Backend: new `blocks.hero`, `blocks.services-grid`, `blocks.cta` components + `shared.service-item`; all registered in `page.content` dynamic zone.
@@ -82,7 +74,23 @@ Built — branch `feature/landing-page`. `npm run build` passes. Awaiting commit
 - Verified in browser (Playwright against local Strapi): submit → success banner + entry persisted; short-message Zod error + honeypot rejection hold; public `find` correctly 403. 3 test entries left in **local** dev DB — delete from Content Manager. `astro check` (0 errors) + `npm run build` pass clean.
 - ⚠️ Deploy note: `frontend/.env` points `STRAPI_URL` at Strapi Cloud (`brave-acoustics-674445e63c.strapiapp.com`) — the form errors ("Could not send your message") until the backend changes are deployed there (POST currently 405s). Bootstrap grants the Public create permission on cloud startup automatically.
 
+#### Email Notifications for Form Submissions (added — branch `feature/email-notifications`)
+- Backend-only. New `contact-message` lifecycle hook (`afterCreate`) — emails all submitted fields (name/email/subject/message) to **inquiry@cck.ki** with `replyTo` set to the sender.
+- `distress-beacon` lifecycle updated — keeps the applicant confirmation email, adds a second notification to **inquiry@cck.ki** (registration/beacon type, unique ID, owner details, applicant email, emergency contact).
+- Both sends are fire-and-forget `strapi.plugins['email'].services.email.send(...).catch(...)` — an email failure is logged (`strapi.log.error`) and never blocks/fails the DB create. Typed `event.result` interfaces (no `any`).
+- Adaptations vs spec: collection is `contact-message` (spec said `contact-submission`, which doesn't exist); contact form has no Phone field, so it's omitted from the email.
+- ⚠️ No email provider configured (`config/plugins.ts` empty) — local sends fail (caught + logged). On Strapi Cloud the built-in email service is used; for reliable delivery/custom sender configure a real provider (e.g. nodemailer/SendGrid) in `config/plugins.ts`.
+- Verified: `tsc --noEmit` clean; local POSTs to both collections → 201 with hooks active (creates unaffected by dead mail transport). Awaiting commit approval.
+- Next: SendGrid provider wiring (deferred — user setting up the SendGrid account). Needs: `@strapi/provider-email-sendgrid` install, `email` config in `config/plugins.ts`, `SENDGRID_API_KEY` env (backend/.env + Strapi Cloud Variables), verified sender address for `defaultFrom`.
+
 #### History
+- **Google Analytics via Partytown** (branch `feature/google-analytics`, awaiting commit approval) — ✅ Completed.
+  - Frontend: `@astrojs/partytown` installed (`npx astro add partytown`); `astro.config.mjs` passes `partytown({ config: { forward: ['dataLayer.push'] } })` so main-thread `gtag()` calls reach the web worker — gtag.js runs entirely off the main thread, preserving the Zero-JS standard.
+  - Backend: new `googleAnalyticsId` String field on the `global-setting` single type — editor pastes the GA4 measurement ID (e.g. `G-XXXXXXX`) in Content Manager → Global Setting. Schema sync requires `yarn develop` restart + republish.
+  - Frontend: `googleAnalyticsId` threaded through `GlobalSetting`/`GlobalSettings` types + `getGlobalSettings()` (`undefined` fallback = analytics disabled); `BaseLayout.astro` `<head>` conditionally renders the gtag.js loader + init snippet only when the ID exists, both `is:inline type="text/partytown"` (ID injected via `encodeURIComponent`/`JSON.stringify`).
+  - Adaptations vs spec: layout is `layouts/BaseLayout.astro` (spec said `Layout.astro`, which doesn't exist).
+  - ⚠️ CSP note: `security.csp: true` is on — Partytown injects its own inline loader snippet and `is:inline` scripts aren't auto-hashed by Astro's CSP; once a GA ID is published, verify in the browser console that the loader isn't CSP-blocked (fix would be adding its hash to `security.csp.scriptDirective.hashes`).
+  - Verified: `astro check` (0 errors) + `npm run build` pass clean; Partytown worker assets emitted to `.vercel/output/static/~partytown/`. Browser/GA-network verification pending until a measurement ID is set in Strapi.
 - **Org chart black background in dark mode** (branch `fix/org-chart-dark-mode`, merged to `main`, branch deleted) — ✅ Completed.
   - Highcharts 13 auto-themes from the page CSS `color-scheme`; visitors with OS dark mode saw a black chart canvas on `/about` (Organisation Structure).
   - Fix in `OrgChart.astro`: `[color-scheme:light]` on the chart container + explicit `chart.backgroundColor: "#ffffff"`.

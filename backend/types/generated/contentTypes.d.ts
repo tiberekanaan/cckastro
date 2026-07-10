@@ -644,6 +644,7 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     favicon: Schema.Attribute.Media<'images'>;
+    googleAnalyticsId: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

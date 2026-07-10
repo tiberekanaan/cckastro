@@ -40,6 +40,27 @@ const settings = await getGlobalSettings();
     }
     <meta name="description" content={description} />
     <title>{title}</title>
+    {
+      /* Google Analytics (gtag.js) — off the main thread via Partytown.
+         Renders only when an editor sets googleAnalyticsId in Global Setting. */
+      settings.googleAnalyticsId && (
+        <>
+          <script
+            is:inline
+            type="text/partytown"
+            src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(settings.googleAnalyticsId)}`}
+          />
+          <script
+            is:inline
+            type="text/partytown"
+            set:html={`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(settings.googleAnalyticsId)});`}
+          />
+        </>
+      )
+    }
     <ClientRouter />
   </head>
   <body class="min-h-screen bg-surface-muted text-foreground">

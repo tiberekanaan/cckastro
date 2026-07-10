@@ -26,6 +26,9 @@
     "contactEmail": {
       "type": "string"
     },
+    "googleAnalyticsId": {
+      "type": "string"
+    },
     "logo": {
       "type": "media",
       "multiple": false,

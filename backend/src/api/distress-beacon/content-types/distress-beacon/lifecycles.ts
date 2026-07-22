@@ -2,7 +2,7 @@
  * distress-beacon lifecycle hooks
  */
 
-const OFFICIALS_EMAIL = 'inquiry@cck.ki';
+const OFFICIALS_EMAIL = 'info@cck.ki';
 
 interface DistressBeaconResult {
   registrationType?: string;

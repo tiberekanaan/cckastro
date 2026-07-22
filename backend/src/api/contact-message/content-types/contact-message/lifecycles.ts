@@ -2,7 +2,7 @@
  * contact-message lifecycle hooks
  */
 
-const OFFICIALS_EMAIL = 'inquiry@cck.ki';
+const OFFICIALS_EMAIL = 'info@cck.ki';
 
 interface ContactMessageResult {
   name?: string;

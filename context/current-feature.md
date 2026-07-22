@@ -5,6 +5,14 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
+#### Resend Email Provider (added — branch `feature/resend-email-provider`)
+- Backend-only. Wires a real mail transport for the live site (Strapi Cloud) via **Resend over SMTP** using the official `@strapi/provider-email-nodemailer` provider (community Resend provider not maintained for Strapi 5).
+- `config/plugins.ts`: when `RESEND_API_KEY` is set, configures nodemailer against `smtp.resend.com:465` (user `resend`, pass = API key); `defaultFrom` from `EMAIL_FROM` (must be on a Resend-verified domain; falls back to `onboarding@resend.dev`), `defaultReplyTo` from `EMAIL_REPLY_TO` (default `info@cck.ki`). **No key → returns `{}`** so local dev keeps current behavior (sends fail, caught + logged in lifecycles).
+- Recipient change: `OFFICIALS_EMAIL` `inquiry@cck.ki` → **`info@cck.ki`** in both `contact-message` and `distress-beacon` lifecycles (user choice: both).
+- `.env.example` documents `RESEND_API_KEY` / `EMAIL_FROM` / `EMAIL_REPLY_TO`.
+- Deploy needs (Strapi Cloud → Settings → Variables): `RESEND_API_KEY` + `EMAIL_FROM` on the verified `cck.ki` domain (verify domain in Resend dashboard first).
+- `tsc --noEmit` clean; boot-tested with dummy key (provider config loads). Awaiting commit approval.
+
 #### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
 - Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).
 - URL param `network` → `operator`, validated against the fixed list (same pattern as QoS); matches `r.provider` case-insensitively before island grouping. Island typeahead + QoS filter untouched.

@@ -2,7 +2,7 @@
  * contact-message lifecycle hooks
  */
 
-const OFFICIALS_EMAIL = 'inquiry@cck.ki';
+const OFFICIALS_EMAIL = 'info@cck.ki';
 
 interface ContactMessageResult {
   name?: string;
@@ -36,5 +36,26 @@ export default {
       .catch((err: unknown) => {
         strapi.log.error('contact-message notification email failed', err);
       });
+
+    if (email) {
+      strapi.plugins['email'].services.email
+        .send({
+          to: email,
+          subject: 'We received your message — CCK',
+          text: [
+            `Dear ${name ?? 'Sir/Madam'},`,
+            '',
+            'Thank you for contacting the Communications Commission of Kiribati.',
+            'We have received your message and will get back to you as soon as possible.',
+            '',
+            `Subject: ${subject ?? '—'}`,
+            '',
+            'Communications Commission of Kiribati',
+          ].join('\n'),
+        })
+        .catch((err: unknown) => {
+          strapi.log.error('contact-message acknowledgement email failed', err);
+        });
+    }
   },
 };

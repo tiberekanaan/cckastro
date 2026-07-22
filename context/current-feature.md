@@ -5,6 +5,11 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
+#### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
+- Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).
+- URL param `network` → `operator`, validated against the fixed list (same pattern as QoS); matches `r.provider` case-insensitively before island grouping. Island typeahead + QoS filter untouched.
+- `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval + browser review.
+
 #### Strapi Dynamic Zone Wiring (added)
 - Backend: new `blocks.hero`, `blocks.services-grid`, `blocks.cta` components + `shared.service-item`; all registered in `page.content` dynamic zone.
 - Frontend: `index.astro` now SSR (`prerender = false`), native `fetch` to `/api/pages` with per-block deep populate (`populate[content][on][...]`), `__component` switch via `BlockRenderer.astro` → `src/components/blocks/*`.

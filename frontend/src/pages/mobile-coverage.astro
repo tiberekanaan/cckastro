@@ -18,9 +18,7 @@ const allRecords = rows
 const islandOptions = [...new Set(allRecords.map((r) => r.island))].sort((a, b) =>
   a.localeCompare(b),
 );
-const networkOptions = [
-  ...new Set(allRecords.map((r) => r.networkType).filter((v): v is string => !!v)),
-].sort((a, b) => a.localeCompare(b));
+const OPERATOR_OPTIONS = ["Oceanlink", "Vodafone"] as const;
 const QOS_OPTIONS = ["Good", "Average", "Poor"] as const;
 
 // --- Active filters (URL params) ---
@@ -28,16 +26,19 @@ const params = Astro.url.searchParams;
 const island = params.get("island") ?? "";
 const qosParam = params.get("qos") ?? "";
 const qos = (QOS_OPTIONS as readonly string[]).includes(qosParam) ? qosParam : "";
-const network = params.get("network") ?? "";
-const hasFilters = Boolean(island || qos || network);
+const operatorParam = params.get("operator") ?? "";
+const operator = (OPERATOR_OPTIONS as readonly string[]).includes(operatorParam)
+  ? operatorParam
+  : "";
+const hasFilters = Boolean(island || qos || operator);
 
-// QoS/network are per-provider, so filter the flat rows before grouping —
+// QoS/operator are per-provider, so filter the flat rows before grouping —
 // an island card then shows only its matching providers.
 const records = allRecords.filter(
   (r) =>
     (!island || r.island.toLowerCase().includes(island.toLowerCase())) &&
     (!qos || r.qos === qos) &&
-    (!network || r.networkType === network),
+    (!operator || (r.provider ?? "").toLowerCase() === operator.toLowerCase()),
 );
 
 /** Group provider rows under their island — one card per island, a tab per provider. */
@@ -167,18 +168,18 @@ const breakdowns = [
         </div>
 
         <div class="flex flex-col gap-1">
-          <label for="network" class="text-sm font-medium text-slate-700">
-            Network type
+          <label for="operator" class="text-sm font-medium text-slate-700">
+            Mobile Operator
           </label>
           <select
-            id="network"
-            name="network"
+            id="operator"
+            name="operator"
             class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
-            <option value="" selected={network === ""}>Any network</option>
-            {networkOptions.map((type) => (
-              <option value={type} selected={network === type}>
-                {type}
+            <option value="" selected={operator === ""}>Any operator</option>
+            {OPERATOR_OPTIONS.map((name) => (
+              <option value={name} selected={operator === name}>
+                {name}
               </option>
             ))}
           </select>
@@ -451,7 +452,7 @@ const breakdowns = [
 
 <script>
   // Live island filter — substring-match the rendered cards as the user types.
-  // QoS/network still apply via the GET form (the island value submits with it).
+  // QoS/operator still apply via the GET form (the island value submits with it).
   const input = document.getElementById("island") as HTMLInputElement | null;
   const grid = document.getElementById("island-grid");
   const empty = document.getElementById("island-empty");

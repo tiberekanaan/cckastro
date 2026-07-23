@@ -14,7 +14,7 @@
     "headerLinks": {
       "type": "component",
       "repeatable": true,
-      "component": "shared.nav-link"
+      "component": "shared.nav-item"
     },
     "footerColumns": {
       "type": "component",

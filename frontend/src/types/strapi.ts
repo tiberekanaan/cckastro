@@ -296,11 +296,22 @@ export interface FooterColumnItem {
   links: NavLinkItem[];
 }
 
+/**
+ * Header nav item (Strapi `shared.nav-item` component). With `children` it
+ * renders as a non-clickable dropdown trigger; `href` is then ignored.
+ */
+export interface NavHeaderItem {
+  id?: number;
+  label: string;
+  href?: string | null;
+  children?: NavLinkItem[] | null;
+}
+
 /** Navigation single type — editable header links + footer columns. */
 export interface Navigation {
   id: number;
   documentId: string;
-  headerLinks: NavLinkItem[];
+  headerLinks: NavHeaderItem[];
   footerColumns: FooterColumnItem[];
 }
 

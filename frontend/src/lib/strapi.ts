@@ -5,6 +5,7 @@ import type {
   StrapiBlockNode,
   Navigation,
   NavLinkItem,
+  NavHeaderItem,
   FooterColumnItem,
   GlobalSetting,
   GlobalSettings,
@@ -73,9 +74,21 @@ function normalizeNavHref(href: string): string {
 const normalizeNavLinks = (links: NavLinkItem[]): NavLinkItem[] =>
   links.map((l) => ({ ...l, href: normalizeNavHref(l.href) }));
 
+/** Normalize header items; an item with children is a dropdown and needs no own href. */
+const normalizeHeaderItems = (items: NavHeaderItem[]): NavHeaderItem[] =>
+  items.map((i) => ({
+    ...i,
+    href: i.href ? normalizeNavHref(i.href) : undefined,
+    children: i.children?.length ? normalizeNavLinks(i.children) : undefined,
+  }));
+
 /** Hard-coded fallback used when the Navigation single type is unpublished/unreachable. */
-const FALLBACK_NAV: { headerLinks: NavLinkItem[]; footerColumns: FooterColumnItem[] } = {
-  headerLinks: site.nav.map((l) => ({ label: l.label, href: l.href })),
+const FALLBACK_NAV: { headerLinks: NavHeaderItem[]; footerColumns: FooterColumnItem[] } = {
+  headerLinks: site.nav.map((l) => ({
+    label: l.label,
+    href: l.href,
+    children: l.children?.map((c) => ({ label: c.label, href: c.href })),
+  })),
   footerColumns: site.footer.columns.map((c) => ({
     heading: c.heading,
     links: c.links.map((l) => ({ label: l.label, href: l.href })),
@@ -88,12 +101,12 @@ const FALLBACK_NAV: { headerLinks: NavLinkItem[]; footerColumns: FooterColumnIte
  * entry leaves a section empty.
  */
 export async function getNavigation(): Promise<{
-  headerLinks: NavLinkItem[];
+  headerLinks: NavHeaderItem[];
   footerColumns: FooterColumnItem[];
 }> {
   try {
     const res = await fetch(
-      `${STRAPI_URL}/api/navigation?populate[headerLinks]=true&populate[footerColumns][populate]=links`,
+      `${STRAPI_URL}/api/navigation?populate[headerLinks][populate]=children&populate[footerColumns][populate]=links`,
     );
     if (!res.ok) {
       if (res.status !== 404) throw new Error(`Strapi /api/navigation → ${res.status}`);
@@ -103,7 +116,7 @@ export async function getNavigation(): Promise<{
     const data = json.data;
     return {
       headerLinks: data?.headerLinks?.length
-        ? normalizeNavLinks(data.headerLinks)
+        ? normalizeHeaderItems(data.headerLinks)
         : FALLBACK_NAV.headerLinks,
       footerColumns: data?.footerColumns?.length
         ? data.footerColumns.map((c) => ({ ...c, links: normalizeNavLinks(c.links ?? []) }))

@@ -5,6 +5,13 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
+#### Services nav dropdown (added — branch `feature/nav-dropdown`)
+- Backend: new `shared.nav-item` component (`label` required, `href` optional, `children` repeatable `shared.nav-link`); `navigation.headerLinks` switched from `shared.nav-link` to it. ⚠️ Component swap resets existing headerLinks rows — re-enter them in Content Manager after deploy (footer columns untouched); local entry confirmed reset to `[]`, footer intact.
+- Frontend: `NavHeaderItem` type; `getNavigation()` populate → `populate[headerLinks][populate]=children`, new `normalizeHeaderItems()` (parent href optional, children hrefs slash-normalized). `Header.astro` renders items with children as non-clickable dropdown trigger — desktop pure-CSS `group-hover`/`group-focus-within` menu (Zero-JS), mobile heading + indented sub-links.
+- Fallback: `site.ts` nav extracted to typed `NavItem[]` + **Services** group (Class License, Individual License, Domain Name (.ki), Type Approval, Numbering, Radiocommunication — slugs verified against live `/api/services`).
+- Deploy-order safe: cloud (old schema) 400s the new populate ("Invalid key children") → fallback nav (incl. Services dropdown) renders until backend deploys + entry republished.
+- Verified in browser (local Strapi + Astro dev): dropdown renders desktop + mobile; `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+
 #### Normalize CMS nav hrefs (added — branch `fix/normalize-nav-hrefs`)
 - Frontend-only. Live "Rules and Regulations" header tab 404'd — editor set its `href` to literal `rules and regulations` in the Navigation single type (updated 2026-07-23); most other CMS links also lacked a leading `/`, breaking them from nested routes (`news` → `/news/news`).
 - `lib/strapi.ts`: new `normalizeNavHref()` — trims, passes through `http(s):`/`mailto:`/`tel:`/`#`, prepends `/` to internal paths (empty → `/`); applied in `getNavigation()` to `headerLinks` + every `footerColumns[].links` (`?? []` guard). Fallback `site.ts` nav untouched.

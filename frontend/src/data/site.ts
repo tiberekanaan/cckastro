@@ -8,6 +8,32 @@ export interface NavLink {
   href: string;
 }
 
+/** Header nav entry: a plain link, or a non-clickable dropdown when `children` is set. */
+export interface NavItem {
+  label: string;
+  href?: string;
+  children?: NavLink[];
+}
+
+const nav: NavItem[] = [
+  { label: "About Us", href: "/about" },
+  { label: "Universal Access", href: "/universal-access" },
+  {
+    label: "Services",
+    children: [
+      { label: "Class License", href: "/services/class-license" },
+      { label: "Individual License", href: "/services/individual-license" },
+      { label: "Domain Name (.ki)", href: "/services/domain-name" },
+      { label: "Type Approval", href: "/services/type-approval" },
+      { label: "Numbering", href: "/services/numbering" },
+      { label: "Radiocommunication", href: "/services/radiocommunication" },
+    ],
+  },
+  { label: "Tenders", href: "/tenders" },
+  { label: "Resources", href: "/resources" },
+  { label: "News", href: "/news" },
+];
+
 export const site = {
   name: "Communications Commission of Kiribati",
   shortName: "CCK",
@@ -15,13 +41,7 @@ export const site = {
   email: "info@cck.gov.ki",
   phone: "+686 7501 0000",
   address: "Bairiki, Tarawa, Kiribati",
-  nav: [
-    { label: "About Us", href: "/about" },
-    { label: "Universal Access", href: "/universal-access" },
-    { label: "Tenders", href: "/tenders" },
-    { label: "Resources", href: "/resources" },
-    { label: "News", href: "/news" },
-  ] satisfies NavLink[],
+  nav,
   hero: {
     eyebrow: "National Telecommunications Regulator",
     title: "Regulating Kiribati's telecommunication market",

@@ -5,14 +5,6 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
-#### Resend Email Provider (added — branch `feature/resend-email-provider`)
-- Backend-only. Wires a real mail transport for the live site (Strapi Cloud) via **Resend over SMTP** using the official `@strapi/provider-email-nodemailer` provider (community Resend provider not maintained for Strapi 5).
-- `config/plugins.ts`: when `RESEND_API_KEY` is set, configures nodemailer against `smtp.resend.com:465` (user `resend`, pass = API key); `defaultFrom` from `EMAIL_FROM` (must be on a Resend-verified domain; falls back to `onboarding@resend.dev`), `defaultReplyTo` from `EMAIL_REPLY_TO` (default `info@cck.ki`). **No key → returns `{}`** so local dev keeps current behavior (sends fail, caught + logged in lifecycles).
-- Recipient change: `OFFICIALS_EMAIL` `inquiry@cck.ki` → **`info@cck.ki`** in both `contact-message` and `distress-beacon` lifecycles (user choice: both).
-- `.env.example` documents `RESEND_API_KEY` / `EMAIL_FROM` / `EMAIL_REPLY_TO`.
-- Deploy needs (Strapi Cloud → Settings → Variables): `RESEND_API_KEY` + `EMAIL_FROM` on the verified `cck.ki` domain (verify domain in Resend dashboard first).
-- `tsc --noEmit` clean; boot-tested with dummy key (provider config loads). Awaiting commit approval.
-
 #### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
 - Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).
 - URL param `network` → `operator`, validated against the fixed list (same pattern as QoS); matches `r.provider` case-insensitively before island grouping. Island typeahead + QoS filter untouched.
@@ -97,6 +89,12 @@ Last completed: Google Analytics via Partytown (see History). `feature/email-not
 - Next: SendGrid provider wiring (deferred — user setting up the SendGrid account). Needs: `@strapi/provider-email-sendgrid` install, `email` config in `config/plugins.ts`, `SENDGRID_API_KEY` env (backend/.env + Strapi Cloud Variables), verified sender address for `defaultFrom`.
 
 #### History
+- **Resend Email Provider + info@cck.ki recipient** (branch `feature/resend-email-provider`, merged to `main`, branch deleted) — ✅ Completed.
+  - Backend-only. Live mail transport via **Resend over SMTP** using official `@strapi/provider-email-nodemailer`: `config/plugins.ts` configures `smtp.resend.com:465` (user `resend`, pass = `RESEND_API_KEY`), `defaultFrom` = `EMAIL_FROM` (must be on the Resend-verified `cck.ki` domain; fallback `onboarding@resend.dev`), `defaultReplyTo` = `EMAIL_REPLY_TO` (default `info@cck.ki`). **No `RESEND_API_KEY` → returns `{}`**, so local dev keeps failing-silently behavior.
+  - `OFFICIALS_EMAIL` `inquiry@cck.ki` → **`info@cck.ki`** in both `contact-message` + `distress-beacon` lifecycles.
+  - New: contact form now also sends an **acknowledgement email to the submitter** ("We received your message — CCK"), fire-and-forget like the rest.
+  - `.env.example` documents `RESEND_API_KEY`/`EMAIL_FROM`/`EMAIL_REPLY_TO`. User has set Resend up (domain verified, API key + `EMAIL_FROM=noreply@cck.ki` in Strapi Cloud Variables).
+  - Verified: `tsc --noEmit` clean; boot-tested locally with dummy key (provider config loads, Strapi starts). Live end-to-end send pending user's post-deploy form test.
 - **Google Analytics via Partytown** (branch `feature/google-analytics`, awaiting commit approval) — ✅ Completed.
   - Frontend: `@astrojs/partytown` installed (`npx astro add partytown`); `astro.config.mjs` passes `partytown({ config: { forward: ['dataLayer.push'] } })` so main-thread `gtag()` calls reach the web worker — gtag.js runs entirely off the main thread, preserving the Zero-JS standard.
   - Backend: new `googleAnalyticsId` String field on the `global-setting` single type — editor pastes the GA4 measurement ID (e.g. `G-XXXXXXX`) in Content Manager → Global Setting. Schema sync requires `yarn develop` restart + republish.

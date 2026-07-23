@@ -89,6 +89,9 @@ Last completed: Google Analytics via Partytown (see History). `feature/email-not
 - Next: SendGrid provider wiring (deferred — user setting up the SendGrid account). Needs: `@strapi/provider-email-sendgrid` install, `email` config in `config/plugins.ts`, `SENDGRID_API_KEY` env (backend/.env + Strapi Cloud Variables), verified sender address for `defaultFrom`.
 
 #### History
+- **Resources media URL fix** (branch `fix/resources-media-url`, merged to `main`, branch deleted) — ✅ Completed.
+  - `resources/index.astro` prepended `STRAPI_URL` to `doc.file.url` unconditionally — broke View/Download on Strapi Cloud, where media is served absolute from a separate `media.strapiapp.com` host (mangled double-domain links). Now uses the existing `mediaUrl()` helper (handles relative + absolute).
+  - Only offender — all other pages already use `mediaUrl()`. Verified live hrefs against Strapi Cloud; `astro check` (0 errors) + `npm run build` pass clean.
 - **Resend Email Provider + info@cck.ki recipient** (branch `feature/resend-email-provider`, merged to `main`, branch deleted) — ✅ Completed.
   - Backend-only. Live mail transport via **Resend over SMTP** using official `@strapi/provider-email-nodemailer`: `config/plugins.ts` configures `smtp.resend.com:465` (user `resend`, pass = `RESEND_API_KEY`), `defaultFrom` = `EMAIL_FROM` (must be on the Resend-verified `cck.ki` domain; fallback `onboarding@resend.dev`), `defaultReplyTo` = `EMAIL_REPLY_TO` (default `info@cck.ki`). **No `RESEND_API_KEY` → returns `{}`**, so local dev keeps failing-silently behavior.
   - `OFFICIALS_EMAIL` `inquiry@cck.ki` → **`info@cck.ki`** in both `contact-message` + `distress-beacon` lifecycles.

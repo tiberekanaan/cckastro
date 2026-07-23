@@ -5,6 +5,12 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
+#### Normalize CMS nav hrefs (added — branch `fix/normalize-nav-hrefs`)
+- Frontend-only. Live "Rules and Regulations" header tab 404'd — editor set its `href` to literal `rules and regulations` in the Navigation single type (updated 2026-07-23); most other CMS links also lacked a leading `/`, breaking them from nested routes (`news` → `/news/news`).
+- `lib/strapi.ts`: new `normalizeNavHref()` — trims, passes through `http(s):`/`mailto:`/`tel:`/`#`, prepends `/` to internal paths (empty → `/`); applied in `getNavigation()` to `headerLinks` + every `footerColumns[].links` (`?? []` guard). Fallback `site.ts` nav untouched.
+- ⚠️ Content fix still required in Strapi Cloud → Navigation: "Rules and Regulations" href must be `/resources` (code can't guess intent — it now yields `/rules and regulations`, still 404). Footer `class-license`/`radiocommunication` point at nonexistent top-level routes — confirm intended targets with client.
+- Verified: `astro check` (0 errors) + `npm run build` pass clean; dev server against live Strapi Cloud shows all nav hrefs slash-prefixed on nested routes. Awaiting commit approval.
+
 #### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
 - Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).
 - URL param `network` → `operator`, validated against the fixed list (same pattern as QoS); matches `r.provider` case-insensitively before island grouping. Island typeahead + QoS filter untouched.

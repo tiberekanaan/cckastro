@@ -58,6 +58,21 @@ export async function softFetchStrapi<T = unknown>(path: string): Promise<T[]> {
   }
 }
 
+/**
+ * Normalize an editor-entered nav href: external/protocol links and in-page
+ * anchors pass through; internal paths get a leading `/` so they resolve the
+ * same from every page (a bare `news` would otherwise break on nested routes).
+ */
+function normalizeNavHref(href: string): string {
+  const trimmed = href.trim();
+  if (trimmed === "") return "/";
+  if (/^(https?:|mailto:|tel:|#)/i.test(trimmed)) return trimmed;
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+const normalizeNavLinks = (links: NavLinkItem[]): NavLinkItem[] =>
+  links.map((l) => ({ ...l, href: normalizeNavHref(l.href) }));
+
 /** Hard-coded fallback used when the Navigation single type is unpublished/unreachable. */
 const FALLBACK_NAV: { headerLinks: NavLinkItem[]; footerColumns: FooterColumnItem[] } = {
   headerLinks: site.nav.map((l) => ({ label: l.label, href: l.href })),
@@ -87,9 +102,11 @@ export async function getNavigation(): Promise<{
     const json: { data: Navigation | null } = await res.json();
     const data = json.data;
     return {
-      headerLinks: data?.headerLinks?.length ? data.headerLinks : FALLBACK_NAV.headerLinks,
+      headerLinks: data?.headerLinks?.length
+        ? normalizeNavLinks(data.headerLinks)
+        : FALLBACK_NAV.headerLinks,
       footerColumns: data?.footerColumns?.length
-        ? data.footerColumns
+        ? data.footerColumns.map((c) => ({ ...c, links: normalizeNavLinks(c.links ?? []) }))
         : FALLBACK_NAV.footerColumns,
     };
   } catch (err) {

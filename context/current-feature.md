@@ -33,6 +33,14 @@ Last completed: Google Analytics via Partytown (see History). `feature/email-not
 - Permissions: `api::uaf-page.uaf-page.find` added to bootstrap `PUBLIC_ACTIONS` (`backend/src/index.ts`) — was missing (local `/api/uaf-page` 403'd; cloud had been granted by hand).
 - `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Verified against local Strapi: schema synced, `/api/projects` exposes `projectStatus`, `/api/uaf-page` → 200. Editor fills UAF Page → `projectsIntro` + each Project → `projectStatus` on Strapi Cloud after deploy.
 
+#### UAF page sectioned layout (added — branch `style/uaf-page-layout`)
+- Frontend-only restyle of `universal-access.astro` — the long `description` Markdown is split on `## ` headings and each section rendered by **content shape** (not heading name, so CMS edits survive): all-bullets → 2-col green-check list; `1.` ordered list or lone-number+title+text pseudo-lists → white cards with ghost serif numerals (3 cards → `lg:grid-cols-3`, else 2-col); everything else → prose (first section gets a lead paragraph).
+- Zero-JS "On this page" TOC (shown when ≥3 headed sections): sticky left sidebar on `lg`, wrap chips on mobile; anchor ids slugified from headings + `#projects`; `scroll-mt-28` offsets the sticky navbar.
+- Projects intro block + status-pill grid unchanged, still full-width at the end (per user). Fallback-safe: description without `##` headings renders as plain prose, no TOC.
+- Hover polish (user request): numbered cards lift (`-translate-y-1` + shadow + accent border tint, ghost numeral → accent); sidebar TOC links nudge right + accent color.
+- Live project filter (user request): status chips (All / Currently Implemented / Completed, `aria-pressed` styling) + search input filter cards client-side via small vanilla `<script>` — no reload (same pattern as mobile-coverage typeahead). Cards carry `data-status`/`data-search` (title+excerpt, lowercased); entrance animation frozen on first interaction so re-shown cards don't re-reveal; "No matching projects" empty state toggled. Grid now `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4` (gap-6).
+- Verified against live Strapi Cloud content via dev server: 5 sections (`overview`…`benefits-to-communities`), 16 check items, 3 step + 4 objective cards, both TOC navs; filter controls + data attrs render (live projects already have statuses set on cloud). `astro check` (0 errors) + `npm run build` pass clean. Awaiting browser review + commit approval.
+
 #### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
 - Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).
 - URL param `network` → `operator`, validated against the fixed list (same pattern as QoS); matches `r.provider` case-insensitively before island grouping. Island typeahead + QoS filter untouched.

@@ -1,0 +1,492 @@
+---
+/**
+ * Command-palette site search. Opened by any `[data-search-open]` button
+ * (see Header). All listeners are document-delegated so they survive
+ * ClientRouter DOM swaps without re-binding.
+ */
+const quickLinks = [
+  { label: "Resources library", href: "/resources" },
+  { label: "News & announcements", href: "/news" },
+  { label: "Mobile coverage", href: "/mobile-coverage" },
+  { label: "Register a distress beacon", href: "/distress-beacon" },
+  { label: "Contact the Commission", href: "/contact" },
+];
+---
+
+<div
+  id="search-overlay"
+  class="fixed inset-0 z-50 hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Site search"
+>
+  <div
+    data-search-backdrop
+    class="absolute inset-0 bg-[oklch(0.17_0.045_263/0.55)] opacity-0 backdrop-blur-md transition-opacity duration-300"
+  >
+  </div>
+
+  <div
+    data-search-panel
+    class="relative mx-auto mt-[10vh] w-[calc(100%-2rem)] max-w-2xl -translate-y-6 scale-[0.97] opacity-0 transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none sm:mt-[14vh]"
+  >
+    <div
+      class="overflow-hidden rounded-panel bg-surface/95 shadow-lift ring-1 ring-primary/15 backdrop-blur-xl"
+    >
+      <!-- Brand thread: the logo's blue→green duo as the panel's top edge. -->
+      <div class="h-0.5 bg-gradient-to-r from-primary via-primary to-accent">
+      </div>
+
+      <form
+        role="search"
+        class="group flex items-center gap-3.5 border-b border-border/70 px-5 py-4"
+        autocomplete="off"
+        onsubmit="return false"
+      >
+        <svg
+          class="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-focus-within:text-primary"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          id="site-search-input"
+          type="search"
+          name="q"
+          placeholder="Search pages, services, news…"
+          aria-label="Search the site"
+          class="w-full bg-transparent text-base font-medium text-foreground outline-none placeholder:font-normal placeholder:text-muted-foreground/70 sm:text-lg [&::-webkit-search-cancel-button]:hidden"
+        />
+        <button
+          type="button"
+          data-search-close
+          aria-label="Close search"
+          class="hidden shrink-0 rounded-lg border border-border bg-surface-muted px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground sm:block"
+        >
+          Esc
+        </button>
+        <button
+          type="button"
+          data-search-close
+          aria-label="Close search"
+          class="shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground sm:hidden"
+        >
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+      </form>
+
+      <div
+        id="search-results"
+        class="max-h-[55vh] overflow-y-auto overscroll-contain p-2.5"
+        aria-live="polite"
+      >
+        <p
+          class="px-3 pb-1.5 pt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground"
+        >
+          Quick links
+        </p>
+        <ul class="flex flex-col">
+          {
+            quickLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  data-result
+                  class="group/row relative flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 transition-colors hover:bg-primary/[0.05] data-[selected]:bg-primary/[0.05]"
+                >
+                  <span class="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent opacity-0 transition-opacity group-hover/row:opacity-100 group-data-[selected]/row:opacity-100" />
+                  <span class="text-sm font-medium text-foreground/85">
+                    {link.label}
+                  </span>
+                  <svg
+                    class="h-4 w-4 text-muted-foreground/50 transition-transform group-hover/row:translate-x-0.5 group-hover/row:text-accent"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div
+        class="hidden items-center gap-5 border-t border-border/70 bg-surface-muted/60 px-5 py-2.5 text-[11px] text-muted-foreground sm:flex"
+      >
+        <span class="flex items-center gap-1.5">
+          <kbd
+            class="rounded-md border border-border bg-surface px-1.5 py-0.5 font-sans text-[10px]"
+            >↑</kbd
+          >
+          <kbd
+            class="rounded-md border border-border bg-surface px-1.5 py-0.5 font-sans text-[10px]"
+            >↓</kbd
+          >
+          Navigate
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd
+            class="rounded-md border border-border bg-surface px-1.5 py-0.5 font-sans text-[10px]"
+            >↵</kbd
+          >
+          Open
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd
+            class="rounded-md border border-border bg-surface px-1.5 py-0.5 font-sans text-[10px]"
+            >Esc</kbd
+          >
+          Close
+        </span>
+        <span class="ml-auto flex items-center gap-1.5">
+          <kbd
+            class="rounded-md border border-border bg-surface px-1.5 py-0.5 font-sans text-[10px]"
+            >⌘K</kbd
+          >
+          Search anywhere
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* The panel itself is the field — the global :focus-visible ring (unlayered,
+     so it beats utility classes) would draw a box inside it. */
+  #site-search-input:focus-visible {
+    outline: none;
+  }
+
+  @keyframes search-pop {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import type { SearchResponse, SearchResult } from "../../types/search";
+
+  const DEBOUNCE_MS = 250;
+  const MIN_CHARS = 2;
+
+  /** Category dot color: informational → blue, offerings → green. */
+  const CATEGORY_DOT: Record<string, string> = {
+    Page: "bg-primary",
+    News: "bg-primary",
+    Service: "bg-accent",
+    Project: "bg-accent",
+    Career: "bg-accent",
+    Commissioner: "bg-secondary",
+    Document: "bg-slate-400",
+  };
+
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  let controller: AbortController | undefined;
+  let hideTimer: ReturnType<typeof setTimeout> | undefined;
+  let idleHTML: string | undefined;
+  let selected = -1;
+
+  const overlay = () => document.getElementById("search-overlay");
+  const input = () =>
+    document.getElementById("site-search-input") as HTMLInputElement | null;
+  const resultsBox = () => document.getElementById("search-results");
+
+  const isOpen = () => {
+    const el = overlay();
+    return !!el && !el.classList.contains("hidden");
+  };
+
+  // The server renders the idle "Quick links" state; snapshot it so clearing
+  // the query can restore it. Re-captured on every ClientRouter navigation.
+  const captureIdle = () => {
+    const box = resultsBox();
+    if (box) idleHTML = box.innerHTML;
+  };
+  document.addEventListener("astro:page-load", captureIdle);
+
+  function setSelected(index: number) {
+    const box = resultsBox();
+    if (!box) return;
+    const rows = box.querySelectorAll<HTMLAnchorElement>("a[data-result]");
+    if (!rows.length) return;
+    selected = ((index % rows.length) + rows.length) % rows.length;
+    rows.forEach((row, i) => {
+      if (i === selected) {
+        row.setAttribute("data-selected", "");
+        row.scrollIntoView({ block: "nearest" });
+      } else {
+        row.removeAttribute("data-selected");
+      }
+    });
+  }
+
+  function showIdle() {
+    const box = resultsBox();
+    if (!box) return;
+    selected = -1;
+    if (idleHTML) box.innerHTML = idleHTML;
+  }
+
+  function sectionLabel(text: string): HTMLElement {
+    const p = document.createElement("p");
+    p.className =
+      "px-3 pb-1.5 pt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground";
+    p.textContent = text;
+    return p;
+  }
+
+  function showSkeleton() {
+    const box = resultsBox();
+    if (!box) return;
+    selected = -1;
+    box.replaceChildren(sectionLabel("Searching"));
+    for (const width of ["w-2/5", "w-3/5", "w-1/2"]) {
+      const row = document.createElement("div");
+      row.className = "flex flex-col gap-2 px-3.5 py-3";
+      const line = document.createElement("div");
+      line.className = `h-3.5 animate-pulse rounded-full bg-surface-muted ${width}`;
+      const sub = document.createElement("div");
+      sub.className = "h-2.5 w-4/5 animate-pulse rounded-full bg-surface-muted/70";
+      row.append(line, sub);
+      box.append(row);
+    }
+  }
+
+  function showEmpty(query: string) {
+    const box = resultsBox();
+    if (!box) return;
+    selected = -1;
+    const wrap = document.createElement("div");
+    wrap.className = "px-4 py-12 text-center";
+    const title = document.createElement("p");
+    title.className = "font-serif text-lg text-foreground";
+    title.textContent = `No matches for “${query}”`;
+    const hint = document.createElement("p");
+    hint.className = "mt-1.5 text-sm text-muted-foreground";
+    hint.textContent = "Try “license”, “coverage” or “tender”.";
+    wrap.append(title, hint);
+    box.replaceChildren(wrap);
+  }
+
+  function showError() {
+    const box = resultsBox();
+    if (!box) return;
+    selected = -1;
+    const p = document.createElement("p");
+    p.className = "px-4 py-12 text-center text-sm text-muted-foreground";
+    p.textContent = "Search is unavailable right now. Please try again.";
+    box.replaceChildren(p);
+  }
+
+  /** Append `text` with case-insensitive occurrences of `query` accented. */
+  function appendHighlighted(parent: HTMLElement, text: string, query: string) {
+    const lower = text.toLowerCase();
+    const q = query.toLowerCase();
+    let from = 0;
+    for (let at = lower.indexOf(q); at !== -1; at = lower.indexOf(q, from)) {
+      parent.append(document.createTextNode(text.slice(from, at)));
+      const mark = document.createElement("mark");
+      mark.className =
+        "bg-transparent font-semibold text-accent underline decoration-accent/30 decoration-2 underline-offset-2";
+      mark.textContent = text.slice(at, at + q.length);
+      parent.append(mark);
+      from = at + q.length;
+    }
+    parent.append(document.createTextNode(text.slice(from)));
+  }
+
+  function renderResults(results: SearchResult[], query: string) {
+    const box = resultsBox();
+    if (!box) return;
+    selected = -1;
+    if (!results.length) {
+      showEmpty(query);
+      return;
+    }
+    const label = sectionLabel(
+      `${results.length} result${results.length === 1 ? "" : "s"}`,
+    );
+    const list = document.createElement("ul");
+    list.className = "flex flex-col";
+    list.setAttribute("role", "listbox");
+    results.forEach((result, i) => {
+      const item = document.createElement("li");
+      item.className = "motion-reduce:animate-none";
+      item.style.animation = "search-pop 0.25s both";
+      item.style.animationDelay = `${Math.min(i * 30, 240)}ms`;
+      const link = document.createElement("a");
+      link.href = result.url;
+      link.dataset.result = "";
+      link.setAttribute("role", "option");
+      link.className =
+        "group/row relative block rounded-xl px-3.5 py-2.5 transition-colors hover:bg-primary/[0.05] data-[selected]:bg-primary/[0.05]";
+
+      const bar = document.createElement("span");
+      bar.className =
+        "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent opacity-0 transition-opacity group-hover/row:opacity-100 group-data-[selected]/row:opacity-100";
+      link.append(bar);
+
+      const top = document.createElement("div");
+      top.className = "flex items-baseline justify-between gap-3";
+      const title = document.createElement("span");
+      title.className = "text-[15px] font-semibold text-foreground";
+      appendHighlighted(title, result.title, query);
+      const badge = document.createElement("span");
+      badge.className =
+        "flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground";
+      const dot = document.createElement("span");
+      dot.className = `h-1.5 w-1.5 rounded-full ${CATEGORY_DOT[result.category] ?? "bg-slate-400"}`;
+      badge.append(dot, document.createTextNode(result.category));
+      top.append(title, badge);
+      link.append(top);
+
+      if (result.excerpt) {
+        const excerpt = document.createElement("p");
+        excerpt.className =
+          "mt-0.5 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground";
+        appendHighlighted(excerpt, result.excerpt, query);
+        link.append(excerpt);
+      }
+      item.append(link);
+      list.append(item);
+    });
+    box.replaceChildren(label, list);
+  }
+
+  async function runSearch(query: string) {
+    controller?.abort();
+    controller = new AbortController();
+    try {
+      const res = await fetch(`/api/search.json?q=${encodeURIComponent(query)}`, {
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`search → ${res.status}`);
+      const data: SearchResponse = await res.json();
+      renderResults(data.results, query);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      showError();
+    }
+  }
+
+  function openOverlay() {
+    const el = overlay();
+    if (!el) return;
+    if (!idleHTML) captureIdle();
+    clearTimeout(hideTimer);
+    el.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+    // Forced reflow between unhide and class removal so the entry transition
+    // animates (synchronous — rAF is throttled in occluded windows).
+    void el.getBoundingClientRect();
+    el.querySelector("[data-search-backdrop]")?.classList.remove("opacity-0");
+    el
+      .querySelector("[data-search-panel]")
+      ?.classList.remove("opacity-0", "-translate-y-6", "scale-[0.97]");
+    const field = input();
+    field?.focus();
+    field?.select();
+  }
+
+  function closeOverlay() {
+    const el = overlay();
+    if (!el || el.classList.contains("hidden")) return;
+    el.querySelector("[data-search-backdrop]")?.classList.add("opacity-0");
+    el
+      .querySelector("[data-search-panel]")
+      ?.classList.add("opacity-0", "-translate-y-6", "scale-[0.97]");
+    document.body.classList.remove("overflow-hidden");
+    hideTimer = setTimeout(() => el.classList.add("hidden"), 300);
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest("[data-search-open]")) {
+      openOverlay();
+      return;
+    }
+    if (
+      target.closest("[data-search-close]") ||
+      target.closest("[data-search-backdrop]")
+    ) {
+      closeOverlay();
+      return;
+    }
+    // Result links: let navigation happen, then close so a ClientRouter
+    // transition doesn't leave the overlay up.
+    if (target.closest("#search-results a")) closeOverlay();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      isOpen() ? closeOverlay() : openOverlay();
+      return;
+    }
+    if (!isOpen()) return;
+    if (event.key === "Escape") {
+      closeOverlay();
+      return;
+    }
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      setSelected(selected + (event.key === "ArrowDown" ? 1 : -1));
+      return;
+    }
+    if (event.key === "Enter") {
+      const rows = resultsBox()?.querySelectorAll<HTMLAnchorElement>(
+        "a[data-result]",
+      );
+      const row = rows?.[selected >= 0 ? selected : 0];
+      if (row) {
+        event.preventDefault();
+        row.click();
+      }
+    }
+  });
+
+  document.addEventListener("input", (event) => {
+    const field = event.target as HTMLElement;
+    if (field.id !== "site-search-input") return;
+    const query = (field as HTMLInputElement).value.trim();
+    clearTimeout(debounceTimer);
+    controller?.abort();
+    if (query.length < MIN_CHARS) {
+      showIdle();
+      return;
+    }
+    showSkeleton();
+    debounceTimer = setTimeout(() => runSearch(query), DEBOUNCE_MS);
+  });
+</script>

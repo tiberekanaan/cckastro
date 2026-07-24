@@ -5,6 +5,11 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
+#### Footer logo restyle (merged to `main`, pushed, branch deleted) — ✅ Completed
+- Frontend-only, `Footer.astro`: white circular chip removed; logo enlarged 36px → 176px (`h-44 w-44 object-contain`, `alt` = site short name) and now stands alone in the first column — CCK wordmark, siteName, and the address/email/phone block removed per user (matches reference screenshot; contact details remain on `/contact` + bottom bar copyright unchanged).
+- Monochrome-until-hover (per user screenshot): `grayscale opacity-60` at rest so the coat of arms blends into the navy footer, `hover:grayscale-0 hover:opacity-100` with `transition-all duration-300` reveals full color.
+- Verified in browser (dev server): large desaturated standalone logo on navy, hover restores full red/gold color. `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-07-25; Vercel auto-deploys.
+
 #### Editable footer logo / coat of arms (added — branch `feature/footer-logo`)
 - Backend: `global-setting` single type gains `footerLogo` single-image media field (schema sync = `yarn develop` restart + republish).
 - Frontend: `footerLogoUrl` threaded through `GlobalSetting`/`GlobalSettings` + `getGlobalSettings()`; populate switched from explicit key list to `populate=*` so the fetch stays valid against a cloud backend that predates `footerLogo` (explicit unknown key would 400 → all Global Settings would fall back). `Footer.astro` renders `footerLogoUrl ?? /coat-of-arms-kiribati.svg` — new fallback asset `frontend/public/coat-of-arms-kiribati.svg` (Kiribati coat of arms, from user). Header logo untouched.

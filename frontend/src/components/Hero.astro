@@ -20,7 +20,7 @@ const hasImage = Boolean(img && width && height);
 <section
   class:list={[
     "relative isolate overflow-hidden",
-    hasImage ? "bg-primary" : "bg-gradient-to-br from-primary to-accent",
+    hasImage ? "bg-neutral-900" : "bg-gradient-to-br from-primary to-accent",
   ]}
 >
   {
@@ -36,7 +36,7 @@ const hasImage = Boolean(img && width && height);
           class="absolute inset-0 -z-10 h-full w-full object-cover"
         />
         {/* Contrast overlay for legible text over the photo. */}
-        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-primary/95 via-primary/75 to-primary/35" />
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
       </>
     )
   }

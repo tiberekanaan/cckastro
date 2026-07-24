@@ -2,27 +2,27 @@
 
 /* Tailwind v4 CSS-first config. No tailwind.config.* file.
    Semantic OKLCH tokens extracted from the CCK logo
-   (green #004722, blue #21428a, red #d2232a). */
+   (blue #21428a = primary, green #004722 = accent, red #d2232a = danger). */
 @theme {
   /* Brand */
-  --color-primary: oklch(0.349 0.09 152.9); /* logo green */
-  --color-primary-hover: oklch(0.3 0.09 152.9);
-  --color-primary-foreground: oklch(0.98 0.01 153);
+  --color-primary: oklch(0.41 0.13 263); /* logo blue */
+  --color-primary-hover: oklch(0.35 0.13 263);
+  --color-primary-foreground: oklch(0.985 0.005 263);
 
-  --color-accent: oklch(0.43 0.135 263); /* logo blue, brightened for CTAs */
-  --color-accent-hover: oklch(0.37 0.135 263);
-  --color-accent-foreground: oklch(0.99 0.005 263);
+  --color-accent: oklch(0.42 0.105 153); /* logo green, brightened for CTAs */
+  --color-accent-hover: oklch(0.36 0.105 153);
+  --color-accent-foreground: oklch(0.98 0.01 153);
 
-  --color-secondary: oklch(0.5 0.1 158); /* lighter green for icon chips */
+  --color-secondary: oklch(0.58 0.105 153); /* lighter green for icon chips */
   --color-danger: oklch(0.557 0.208 25.8); /* logo red — distress */
 
   /* Surfaces & text */
   --color-surface: oklch(1 0 0);
-  --color-surface-muted: oklch(0.975 0.008 160); /* soft green-grey page bg */
-  --color-foreground: oklch(0.23 0.02 160);
-  --color-muted-foreground: oklch(0.53 0.02 160);
-  --color-border: oklch(0.91 0.008 160);
-  --color-ring: oklch(0.43 0.135 263);
+  --color-surface-muted: oklch(0.975 0.006 255); /* soft blue-grey page bg */
+  --color-foreground: oklch(0.23 0.015 260);
+  --color-muted-foreground: oklch(0.53 0.02 260);
+  --color-border: oklch(0.91 0.008 255);
+  --color-ring: oklch(0.41 0.13 263);
 
   /* Typography */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
@@ -33,10 +33,10 @@
   --radius-panel: 1.5rem;
 
   /* Soft elevation */
-  --shadow-soft: 0 1px 2px oklch(0.23 0.02 160 / 0.04),
-    0 8px 24px oklch(0.23 0.02 160 / 0.06);
-  --shadow-lift: 0 4px 12px oklch(0.23 0.02 160 / 0.08),
-    0 16px 40px oklch(0.23 0.02 160 / 0.1);
+  --shadow-soft: 0 1px 2px oklch(0.23 0.015 260 / 0.04),
+    0 8px 24px oklch(0.23 0.015 260 / 0.06);
+  --shadow-lift: 0 4px 12px oklch(0.23 0.015 260 / 0.08),
+    0 16px 40px oklch(0.23 0.015 260 / 0.1);
 }
 
 html {

@@ -35,7 +35,7 @@ const titleParts =
             {titleParts ? (
               <>
                 {titleParts.before}
-                <span class="text-accent">{titleParts.match}</span>
+                <span class="text-primary">{titleParts.match}</span>
                 {titleParts.after}
               </>
             ) : (
@@ -60,7 +60,7 @@ const titleParts =
         block.buttonText && block.buttonLink && (
           <a
             href={block.buttonLink}
-            class="mt-7 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+            class="mt-7 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
           >
             {block.buttonText}
           </a>

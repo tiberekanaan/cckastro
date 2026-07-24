@@ -41,3 +41,8 @@ When generating or modifying backend code, adhere to the following Strapi 5 stan
 *   **CONCISE LOGIC:** Explain architectural decisions in bullet points of under 10 words.
 *   **DRY RUN FIRST:** If a task requires structural changes, outline the plan in 3 bullet points and wait for my confirmation before writing code [17].
 *   **ACKNOWLEDGE:** Acknowledge with "Ready." and nothing else.
+
+#### Strapi Cloud & Vercel 
+*   **STRAPI CLOUD:** The live site backend is now hosted on Strapi Cloud
+*   **Vercel:** The live site frontend Astro is now hosted on Vercel
+*   **Github:** Both STRAPI CLOUD and Vercel pull updates from github repo connected to the local repo

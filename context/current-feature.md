@@ -37,11 +37,11 @@ Last completed: Google Analytics via Partytown (see History). `feature/email-not
 - ⚠️ Content fix still required in Strapi Cloud → Navigation: "Rules and Regulations" href must be `/resources` (code can't guess intent — it now yields `/rules and regulations`, still 404). Footer `class-license`/`radiocommunication` point at nonexistent top-level routes — confirm intended targets with client.
 - Verified: `astro check` (0 errors) + `npm run build` pass clean; dev server against live Strapi Cloud shows all nav hrefs slash-prefixed on nested routes. Merged + deployed 2026-07-24.
 
-#### Remove legacy Resource collection (added — branch `chore/remove-legacy-resource`)
+#### Remove legacy Resource collection (merged to `main`, pushed, branch deleted) — ✅ Completed
 - Backend-only. Deleted `backend/src/api/resource/` (schema + router/controller/service) — the legacy collection overlapped **Official Document** (which powers `/resources`) and caused a mix-up: an editor added "Radiocommunications Rule 2026" to Resource and it never appeared on the live site.
 - Entry was recreated under Official Document on Strapi Cloud (verified live via API) before deletion; no bootstrap permission, seed data, frontend type, or fetch referenced the legacy collection.
 - Note: the 4 legacy Resource rows stay orphaned in the DB (Strapi never drops tables on schema removal) but disappear from Content Manager after deploy.
-- Verified: `tsc --noEmit` clean; local Strapi boots clean, `/api/resources` → 404, `/api/official-documents` → 200. Awaiting commit approval.
+- Verified: `tsc --noEmit` clean; local Strapi boots clean, `/api/resources` → 404, `/api/official-documents` → 200. Merged + pushed 2026-07-25; Strapi Cloud auto-deploys.
 
 #### UAF projects intro + status (added — branch `feature/uaf-projects-status`)
 - Backend: `uaf-page` single type gains `projectsIntro` richtext (editable copy rendered right above the projects grid); `project` collection gains `projectStatus` enum (`Completed` / `Currently Implemented`), optional.

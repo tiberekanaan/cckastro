@@ -331,6 +331,7 @@ export interface GlobalSetting {
   googleAnalyticsId?: string | null;
   logo?: StrapiMedia | null;
   favicon?: StrapiMedia | null;
+  footerLogo?: StrapiMedia | null;
 }
 
 /** Resolved global settings consumed by layout/components (always populated via fallbacks). */
@@ -347,6 +348,8 @@ export interface GlobalSettings {
   logoUrl?: string;
   /** Absolute favicon URL, or undefined to use the static fallback. */
   faviconUrl?: string;
+  /** Absolute footer logo URL, or undefined to use the static fallback. */
+  footerLogoUrl?: string;
 }
 
 /** Privacy single type — editable page copy (`content` richtext → Markdown). */

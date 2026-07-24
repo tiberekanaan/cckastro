@@ -40,6 +40,12 @@
       "multiple": false,
       "required": false,
       "allowedTypes": ["images"]
+    },
+    "footerLogo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
     }
   }
 }

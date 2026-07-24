@@ -215,21 +215,25 @@ export interface NewsItem {
   photo?: StrapiMedia | null;
 }
 
+export type ProjectStatus = "Completed" | "Currently Implemented";
+
 export interface Project {
   id: number;
   documentId: string;
   title?: string | null;
   slug?: string | null;
   description?: StrapiRichText;
+  projectStatus?: ProjectStatus | null;
   photos?: StrapiMedia[] | null;
 }
 
-/** UAF single type. `description` is a Strapi `richtext` (Markdown) field. */
+/** UAF single type. `description`/`projectsIntro` are Strapi `richtext` (Markdown) fields. */
 export interface UafPage {
   id: number;
   documentId: string;
   title?: string | null;
   description?: string | null;
+  projectsIntro?: string | null;
 }
 
 /** Tenders single type — application-process copy + Customer Portal CTA. */

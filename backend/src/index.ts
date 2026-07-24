@@ -27,6 +27,8 @@ const PUBLIC_ACTIONS = [
   'api::global-setting.global-setting.find',
   // Mobile coverage: public island/village coverage table.
   'api::mobile-coverage.mobile-coverage.find',
+  // UAF page: editable intro + projects-intro copy single type.
+  'api::uaf-page.uaf-page.find',
 ];
 
 // Collections whose `slug` UID must be backfilled for pre-existing entries.

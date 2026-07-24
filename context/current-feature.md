@@ -5,18 +5,33 @@
 #### Status
 Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
-#### Services nav dropdown (added — branch `feature/nav-dropdown`)
+#### Services nav dropdown (merged to `main`, deployed) — ✅ Completed
 - Backend: new `shared.nav-item` component (`label` required, `href` optional, `children` repeatable `shared.nav-link`); `navigation.headerLinks` switched from `shared.nav-link` to it. ⚠️ Component swap resets existing headerLinks rows — re-enter them in Content Manager after deploy (footer columns untouched); local entry confirmed reset to `[]`, footer intact.
 - Frontend: `NavHeaderItem` type; `getNavigation()` populate → `populate[headerLinks][populate]=children`, new `normalizeHeaderItems()` (parent href optional, children hrefs slash-normalized). `Header.astro` renders items with children as non-clickable dropdown trigger — desktop pure-CSS `group-hover`/`group-focus-within` menu (Zero-JS), mobile heading + indented sub-links.
 - Fallback: `site.ts` nav extracted to typed `NavItem[]` + **Services** group (Class License, Individual License, Domain Name (.ki), Type Approval, Numbering, Radiocommunication — slugs verified against live `/api/services`).
 - Deploy-order safe: cloud (old schema) 400s the new populate ("Invalid key children") → fallback nav (incl. Services dropdown) renders until backend deploys + entry republished.
-- Verified in browser (local Strapi + Astro dev): dropdown renders desktop + mobile; `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+- Verified in browser (local Strapi + Astro dev): dropdown renders desktop + mobile; `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Deployed 2026-07-24: Vercel Ready, Strapi Cloud schema live (children populate → 200), cck.ki renders fallback nav with Services dropdown.
+- ⏳ Pending content re-entry in Strapi Cloud → Navigation (headerLinks reset by component swap): re-add header links, "Services" parent (no href) + 6 service children, "Rules and Regulations" → `/resources`.
 
-#### Normalize CMS nav hrefs (added — branch `fix/normalize-nav-hrefs`)
+#### Normalize CMS nav hrefs (merged to `main`, deployed) — ✅ Completed
 - Frontend-only. Live "Rules and Regulations" header tab 404'd — editor set its `href` to literal `rules and regulations` in the Navigation single type (updated 2026-07-23); most other CMS links also lacked a leading `/`, breaking them from nested routes (`news` → `/news/news`).
 - `lib/strapi.ts`: new `normalizeNavHref()` — trims, passes through `http(s):`/`mailto:`/`tel:`/`#`, prepends `/` to internal paths (empty → `/`); applied in `getNavigation()` to `headerLinks` + every `footerColumns[].links` (`?? []` guard). Fallback `site.ts` nav untouched.
 - ⚠️ Content fix still required in Strapi Cloud → Navigation: "Rules and Regulations" href must be `/resources` (code can't guess intent — it now yields `/rules and regulations`, still 404). Footer `class-license`/`radiocommunication` point at nonexistent top-level routes — confirm intended targets with client.
-- Verified: `astro check` (0 errors) + `npm run build` pass clean; dev server against live Strapi Cloud shows all nav hrefs slash-prefixed on nested routes. Awaiting commit approval.
+- Verified: `astro check` (0 errors) + `npm run build` pass clean; dev server against live Strapi Cloud shows all nav hrefs slash-prefixed on nested routes. Merged + deployed 2026-07-24.
+
+#### Remove legacy Resource collection (added — branch `chore/remove-legacy-resource`)
+- Backend-only. Deleted `backend/src/api/resource/` (schema + router/controller/service) — the legacy collection overlapped **Official Document** (which powers `/resources`) and caused a mix-up: an editor added "Radiocommunications Rule 2026" to Resource and it never appeared on the live site.
+- Entry was recreated under Official Document on Strapi Cloud (verified live via API) before deletion; no bootstrap permission, seed data, frontend type, or fetch referenced the legacy collection.
+- Note: the 4 legacy Resource rows stay orphaned in the DB (Strapi never drops tables on schema removal) but disappear from Content Manager after deploy.
+- Verified: `tsc --noEmit` clean; local Strapi boots clean, `/api/resources` → 404, `/api/official-documents` → 200. Awaiting commit approval.
+
+#### UAF projects intro + status (added — branch `feature/uaf-projects-status`)
+- Backend: `uaf-page` single type gains `projectsIntro` richtext (editable copy rendered right above the projects grid); `project` collection gains `projectStatus` enum (`Completed` / `Currently Implemented`), optional.
+- Frontend: `universal-access.astro` renders `marked`-parsed `projectsIntro` in an accent-bordered "Universal Access Projects" block between header and grid (hidden when unset); each project card shows a status pill overlaid on the photo (emerald Completed / sky Currently Implemented). Detail page `projects/[slug].astro` shows the same pill beside the "Universal Access Fund" label.
+- Types: `ProjectStatus` union; `projectStatus` on `Project`, `projectsIntro` on `UafPage`.
+- Fallback-safe: unset field → no intro block / no pill; layout unchanged.
+- Permissions: `api::uaf-page.uaf-page.find` added to bootstrap `PUBLIC_ACTIONS` (`backend/src/index.ts`) — was missing (local `/api/uaf-page` 403'd; cloud had been granted by hand).
+- `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Verified against local Strapi: schema synced, `/api/projects` exposes `projectStatus`, `/api/uaf-page` → 200. Editor fills UAF Page → `projectsIntro` + each Project → `projectStatus` on Strapi Cloud after deploy.
 
 #### Mobile Operator filter (added — branch `feature/mobile-operator-filter`)
 - Frontend-only change to `mobile-coverage.astro` — filter form's **Network type** select (derived 2G/3G/4G options) replaced with **Mobile Operator** (fixed options: Oceanlink, Vodafone).

@@ -59,9 +59,22 @@ const body = project?.description ?? [];
         project ? (
           <>
             <header class="mt-6">
-              <span class="text-xs font-semibold uppercase tracking-wide text-accent">
-                Universal Access Fund
-              </span>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="text-xs font-semibold uppercase tracking-wide text-accent">
+                  Universal Access Fund
+                </span>
+                {project.projectStatus && (
+                  <span
+                    class={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      project.projectStatus === "Completed"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-sky-100 text-sky-800"
+                    }`}
+                  >
+                    {project.projectStatus}
+                  </span>
+                )}
+              </div>
               <h1 class="mt-2 font-serif text-4xl font-bold leading-tight text-primary">
                 {project.title}
               </h1>

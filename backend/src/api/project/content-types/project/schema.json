@@ -21,6 +21,13 @@
     "description": {
       "type": "blocks"
     },
+    "projectStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Completed",
+        "Currently Implemented"
+      ]
+    },
     "photos": {
       "type": "media",
       "multiple": true,

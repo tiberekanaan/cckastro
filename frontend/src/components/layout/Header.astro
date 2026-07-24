@@ -3,6 +3,7 @@ import { site } from "../../data/site";
 import { getNavigation } from "../../lib/strapi";
 import type { GlobalSettings } from "../../types/strapi";
 import Button from "../ui/Button.astro";
+import SearchOverlay from "./SearchOverlay.astro";
 
 interface Props {
   /* Transparent overlay mode: header floats over a full-bleed hero. */
@@ -111,14 +112,66 @@ const { headerLinks } = await getNavigation();
       }
     </nav>
 
-    <div class="hidden lg:block">
+    <div class="hidden items-center gap-2 lg:flex">
+      <button
+        type="button"
+        data-search-open
+        aria-label="Search the site"
+        class:list={[
+          "rounded-full p-2.5 transition-colors",
+          overlay
+            ? "text-white/85 hover:bg-white/10 hover:text-white"
+            : "text-foreground/70 hover:bg-surface-muted hover:text-accent",
+        ]}
+      >
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
       <Button href="/contact" variant="primary" class="px-5 py-2.5">
         Contact
       </Button>
     </div>
 
-    <!-- Mobile menu: CSS-only disclosure, Zero-JS -->
-    <details class="group relative lg:hidden">
+    <div class="flex items-center gap-2 lg:hidden">
+      <button
+        type="button"
+        data-search-open
+        aria-label="Search the site"
+        class:list={[
+          "rounded-md border p-2 transition-colors",
+          overlay
+            ? "border-white/30 text-white"
+            : "border-border text-primary hover:bg-surface-muted",
+        ]}
+      >
+        <svg
+          class="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+
+      <!-- Mobile menu: CSS-only disclosure, Zero-JS -->
+      <details class="group relative">
       <summary
         class:list={[
           "flex cursor-pointer items-center rounded-md border p-2 [&::-webkit-details-marker]:hidden",
@@ -174,6 +227,9 @@ const { headerLinks } = await getNavigation();
           >
         </nav>
       </div>
-    </details>
+      </details>
+    </div>
   </div>
 </header>
+
+<SearchOverlay />

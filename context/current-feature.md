@@ -1,9 +1,16 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Service detail rich content — polished .ki Domains page (branch `feature/service-detail-richtext`)
+
+Restyle `/services/[slug]` to match the old-site .ki Domains reference: render the `content` richtext as real Markdown (styled prose, serif navy headings, fee table with grouped rows, numbered process) and auto-render a "Frequently Asked Questions" section as a zero-JS `<details>` accordion. Frontend-only; all service pages benefit; plain-text legacy content still renders. New Markdown content for the Domain Name service supplied for pasting into Strapi Cloud.
+
+- `services/[slug].astro`: `content` split on `## ` headings; FAQ-titled section with `### ` questions → `<details>`/`<summary>` accordion (first item open, navy closed / accent-tinted open headers, chevron rotate); other sections → marked-rendered prose (local `Marked` instance, `breaks: true` so legacy plain text keeps its line breaks). Tables wrapped in `.table-scroll` (overflow-x, rounded border) via string wrap; navy header row, group rows (`tr:has(td>strong:only-child)`) tinted, value columns nowrap navy. Debug `console.log` removed.
+- Verified in browser (dev server, temp preview hook since cloud still has plain text): headings + accent bars, fee table groups, numbered process, FAQ accordion toggle all match reference; legacy plain-text fallback renders cleanly. `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+- Content: new Domain Name Markdown pasted + published in Strapi Cloud (Service → Domain Name → content) 2026-07-25 — took three tries: first paste landed in the unused Page collection "Domain" entry, second carried 72 stray "Drag" UI-artifact lines (fixed by re-copying from a plain-text file, `~/Desktop/domain-name-content.md`). Verified in browser against live cloud: full reference layout renders (fee table groups, steps, FAQ accordion). FAQ answers 2–5 drafted new — verify wording against the old site.
+- ⚠️ Until this branch deploys, live cck.ki shows the raw Markdown (old renderer prints `content` verbatim) — merge + push promptly.
 
 #### Status
-Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
+In progress: `feature/service-detail-richtext`. Last completed: Google Analytics via Partytown (see History). `feature/email-notifications` still awaiting commit approval (section below).
 
 #### Footer logo restyle (merged to `main`, pushed, branch deleted) — ✅ Completed
 - Frontend-only, `Footer.astro`: white circular chip removed; logo enlarged 36px → 176px (`h-44 w-44 object-contain`, `alt` = site short name) and now stands alone in the first column — CCK wordmark, siteName, and the address/email/phone block removed per user (matches reference screenshot; contact details remain on `/contact` + bottom bar copyright unchanged).

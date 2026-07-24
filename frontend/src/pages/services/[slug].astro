@@ -1,6 +1,7 @@
 ---
 export const prerender = false;
 
+import { Marked } from "marked";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
 import type { StrapiCollectionResponse, Service } from "../../types/strapi";
@@ -14,7 +15,6 @@ if (slug) {
     `${STRAPI_URL}/api/services?filters[slug][$eq]=${slug}&populate=image`,
   );
   const data: StrapiCollectionResponse<Service> = await res.json();
-  console.log("Strapi Response:", data);
   // Strapi 5 responses are flattened — no `.attributes` wrapper.
   service = data.data?.[0] ?? null;
 }
@@ -22,6 +22,93 @@ if (slug) {
 if (!service) {
   Astro.response.status = 404;
 }
+// --- Sectioned rendering of the `content` Markdown --------------------------
+// Split on `## ` headings; a "Frequently Asked Questions" section with `### `
+// subheadings becomes a zero-JS <details> accordion, everything else renders
+// as styled prose. Content without `## ` headings (legacy plain text) falls
+// through as a single prose section — `breaks: true` keeps its line breaks.
+const md = new Marked({ breaks: true });
+
+interface FaqItem {
+  question: string;
+  answerHtml: string;
+}
+type Section =
+  | { kind: "prose"; heading: string; html: string }
+  | { kind: "faq"; heading: string; items: FaqItem[] };
+
+// marked has no hook for a scroll wrapper around tables; its output uses bare
+// `<table>` tags, so a string wrap is safe.
+const wrapTables = (html: string): string =>
+  html
+    .replaceAll("<table>", '<div class="table-scroll"><table>')
+    .replaceAll("</table>", "</table></div>");
+
+async function buildSections(source: string): Promise<Section[]> {
+  const parts = source.split(/^##\s+(.+)$/m);
+  const sections: Section[] = [];
+
+  const push = async (heading: string, body: string): Promise<void> => {
+    const text = body.trim();
+    if (!text && !heading) return;
+
+    if (/frequently asked|faq/i.test(heading)) {
+      const qa = text.split(/^###\s+(.+)$/m);
+      const items: FaqItem[] = [];
+      for (let i = 1; i < qa.length; i += 2) {
+        items.push({
+          question: qa[i].trim(),
+          answerHtml: await md.parse((qa[i + 1] ?? "").trim()),
+        });
+      }
+      if (items.length > 0) {
+        sections.push({ kind: "faq", heading, items });
+        return;
+      }
+    }
+
+    sections.push({
+      kind: "prose",
+      heading,
+      html: wrapTables(await md.parse(text)),
+    });
+  };
+
+  await push("", parts[0] ?? "");
+  for (let i = 1; i < parts.length; i += 2) {
+    await push(parts[i].trim(), parts[i + 1] ?? "");
+  }
+  return sections;
+}
+
+const sections: Section[] = service?.content
+  ? await buildSections(service.content)
+  : [];
+
+const proseClasses = [
+  "leading-relaxed text-muted-foreground",
+  "[&_a]:text-accent [&_a]:underline [&_strong]:text-primary",
+  "[&_p]:mt-4 [&_p:first-child]:mt-0",
+  "[&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6",
+  "[&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6",
+  "[&_li]:mt-1.5 [&_li]:pl-1 [&_li::marker]:text-accent [&_li::marker]:font-semibold",
+  "[&_h3]:mt-8 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-primary",
+].join(" ");
+
+// Fee-table treatment: navy header row, muted group rows (a row whose first
+// cell is only a `**bold**` label), value columns kept on one line.
+const tableClasses = [
+  "[&_.table-scroll]:mt-6 [&_.table-scroll]:overflow-x-auto [&_.table-scroll]:rounded-xl [&_.table-scroll]:border [&_.table-scroll]:border-slate-200 [&_.table-scroll]:shadow-sm",
+  "[&_table]:w-full [&_table]:border-collapse [&_table]:text-sm",
+  "[&_th]:bg-primary [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:font-semibold [&_th]:text-white",
+  "[&_td]:border-t [&_td]:border-slate-200 [&_td]:px-4 [&_td]:py-3 [&_td]:align-top",
+  "[&_td:nth-child(n+2)]:whitespace-nowrap [&_td:nth-child(n+2)]:font-medium [&_td:nth-child(n+2)]:text-primary",
+  "[&_tbody_tr:has(td>strong:only-child)]:bg-slate-100",
+  // Live feel on hover: data rows tint toward the accent and their first
+  // column nudges right; group-label rows stay static.
+  "[&_tbody_tr]:transition-all [&_tbody_tr]:duration-200 [&_td:first-child]:transition-[padding] [&_td:first-child]:duration-200",
+  "[&_tbody_tr:not(:has(td>strong:only-child)):hover]:bg-accent/5 [&_tbody_tr:not(:has(td>strong:only-child)):hover]:shadow-[inset_3px_0_0_var(--color-accent)] [&_tbody_tr:not(:has(td>strong:only-child)):hover_td:first-child]:pl-6",
+].join(" ");
 ---
 
 {
@@ -36,26 +123,80 @@ if (!service) {
             <span aria-hidden="true">&larr;</span>
             Back to services
           </a>
-          <h1 class="mt-6 font-serif text-4xl font-semibold text-primary">
+          <h1 class="mt-6 font-serif text-4xl font-semibold leading-tight text-primary">
             {service.title}
           </h1>
           {service.image && (
             <img
               src={mediaUrl(service.image)}
               alt={service.image.alternativeText ?? service.title}
-              class="mt-8 h-64 w-full rounded-2xl object-cover shadow-md mb-8"
+              class="mt-8 h-64 w-full rounded-2xl object-cover shadow-md"
             />
           )}
           {service.description && (
-            <p class="mt-3 text-lg leading-relaxed text-muted-foreground">
+            <p class="mt-6 text-lg leading-relaxed text-muted-foreground">
               {service.description}
             </p>
           )}
-          {service.content && (
-            <div class="mt-8 whitespace-pre-line leading-relaxed text-foreground">
-              {service.content}
-            </div>
-          )}
+
+          <div class="mt-4 space-y-12">
+            {sections.map((section, index) => (
+              <section>
+                {section.heading && (
+                  <h2 class="font-serif text-2xl font-bold text-primary sm:text-3xl">
+                    <span
+                      aria-hidden="true"
+                      class="mb-3 block h-1 w-10 rounded-full bg-accent"
+                    />
+                    {section.heading}
+                  </h2>
+                )}
+
+                {section.kind === "prose" && (
+                  <div
+                    class:list={[
+                      section.heading && "mt-5",
+                      proseClasses,
+                      tableClasses,
+                      index === 0 && "[&_p:first-child]:text-lg",
+                    ]}
+                    set:html={section.html}
+                  />
+                )}
+
+                {section.kind === "faq" && (
+                  <div class="mt-6 space-y-3">
+                    {section.items.map((item, itemIndex) => (
+                      <details
+                        open={itemIndex === 0}
+                        class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                      >
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 bg-primary px-5 py-4 text-sm font-semibold text-white transition-colors group-open:bg-accent/10 group-open:text-primary [&::-webkit-details-marker]:hidden">
+                          {item.question}
+                          <svg
+                            aria-hidden="true"
+                            class="h-4 w-4 flex-none transition-transform duration-200 group-open:rotate-180"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </summary>
+                        <div
+                          class:list={["px-5 py-4 text-sm", proseClasses]}
+                          set:html={item.answerHtml}
+                        />
+                      </details>
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
         </div>
       </section>
     </BaseLayout>

@@ -138,6 +138,7 @@ const FALLBACK_GLOBAL: GlobalSettings = {
   googleAnalyticsId: undefined,
   logoUrl: undefined,
   faviconUrl: undefined,
+  footerLogoUrl: undefined,
 };
 
 /**
@@ -147,7 +148,9 @@ const FALLBACK_GLOBAL: GlobalSettings = {
 export async function getGlobalSettings(): Promise<GlobalSettings> {
   try {
     const res = await fetch(
-      `${STRAPI_URL}/api/global-setting?populate[0]=logo&populate[1]=favicon`,
+      // populate=* stays valid whichever schema version the backend runs
+      // (an explicit key list 400s on a backend that predates `footerLogo`).
+      `${STRAPI_URL}/api/global-setting?populate=*`,
     );
     if (!res.ok) {
       if (res.status !== 404)
@@ -166,6 +169,7 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
       googleAnalyticsId: data.googleAnalyticsId || undefined,
       logoUrl: mediaUrl(data.logo),
       faviconUrl: mediaUrl(data.favicon),
+      footerLogoUrl: mediaUrl(data.footerLogo),
     };
   } catch (err) {
     console.error("[global-setting] fetch failed:", err);

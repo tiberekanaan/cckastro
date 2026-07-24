@@ -8,7 +8,8 @@ interface Props {
 }
 
 const { settings } = Astro.props;
-const logoSrc = settings.logoUrl ?? "/cck-logo.png";
+// Footer shows the editable footerLogo (coat of arms fallback), not the header logo.
+const logoSrc = settings.footerLogoUrl ?? "/coat-of-arms-kiribati.svg";
 
 const year = new Date().getFullYear();
 

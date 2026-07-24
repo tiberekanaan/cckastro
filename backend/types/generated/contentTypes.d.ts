@@ -715,7 +715,7 @@ export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     footerColumns: Schema.Attribute.Component<'shared.footer-column', true>;
-    headerLinks: Schema.Attribute.Component<'shared.nav-link', true>;
+    headerLinks: Schema.Attribute.Component<'shared.nav-item', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -920,40 +920,12 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    projectStatus: Schema.Attribute.Enumeration<
+      ['Completed', 'Currently Implemented']
+    >;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiResourceResource extends Struct.CollectionTypeSchema {
-  collectionName: 'resources';
-  info: {
-    displayName: 'Resource';
-    pluralName: 'resources';
-    singularName: 'resource';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::resource.resource'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String;
-    type: Schema.Attribute.Enumeration<['rule', 'regulation']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1073,6 +1045,7 @@ export interface ApiUafPageUafPage extends Struct.SingleTypeSchema {
       'api::uaf-page.uaf-page'
     > &
       Schema.Attribute.Private;
+    projectsIntro: Schema.Attribute.RichText;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -1606,7 +1579,6 @@ declare module '@strapi/strapi' {
       'api::page.page': ApiPagePage;
       'api::privacy-page.privacy-page': ApiPrivacyPagePrivacyPage;
       'api::project.project': ApiProjectProject;
-      'api::resource.resource': ApiResourceResource;
       'api::service.service': ApiServiceService;
       'api::tenders-page.tenders-page': ApiTendersPageTendersPage;
       'api::terms-page.terms-page': ApiTermsPageTermsPage;

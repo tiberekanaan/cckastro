@@ -195,6 +195,19 @@ export interface SharedFooterColumn extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedNavItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_nav_items';
+  info: {
+    displayName: 'NavItem';
+    icon: 'link';
+  };
+  attributes: {
+    children: Schema.Attribute.Component<'shared.nav-link', true>;
+    href: Schema.Attribute.String;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedNavLink extends Struct.ComponentSchema {
   collectionName: 'components_shared_nav_links';
   info: {
@@ -240,6 +253,7 @@ declare module '@strapi/strapi' {
       'blocks.rich-text': BlocksRichText;
       'blocks.services-grid': BlocksServicesGrid;
       'shared.footer-column': SharedFooterColumn;
+      'shared.nav-item': SharedNavItem;
       'shared.nav-link': SharedNavLink;
       'shared.service-item': SharedServiceItem;
     }

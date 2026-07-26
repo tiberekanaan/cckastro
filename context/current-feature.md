@@ -1,13 +1,18 @@
 #### Current Feature
 
-**Feature: Proxy Strapi media through the frontend domain** (branch `feature/proxy-media`)
+**Feature:** _None in progress — next feature TBD._
+
+#### Proxy Strapi media through the frontend domain (merged to `main`, deployed, branch deleted) — ✅ Completed
 
 - Problem: images (news photos, project galleries, hero/CTA images, CMS logo/favicon) load straight from `…media.strapiapp.com`, still exposing Strapi Cloud hosting after the `web.cck.ki` domain switch.
-- Plan (frontend-only): new SSR catch-all `src/pages/media/[...path].ts` streams files from the media host (new `STRAPI_MEDIA_URL` env var) with upstream Content-Type, long immutable Cache-Control (media filenames are content-hashed), Range passthrough; path validated, unknown → 404, upstream failure → 502.
+- Fix (frontend-only): new SSR catch-all `src/pages/media/[...path].ts` streams files from the media host (new `STRAPI_MEDIA_URL` env var) with upstream Content-Type, long immutable Cache-Control (media filenames are content-hashed), Range passthrough; path validated, unknown → 404, upstream failure → 502.
 - `mediaUrl()` rewrites media-host URLs to `/media/<path>` when `STRAPI_MEDIA_URL` is set; new `upstreamMediaUrl()` keeps the raw URL for server-side fetches (`files/[documentId].ts`).
 - Deploy-order safe: `STRAPI_MEDIA_URL` unset → passthrough (today's behavior). Vercel needs the new env var + redeploy.
 - Media-host quirk: missing objects answer 403 (S3-style), mapped to 404 alongside real 404s.
-- Verified via dev server against live Strapi Cloud: `/media/Kauma_5cc89d366f.webp` → 200 `image/webp` with `public, max-age=31536000, s-maxage=31536000, immutable`; Range request → 206; traversal (`/media/../…`) + unknown file → 404; home, `/news`, `/universal-access`, `/about`, `/resources` render zero `media.strapiapp` references — all img srcs are `/media/<file>`; `/files/<id>` proxy still streams PDFs (server-side fetch via new `upstreamMediaUrl()`). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+- Verified via dev server against live Strapi Cloud: `/media/Kauma_5cc89d366f.webp` → 200 `image/webp` with `public, max-age=31536000, s-maxage=31536000, immutable`; Range request → 206; traversal (`/media/../…`) + unknown file → 404; home, `/news`, `/universal-access`, `/about`, `/resources` render zero `media.strapiapp` references — all img srcs are `/media/<file>`; `/files/<id>` proxy still streams PDFs (server-side fetch via new `upstreamMediaUrl()`). `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-07-27 (`e0dc7a7`), branch deleted.
+- Deploy hiccup: while adding `STRAPI_MEDIA_URL` in Vercel, `STRAPI_URL` got retyped as `web.ccki.ki` (extra `i`) → all runtime Strapi fetches ENOTFOUND (pages fell back to empty states, `/files` 502). Diagnosed via `vercel logs`; local repo (`frontend/`) is now `vercel link`ed, env vars are Sensitive (not readable via `env pull`). Fixed via CLI (`vercel env rm/add STRAPI_URL` production + preview → `https://web.cck.ki`) + `vercel redeploy`.
+- Verified live on cck.ki post-redeploy 2026-07-27: `/media/<file>` → 200 `image/webp` immutable (Vercel edge caches via s-maxage); `/files/<id>` → 200 `application/pdf`; home/news/UAF/about/resources all render images from `/media/…` with zero `media.strapiapp` references; missing media → 404.
+- Vercel env now: `STRAPI_URL=https://web.cck.ki` + `STRAPI_MEDIA_URL=https://brave-acoustics-674445e63c.media.strapiapp.com` (both Production + Preview). Backend-host exposure via media URLs is now closed; remaining discoverability is only DNS itself (`web.cck.ki` CNAME target is public by nature).
 
 #### Custom backend domain web.cck.ki (committed to `main`, deployed) — ✅ Completed
 

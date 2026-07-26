@@ -11,7 +11,7 @@
 - Frontend dedupes labels (`Set`) as a guard; `label` is `unique:true` in the schema so Content Manager prevents duplicates anyway.
 - Verified locally: schema synced via `yarn develop`; `/api/contact-subjects` 200 (public find), `$eqi` label filter matches case-insensitively ("licensing" → licensing@cck.ki row); POST contact message 201 with lifecycle lookup active; dev server against local Strapi renders the live dropdown, against Strapi Cloud renders the fallback list. Test rows deleted from local DB. `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean.
 - Merged + pushed 2026-07-26 (`dfde15b`); Strapi Cloud + Vercel auto-deploy.
-- ⏳ Pending content entry in Strapi Cloud → Content Manager → Contact Subject: client adds entries (e.g. General → info@cck.ki, Licensing → licensing@cck.ki, Payment issues → account@cck.ki). Until then the form shows the fallback subject list and all queries route to info@cck.ki.
+- Content entered in Strapi Cloud → Contact Subject 2026-07-27 (via browser): General → info@cck.ki, Licensing → licensing@cck.ki, Payment issues → account@cck.ki. Verified live: cloud API returns all 3, cck.ki/contact renders the real dropdown (not the fallback). Client can add/edit subjects + recipients in Content Manager anytime.
 
 #### Remove eyebrow labels site-wide (merged to `main`, pushed) — ✅ Completed
 

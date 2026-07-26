@@ -23,7 +23,7 @@ export default defineConfig({
     //remotePatterns: [{ protocol: 'http', hostname: 'localhost' }],
     remotePatterns: [
     { protocol: 'http', hostname: 'localhost' },
-    { protocol: 'https', hostname: 'cckastrobackend-nys32.ondigitalocean.app' } // Add your production Strapi domain here
+    { protocol: 'https', hostname: 'web.cck.ki' } // Production Strapi (custom domain on Strapi Cloud)
   ],
   },
   security: {

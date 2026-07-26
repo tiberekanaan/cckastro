@@ -1,0 +1,54 @@
+---
+/**
+ * Guards `form[data-prevent-resubmit]` against duplicate submissions: the
+ * first submit disables the submit button (swapping in its `data-busy-label`)
+ * and any repeat submit before navigation is cancelled. Include once per page
+ * that renders a guarded form — Astro dedupes the module script.
+ */
+---
+
+<script>
+  // Delegated on document so the listener survives ClientRouter page swaps.
+  document.addEventListener("submit", (event) => {
+    const form = event.target;
+    if (
+      !(form instanceof HTMLFormElement) ||
+      !form.hasAttribute("data-prevent-resubmit")
+    ) {
+      return;
+    }
+    if (form.dataset.submitted === "true") {
+      event.preventDefault();
+      return;
+    }
+    form.dataset.submitted = "true";
+    const button = form.querySelector<HTMLButtonElement>(
+      "button[type='submit']",
+    );
+    if (button) {
+      if (!button.dataset.idleLabel) {
+        button.dataset.idleLabel = button.textContent?.trim() ?? "";
+      }
+      button.disabled = true;
+      button.textContent = button.dataset.busyLabel ?? "Sending…";
+    }
+  });
+
+  // A page restored from the back-forward cache keeps its pre-navigation DOM —
+  // re-arm the form so the button isn't stuck disabled.
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) return;
+    for (const form of document.querySelectorAll<HTMLFormElement>(
+      "form[data-prevent-resubmit]",
+    )) {
+      delete form.dataset.submitted;
+      const button = form.querySelector<HTMLButtonElement>(
+        "button[type='submit']",
+      );
+      if (button?.disabled) {
+        button.disabled = false;
+        button.textContent = button.dataset.idleLabel || button.textContent;
+      }
+    }
+  });
+</script>

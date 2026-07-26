@@ -1,6 +1,12 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Prevent duplicate form submissions — contact + distress beacon (branch `fix/prevent-double-submit`)
+
+- Frontend-only. Rapid double-clicks on "Send Message" / "Submit Registration" POST the form multiple times → duplicate Strapi entries + duplicate notification emails.
+- New shared `components/forms/PreventDoubleSubmit.astro`: document-delegated `submit` listener (survives ClientRouter swaps, Astro dedupes the module script) targeting `form[data-prevent-resubmit]` — first submit marks the form + disables the submit button and swaps its text to the button's `data-busy-label`; repeat submits are `preventDefault`ed.
+- `contact.astro` + `distress-beacon.astro`: forms gain `data-prevent-resubmit`, buttons gain `disabled:` styling + busy labels ("Sending…" / "Submitting…"), pages include the component.
+- bfcache guard: `pageshow` (persisted) re-arms guarded forms and restores the button's idle label so back-navigation never leaves a stuck disabled button.
+- Verified in browser (dev server against local Strapi, user's `yarn develop` on 1337): contact form — two synchronous `requestSubmit()` calls created exactly ONE Contact Message row (4→5), button disabled + "Sending…", success banner rendered; beacon form — first submit event allowed, second `defaultPrevented`, button disabled + "Submitting…". Test row deleted from local DB. `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
 
 #### Contact form subject dropdown + per-subject routing email (merged to `main`, pushed, branch deleted) — ✅ Completed
 

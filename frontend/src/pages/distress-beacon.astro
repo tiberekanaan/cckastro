@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { actions, isInputError } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import PreventDoubleSubmit from "../components/forms/PreventDoubleSubmit.astro";
 
 const result = Astro.getActionResult(actions.distressBeacon.register);
 const success = result && !result.error;
@@ -64,6 +65,7 @@ const beaconTypes = ["EPIBP/PLB", "ELT"];
       method="POST"
       action={actions.distressBeacon.register}
       data-astro-reload
+      data-prevent-resubmit
       class="grid gap-10 rounded-card border border-border bg-surface p-6 sm:p-8"
     >
       {/* Honeypot — hidden from users, bots fill it and get rejected. */}
@@ -342,12 +344,14 @@ const beaconTypes = ["EPIBP/PLB", "ELT"];
 
       <button
         type="submit"
-        class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+        data-busy-label="Submitting…"
+        class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         Submit Registration
       </button>
     </form>
   </section>
+  <PreventDoubleSubmit />
 </BaseLayout>
 
 <script>

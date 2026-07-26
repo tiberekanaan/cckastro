@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { actions, isInputError } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import PreventDoubleSubmit from "../components/forms/PreventDoubleSubmit.astro";
 import { getGlobalSettings, softFetchStrapi } from "../lib/strapi";
 import type { ContactSubject } from "../types/strapi";
 
@@ -132,6 +133,7 @@ const details = [
           method="POST"
           action={actions.contact.send}
           data-astro-reload
+          data-prevent-resubmit
           class="grid gap-5 rounded-card border border-border bg-surface p-6 sm:p-8"
         >
           {/* Honeypot — hidden from users, bots fill it and get rejected. */}
@@ -198,7 +200,8 @@ const details = [
 
           <button
             type="submit"
-            class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+            data-busy-label="Sending…"
+            class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             Send Message
           </button>
@@ -206,4 +209,5 @@ const details = [
       </div>
     </div>
   </section>
+  <PreventDoubleSubmit />
 </BaseLayout>

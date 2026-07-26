@@ -17,9 +17,11 @@ const hasImage = Boolean(img && width && height);
 
 {/* Full-bleed hero: background image spans the whole area, including the
     transparent header (logo + navbar) that floats over it. */}
+{/* 100svh minus the sticky header (5rem content + 1px border) so the hero
+    fills the rest of the viewport exactly. */}
 <section
   class:list={[
-    "relative isolate overflow-hidden",
+    "relative isolate flex min-h-[calc(100svh-5rem-1px)] items-center overflow-hidden",
     hasImage ? "bg-neutral-900" : "bg-gradient-to-br from-primary to-accent",
   ]}
 >
@@ -41,7 +43,7 @@ const hasImage = Boolean(img && width && height);
     )
   }
 
-  <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:py-40">
+  <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
     <div class="max-w-2xl">
       <h1 class="font-serif text-4xl font-bold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
         {block.title}

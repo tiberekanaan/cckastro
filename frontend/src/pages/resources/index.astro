@@ -3,7 +3,7 @@ export const prerender = false;
 
 import { Icon } from "astro-icon/components";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import { STRAPI_URL } from "../../lib/strapi";
 import type {
   OfficialDocument,
   StrapiCollectionResponse,
@@ -174,7 +174,8 @@ const toTitleCase = (s: string) =>
           <ul class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {docs.map((doc) => {
               const isRegulation = doc.type === "Regulation";
-              const fileUrl = mediaUrl(doc.file) ?? null;
+              // Same-origin proxy route — never expose the Strapi media host.
+              const fileUrl = doc.file?.url ? `/files/${doc.documentId}` : null;
               return (
                 <li class="flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-sm transition-shadow hover:shadow-md">
                   {/* Static document thumbnail — light card, type-differentiated graphic */}
@@ -222,7 +223,7 @@ const toTitleCase = (s: string) =>
                             <span>View</span>
                           </a>
                           <a
-                            href={fileUrl}
+                            href={`${fileUrl}?download=1`}
                             download
                             aria-label={`Download ${doc.title}`}
                             title="Download"

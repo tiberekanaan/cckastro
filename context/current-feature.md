@@ -1,6 +1,14 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Proxy Resources file links through the frontend domain (branch `feature/proxy-resource-files`)
+
+- Problem: `/resources` View/Download links point straight at the Strapi Cloud media host (`…media.strapiapp.com/…`), exposing where the backend is hosted (and by extension its admin login URL).
+- Fix (frontend-only): new SSR endpoint `src/pages/files/[documentId].ts` — looks up the Official Document via public `find` + `filters[documentId][$eq]` (no new permission), fetches the file server-side, streams it back with upstream `Content-Type` + `Content-Disposition` filename. Visitors only ever see `cck.ki/files/<id>`.
+- `?download=1` sets `Content-Disposition: attachment` — also fixes the Download button, whose `download` attribute is silently ignored cross-origin today (it behaved like View).
+- `resources/index.astro` swaps both hrefs to the proxy route. `documentId` in the URL is acceptable here — official-document has no slug/detail page; this is a file endpoint, not a content page.
+- Out of scope: proxying images/other media (host still discoverable via image URLs elsewhere, e.g. the Global Settings logo on every page) — separate feature if wanted.
+- Also: `name`/`ext`/`mime` optional fields added to `StrapiMedia`; filename sent via quoted ASCII + RFC 5987 `filename*`; 1h `Cache-Control`; bad/unknown documentId → 404; Strapi/media fetch failure → 502.
+- Verified via dev server against live Strapi Cloud: `/files/iph2uxueuk2ctpapm868c40w` → 200 `application/pdf`, `inline; filename="Communications Licensing Rules 2014.pdf"`, body is a valid PDF; `?download=1` → `attachment`; malformed + unknown ids → 404; `/resources` cards render only `/files/<id>` hrefs (zero document links to strapiapp). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
 
 #### Prevent duplicate form submissions — contact + distress beacon (merged to `main`, pushed, branch deleted) — ✅ Completed
 

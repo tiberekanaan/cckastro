@@ -8,7 +8,7 @@ import partytown from '@astrojs/partytown';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://cck.gov.ki',
+  site: 'https://cck.ki',
   // Vercel adapter: index.astro is SSR (prerender = false) to fetch live Strapi data.
   adapter: vercel(),
   integrations: [

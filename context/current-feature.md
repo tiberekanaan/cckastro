@@ -1,6 +1,15 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Social share previews (Open Graph / Twitter cards) — branch `feature/social-share-meta`, awaiting commit approval.
+
+- Problem: sharing cck.ki on social media showed a blank gray card with title "CCK Homepage | CCK" — the site had zero Open Graph/Twitter meta tags, so scrapers had nothing to work with.
+- Frontend-only. `BaseLayout.astro` `<head>` gains canonical link + full OG/Twitter set: `og:type/site_name/title/description/url/image(+width/height/alt)` and `twitter:card=summary_large_image/title/description/image`. Absolute URLs built against `Astro.site`; `astro.config.mjs` `site` fixed from stale `https://cck.gov.ki` → `https://cck.ki`.
+- New props `ogTitle`/`ogDescription` (default to `title`/`description`) + `ogImage` (default `/og-image.jpg`) — homepage passes ogTitle "Communications Commission of Kiribati" + a proper regulator blurb, since the CMS Page entry's title/description are "Home"/"Home page". `og:image:width/height` hints emitted only for the bundled default image.
+- New `public/og-image.jpg` (1200×630, 128KB): CCK headquarters + radio tower photo (from live `/media/1743048724744_2_2a7a0986ec.jpg`) with navy gradient, CCK logo, "Communications Commission of Kiribati" text, green brand bar. Generated via sharp (script kept in session scratchpad only).
+- Any page can later pass its own `ogImage` (e.g. news article photos) — not wired yet, default card serves site-wide.
+- Verified via dev server: `/` renders full tag set with absolute `https://cck.ki/...` URLs + override title/description; `/contact` inherits defaults with correct per-page `og:url`; `/og-image.jpg` → 200 `image/jpeg`. `astro check` (0 errors) + `npm run build` pass clean.
+- Post-deploy: re-scrape with Facebook Sharing Debugger (facebook.com/tools/debug) — FB caches the old empty card.
+- ⚠️ `www.cck.ki` does not resolve (no DNS record) — shares of the www URL can't be scraped; add a `www` CNAME/redirect in Hostinger DNS + Vercel domains, or share `https://cck.ki`.
 
 #### Proxy Strapi media through the frontend domain (merged to `main`, deployed, branch deleted) — ✅ Completed
 

@@ -14,16 +14,29 @@ interface Props {
   description?: string;
   /* Float a transparent header over a full-bleed hero (home page). */
   heroOverlay?: boolean;
+  /* Social-share title when the page <title> isn't presentable on its own. */
+  ogTitle?: string;
+  /* Social-share description when the meta description isn't presentable. */
+  ogDescription?: string;
+  /* Social-share image (absolute URL or site-relative path). */
+  ogImage?: string;
 }
 
 const {
   title,
   description = "The Communications Commission of Kiribati regulates the national telecommunication market.",
   heroOverlay = false,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = "/og-image.jpg",
 } = Astro.props;
 
 // Editable site assets + contact info from Strapi (falls back to site.ts).
 const settings = await getGlobalSettings();
+
+// Social-share URLs must be absolute (resolved against `site` in astro.config).
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
 ---
 
 <!doctype html>
@@ -40,6 +53,27 @@ const settings = await getGlobalSettings();
     }
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={settings.siteName} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    {
+      /* Dimension hints only apply to the bundled default card. */
+      ogImage === "/og-image.jpg" && (
+        <>
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+        </>
+      )
+    }
+    <meta property="og:image:alt" content={settings.siteName} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
     {
       /* Google Analytics (gtag.js) — off the main thread via Partytown.
          Renders only when an editor sets googleAnalyticsId in Global Setting. */

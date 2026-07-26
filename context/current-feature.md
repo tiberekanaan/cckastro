@@ -12,7 +12,7 @@
 - Verified via dev server: `/` renders full tag set with absolute `https://cck.ki/...` URLs + override title/description; `/contact` inherits defaults with correct per-page `og:url`; `/og-image.jpg` → 200 `image/jpeg`. `astro check` (0 errors) + `npm run build` pass clean.
 - Merged + pushed 2026-07-27 (`fa7535a`); Vercel auto-deploys.
 - Post-deploy: re-scrape with Facebook Sharing Debugger (facebook.com/tools/debug) — FB caches the old empty card.
-- ⚠️ `www.cck.ki` does not resolve (no DNS record) — shares of the www URL can't be scraped; add a `www` CNAME/redirect in Hostinger DNS + Vercel domains, or share `https://cck.ki`.
+- ✅ `www.cck.ki` resolved 2026-07-27 (no code): Hostinger CNAME `www` → `cname.vercel-dns.com` + domain added to the Vercel `cckastro` project (`vercel domains add www.cck.ki cckastro`) with a dashboard-set 308 redirect to `cck.ki` (paths preserved, SSL auto-issued). Verified: `https://www.cck.ki/contact` → 308 → `https://cck.ki/contact` → 200. Vercel suggests a project-specific CNAME (`b52e9cbad3a6ec25.vercel-dns-017.com`) as rank 1, but `cname.vercel-dns.com` is a supported config — no change needed.
 
 #### Proxy Strapi media through the frontend domain (merged to `main`, deployed, branch deleted) — ✅ Completed
 

@@ -274,6 +274,13 @@ export interface CareersPage {
   applicationInfo?: string | null;
 }
 
+/** Contact form subject option — routes submissions to a department inbox. */
+export interface ContactSubject {
+  id: number;
+  documentId: string;
+  label: string;
+}
+
 export interface StrapiPagination {
   page: number;
   pageSize: number;

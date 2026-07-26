@@ -567,6 +567,39 @@ export interface ApiContactMessageContactMessage
   };
 }
 
+export interface ApiContactSubjectContactSubject
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'contact_subjects';
+  info: {
+    description: 'Subjects offered on the contact form; each routes to a department email.';
+    displayName: 'Contact Subject';
+    pluralName: 'contact-subjects';
+    singularName: 'contact-subject';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::contact-subject.contact-subject'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    recipientEmail: Schema.Attribute.Email & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDistressBeaconDistressBeacon
   extends Struct.CollectionTypeSchema {
   collectionName: 'distress_beacons';
@@ -644,6 +677,7 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     favicon: Schema.Attribute.Media<'images'>;
+    footerLogo: Schema.Attribute.Media<'images'>;
     googleAnalyticsId: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1569,6 +1603,7 @@ declare module '@strapi/strapi' {
       'api::careers-page.careers-page': ApiCareersPageCareersPage;
       'api::commissioner.commissioner': ApiCommissionerCommissioner;
       'api::contact-message.contact-message': ApiContactMessageContactMessage;
+      'api::contact-subject.contact-subject': ApiContactSubjectContactSubject;
       'api::distress-beacon.distress-beacon': ApiDistressBeaconDistressBeacon;
       'api::global-setting.global-setting': ApiGlobalSettingGlobalSetting;
       'api::mobile-coverage.mobile-coverage': ApiMobileCoverageMobileCoverage;

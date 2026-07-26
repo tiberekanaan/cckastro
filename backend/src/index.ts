@@ -11,6 +11,8 @@ const PUBLIC_ACTIONS = [
   'api::distress-beacon.distress-beacon.create',
   // Contact form: unauthenticated public form submissions.
   'api::contact-message.contact-message.create',
+  // Contact subjects: dropdown options for the contact form.
+  'api::contact-subject.contact-subject.find',
   // Careers: job listings (find) + detail page (findOne).
   'api::career.career.find',
   'api::career.career.findOne',

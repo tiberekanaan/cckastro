@@ -1,6 +1,14 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Contact form subject dropdown + per-subject routing email (branch `feature/contact-subjects`)
+
+- Backend: new `contact-subject` collection (`label` string required, `recipientEmail` email required; `draftAndPublish:false`) — client manages the subject list + department routing in Content Manager (e.g. Licensing → licensing@cck.ki, Payment issues → account@cck.ki, General → info@cck.ki). Bootstrap grants Public `find`.
+- Lifecycle: `contact-message` `afterCreate` looks up the recipient by submitted subject (case-insensitive label match via Document Service); no match / lookup failure → falls back to `info@cck.ki`. Acknowledgement email to submitter unchanged.
+- Frontend: `contact.astro` subject text input → `<select>` populated from `/api/contact-subjects` (labels only via `fields`), with a built-in fallback list (General / Licensing / Payment issues) when Strapi is unreachable or the collection is empty. `ContactSubject` type added. Action validation unchanged (subject stays a required string).
+- Deploy-order safe: cloud backend without the collection → frontend falls back to the static list; lifecycle falls back to `info@cck.ki`.
+- Frontend dedupes labels (`Set`) as a guard; `label` is `unique:true` in the schema so Content Manager prevents duplicates anyway.
+- Verified locally: schema synced via `yarn develop`; `/api/contact-subjects` 200 (public find), `$eqi` label filter matches case-insensitively ("licensing" → licensing@cck.ki row); POST contact message 201 with lifecycle lookup active; dev server against local Strapi renders the live dropdown, against Strapi Cloud renders the fallback list. Test rows deleted from local DB. `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+- After deploy: client creates Contact Subject entries in Strapi Cloud Content Manager (e.g. General → info@cck.ki, Licensing → licensing@cck.ki, Payment issues → account@cck.ki).
 
 #### Remove eyebrow labels site-wide (merged to `main`, pushed) — ✅ Completed
 

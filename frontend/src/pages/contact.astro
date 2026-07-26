@@ -3,10 +3,20 @@ export const prerender = false;
 
 import { actions, isInputError } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getGlobalSettings } from "../lib/strapi";
+import { getGlobalSettings, softFetchStrapi } from "../lib/strapi";
+import type { ContactSubject } from "../types/strapi";
 
 // Editable contact info from Strapi (falls back to site.ts).
 const settings = await getGlobalSettings();
+
+// Editor-managed subject list (each routes to a department inbox backend-side).
+const FALLBACK_SUBJECTS = ["General", "Licensing", "Payment issues"];
+const subjectEntries = await softFetchStrapi<ContactSubject>(
+  "/api/contact-subjects?fields[0]=label&sort=label:asc",
+);
+const subjects = subjectEntries.length
+  ? [...new Set(subjectEntries.map((s) => s.label))]
+  : FALLBACK_SUBJECTS;
 
 const result = Astro.getActionResult(actions.contact.send);
 const success = result && !result.error;
@@ -160,7 +170,10 @@ const details = [
 
           <label class={labelClass}>
             Subject *
-            <input class={inputClass} type="text" name="subject" required />
+            <select class={inputClass} name="subject" required>
+              <option value="" disabled selected>Select a subject…</option>
+              {subjects.map((label) => <option value={label}>{label}</option>)}
+            </select>
             {
               fieldErrors.subject && (
                 <span class="mt-1 block text-xs text-red-600">

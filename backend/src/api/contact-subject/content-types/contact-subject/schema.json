@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contact_subjects",
+  "info": {
+    "singularName": "contact-subject",
+    "pluralName": "contact-subjects",
+    "displayName": "Contact Subject",
+    "description": "Subjects offered on the contact form; each routes to a department email."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "recipientEmail": {
+      "type": "email",
+      "required": true
+    }
+  }
+}

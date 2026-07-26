@@ -37,10 +37,7 @@ const fmtDate = (d?: string | null): string =>
       </div>
 
       <div>
-        <SectionHeading
-          eyebrow="News & notices"
-          title={block.title ?? "Latest News"}
-        />
+        <SectionHeading title={block.title ?? "Latest News"} />
 
         <ul class="mt-8 flex flex-col divide-y divide-border overflow-hidden rounded-card bg-surface shadow-soft ring-1 ring-border/60">
           {

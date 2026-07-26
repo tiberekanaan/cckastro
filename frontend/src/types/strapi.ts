@@ -8,6 +8,9 @@ export interface StrapiMedia {
   alternativeText?: string | null;
   width?: number | null;
   height?: number | null;
+  name?: string | null;
+  ext?: string | null;
+  mime?: string | null;
 }
 
 /* --- Rich text (Strapi "blocks" field) --- */

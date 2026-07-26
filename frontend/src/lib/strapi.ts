@@ -16,10 +16,29 @@ import { site } from "../data/site";
 export const STRAPI_URL: string =
   import.meta.env.STRAPI_URL ?? "http://localhost:1337";
 
-/** Absolute URL for a Strapi media object (handles relative upload paths). */
-export function mediaUrl(media?: StrapiMedia | null): string | undefined {
+/** Strapi Cloud media host base (unset → media URLs are passed through as-is). */
+export const STRAPI_MEDIA_URL: string | undefined =
+  (import.meta.env.STRAPI_MEDIA_URL as string | undefined)?.replace(/\/+$/, "") ||
+  undefined;
+
+/** Direct (backend-host) URL for a Strapi media object — for server-side fetches only. */
+export function upstreamMediaUrl(media?: StrapiMedia | null): string | undefined {
   if (!media?.url) return undefined;
   return media.url.startsWith("http") ? media.url : `${STRAPI_URL}${media.url}`;
+}
+
+/**
+ * Browser-facing URL for a Strapi media object. Media-host URLs are rewritten
+ * to the same-origin `/media/<file>` proxy so visitors never see the Strapi
+ * Cloud host; anything else (local dev uploads, external URLs) passes through.
+ */
+export function mediaUrl(media?: StrapiMedia | null): string | undefined {
+  const url = upstreamMediaUrl(media);
+  if (!url) return undefined;
+  if (STRAPI_MEDIA_URL && url.startsWith(`${STRAPI_MEDIA_URL}/`)) {
+    return `/media/${url.slice(STRAPI_MEDIA_URL.length + 1)}`;
+  }
+  return url;
 }
 
 /** Flatten a Strapi "blocks" rich-text value into plain text (for excerpts). */

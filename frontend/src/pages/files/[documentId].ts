@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { z } from "astro/zod";
-import { STRAPI_URL, mediaUrl } from "../../lib/strapi";
+import { STRAPI_URL, upstreamMediaUrl } from "../../lib/strapi";
 import type {
   OfficialDocument,
   StrapiCollectionResponse,
@@ -38,7 +38,9 @@ export const GET: APIRoute = async ({ params, url }) => {
     return new Response("File temporarily unavailable", { status: 502 });
   }
 
-  const fileUrl = doc ? mediaUrl(doc.file) : undefined;
+  // Direct media-host URL — this fetch is server-side, so no need to (and must
+  // not) go through the same-origin /media proxy rewrite.
+  const fileUrl = doc ? upstreamMediaUrl(doc.file) : undefined;
   if (!doc || !fileUrl) return new Response("Not found", { status: 404 });
 
   let upstream: Response;

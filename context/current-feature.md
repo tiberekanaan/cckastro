@@ -1,6 +1,21 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature: Proxy Strapi media through the frontend domain** (branch `feature/proxy-media`)
+
+- Problem: images (news photos, project galleries, hero/CTA images, CMS logo/favicon) load straight from `…media.strapiapp.com`, still exposing Strapi Cloud hosting after the `web.cck.ki` domain switch.
+- Plan (frontend-only): new SSR catch-all `src/pages/media/[...path].ts` streams files from the media host (new `STRAPI_MEDIA_URL` env var) with upstream Content-Type, long immutable Cache-Control (media filenames are content-hashed), Range passthrough; path validated, unknown → 404, upstream failure → 502.
+- `mediaUrl()` rewrites media-host URLs to `/media/<path>` when `STRAPI_MEDIA_URL` is set; new `upstreamMediaUrl()` keeps the raw URL for server-side fetches (`files/[documentId].ts`).
+- Deploy-order safe: `STRAPI_MEDIA_URL` unset → passthrough (today's behavior). Vercel needs the new env var + redeploy.
+- Media-host quirk: missing objects answer 403 (S3-style), mapped to 404 alongside real 404s.
+- Verified via dev server against live Strapi Cloud: `/media/Kauma_5cc89d366f.webp` → 200 `image/webp` with `public, max-age=31536000, s-maxage=31536000, immutable`; Range request → 206; traversal (`/media/../…`) + unknown file → 404; home, `/news`, `/universal-access`, `/about`, `/resources` render zero `media.strapiapp` references — all img srcs are `/media/<file>`; `/files/<id>` proxy still streams PDFs (server-side fetch via new `upstreamMediaUrl()`). `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
+
+#### Custom backend domain web.cck.ki (committed to `main`, deployed) — ✅ Completed
+
+- Strapi Cloud backend now served from `https://web.cck.ki` instead of the bare `brave-acoustics-674445e63c.strapiapp.com` URL (which still works alongside it — Strapi Cloud keeps both). Admin: `https://web.cck.ki/admin`.
+- Setup (no code): domain added in Strapi Cloud → Settings → Domains; CNAME `web` → `brave-acoustics-674445e63c.strapiapp.com` added in Hostinger DNS for `cck.ki`; Strapi auto-issued SSL once the record propagated.
+- Frontend: `frontend/.env` + Vercel `STRAPI_URL` env var → `https://web.cck.ki` (inlined at build time — required a redeploy); `astro.config.mjs` `image.remotePatterns` stale DigitalOcean host swapped for `web.cck.ki`. Backend CORS untouched (allowlists frontend origins only).
+- Verified live post-redeploy 2026-07-27: `cck.ki` 200, `/contact` renders subject dropdown, `/files/iph2uxueuk2ctpapm868c40w` → 200 `application/pdf` (request-time fetch through the new domain). `astro check` (0 errors) + `npm run build` pass clean. Committed `83c3e69`.
+- Still exposed: uploaded media serves from `…media.strapiapp.com` regardless of the custom domain (image URLs, e.g. the logo, reveal Strapi Cloud hosting) — proxying media would be a separate feature.
 
 #### Proxy Resources file links through the frontend domain (merged to `main`, pushed, branch deleted) — ✅ Completed
 

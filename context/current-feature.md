@@ -2,6 +2,13 @@
 
 **Feature:** _None in progress — next feature TBD._
 
+#### Tenders CTA external link fix (merged to `main`, pushed, branch deleted) — ✅ Completed
+
+- Problem: the Tenders page "Visit Customer Portal" button linked to `cck.ki/portal.cck.ki` — the CMS entry's `buttonLink` is `portal.cck.ki` (no scheme), so the browser resolved it as a relative path; `tenders.astro` rendered it verbatim.
+- Fix (frontend-only): `normalizeButtonLink()` in `tenders.astro` — scheme'd URLs / `#` / `/`-paths pass through; scheme-less values whose first segment contains a dot (looks like a hostname) get `https://` prepended; anything else gets `/` (internal path).
+- Verified via dev server against live Strapi Cloud: button renders `href="https://portal.cck.ki"`. `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-07-27 (`b6be977`); Vercel auto-deploys.
+- Optional content tidy: editor can set the CMS field to `https://portal.cck.ki` in Strapi Cloud → Tenders Page, but the code guard covers scheme-less entries either way.
+
 #### Social share previews (Open Graph / Twitter cards) (merged to `main`, pushed, branch deleted) — ✅ Completed
 
 - Problem: sharing cck.ki on social media showed a blank gray card with title "CCK Homepage | CCK" — the site had zero Open Graph/Twitter meta tags, so scrapers had nothing to work with.

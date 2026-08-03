@@ -2,6 +2,12 @@
 
 **Feature:** _None in progress — next feature TBD._
 
+#### External button links → new tab (merged to `main`, pushed) — ✅ Completed
+
+- Problem: home Hero "Access Customer Portal" button rendered the CMS `buttonLink` (`portal.cck.ki`, scheme-less) verbatim → resolved as `cck.ki/portal.cck.ki`; external buttons also opened in the same tab.
+- Fix (frontend-only): `normalizeButtonLink()` extracted from `tenders.astro` into shared `lib/links.ts` + new `isExternalLink()`; `Hero.astro` normalizes `block.buttonLink`; `ui/Button.astro` gains optional `target` prop (auto `rel="noopener noreferrer"` on `_blank`); Hero + tenders buttons open external links in a new tab.
+- Verified via dev server against live Strapi Cloud: home hero + `/tenders` buttons render `href="https://portal.cck.ki" target="_blank" rel="noopener noreferrer"`. `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-08-04; Vercel auto-deploys.
+
 #### Tenders CTA external link fix (merged to `main`, pushed, branch deleted) — ✅ Completed
 
 - Problem: the Tenders page "Visit Customer Portal" button linked to `cck.ki/portal.cck.ki` — the CMS entry's `buttonLink` is `portal.cck.ki` (no scheme), so the browser resolved it as a relative path; `tenders.astro` rendered it verbatim.

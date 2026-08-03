@@ -3,9 +3,10 @@ interface Props {
   href: string;
   variant?: "primary" | "outline" | "ghost";
   class?: string;
+  target?: "_blank";
 }
 
-const { href, variant = "primary", class: className } = Astro.props;
+const { href, variant = "primary", class: className, target } = Astro.props;
 
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2";
@@ -19,6 +20,11 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 };
 ---
 
-<a href={href} class:list={[base, variants[variant], className]}>
+<a
+  href={href}
+  target={target}
+  rel={target === "_blank" ? "noopener noreferrer" : undefined}
+  class:list={[base, variants[variant], className]}
+>
   <slot />
 </a>

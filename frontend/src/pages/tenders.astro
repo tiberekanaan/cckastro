@@ -4,6 +4,7 @@ export const prerender = false;
 import { marked } from "marked";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { STRAPI_URL } from "../lib/strapi";
+import { isExternalLink, normalizeButtonLink } from "../lib/links";
 import type { TendersPage } from "../types/strapi";
 
 let page: TendersPage | null = null;
@@ -42,19 +43,8 @@ const descriptionHtml = await marked.parse(
 );
 const buttonText = page?.buttonText ?? "Visit the Customer Portal";
 
-// Editors may enter scheme-less external links ("portal.cck.ki"); without a
-// scheme the browser resolves them relative to cck.ki. A leading domain-like
-// segment (contains a dot) means external → https://; otherwise internal path.
-function normalizeButtonLink(href: string): string {
-  const trimmed = href.trim();
-  if (trimmed === "") return "#";
-  if (/^(https?:|mailto:|tel:|#|\/)/i.test(trimmed)) return trimmed;
-  const firstSegment = trimmed.split("/")[0];
-  return firstSegment.includes(".")
-    ? `https://${trimmed}`
-    : `/${trimmed}`;
-}
 const buttonLink = normalizeButtonLink(page?.buttonLink ?? "#");
+const buttonExternal = isExternalLink(buttonLink);
 ---
 
 <BaseLayout
@@ -79,6 +69,8 @@ const buttonLink = normalizeButtonLink(page?.buttonLink ?? "#");
       <div class="mt-10">
         <a
           href={buttonLink}
+          target={buttonExternal ? "_blank" : undefined}
+          rel={buttonExternal ? "noopener noreferrer" : undefined}
           class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg"
         >
           {buttonText}

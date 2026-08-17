@@ -1,9 +1,13 @@
 #### Current Feature
 
-**Feature:** Per-article Facebook/OG share image for news (branch `fix/news-og-image`)
+**Feature:** _None in progress — next feature TBD._
 
-- Problem: sharing a news article to Facebook shows the generic site OG card, not the article's photo — `news/[slug].astro` never passes `ogImage` to `BaseLayout` (prop already exists, wired for the OG feature but unused).
-- Fix (frontend-only): pass the article photo (`mediaUrl()` result) as `ogImage`; `BaseLayout` already absolutizes it against `Astro.site`. No photo → site default card.
+#### Per-article Facebook/OG share image for news (merged to `main`, pushed, branch deleted) — ✅ Completed
+
+- Problem: sharing a news article to Facebook showed the generic site OG card, not the article's photo — `news/[slug].astro` never passed `ogImage` to `BaseLayout` (prop already existed, unused).
+- Fix (frontend-only, one line): pass the article photo (`mediaUrl()` result) as `ogImage`; `BaseLayout` absolutizes it against `Astro.site`. No photo / not-found → site default card; 1200×630 size hints correctly emitted only for the default.
+- Verified via dev server against live Strapi Cloud: article `og:image` + `twitter:image` → `https://cck.ki/media/<photo>`; bad slug → default `https://cck.ki/og-image.jpg`. `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-08-17 (`1118e5c`); Vercel auto-deploys.
+- Post-deploy: previously-shared article URLs need a re-scrape in the Facebook Sharing Debugger (FB caches old cards). `og:image:alt` still reads the site name, not the photo alt — cosmetic, left as is.
 
 #### Social share buttons on news articles (merged to `main`, pushed) — ✅ Completed
 

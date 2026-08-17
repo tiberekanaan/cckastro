@@ -2,6 +2,11 @@
 
 **Feature:** _None in progress — next feature TBD._
 
+#### Footer logo hover restyle (merged to `main`, pushed, branch deleted) — ✅ Completed
+
+- Frontend-only, one line in `Footer.astro`: resting `opacity-60 grayscale` mute removed — coat of arms now always full color; hover gains a gentle lift (`-translate-y-1` + 3% scale) with a soft golden drop-shadow glow (matches the coat-of-arms gold on navy), 500ms ease-out, disabled under `motion-reduce`.
+- `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-08-18 (`5c5c7e9`); Vercel auto-deploys.
+
 #### Kiribati (Gilbertese) language toggle on news articles (merged to `main`, pushed, branch deleted) — ✅ Completed
 
 - Backend: Strapi i18n enabled on News (`title` + `description` localized; `date`/`photo` shared across locales; `slug` is a UID so Strapi auto-localizes it). Custom locale `gil` registered in bootstrap via the i18n locales service — `gil` is not in Strapi's predefined ISO list (admin UI can't add it), but only admin routes validate against that list; the content API accepts any DB-registered locale. Existing entries kept `locale: en` after the migration.

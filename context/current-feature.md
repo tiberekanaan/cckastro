@@ -1,9 +1,13 @@
 #### Current Feature
 
-**Feature:** Social share buttons on news articles (branch `feature/news-share-buttons`)
+**Feature:** _None in progress — next feature TBD._
 
-- Frontend-only. Three share buttons under the news article title/date on `news/[slug].astro`: **Facebook** (`facebook.com/sharer`), **Messenger** (`fb-messenger://share` app deep link — opens the Messenger app; no FB App ID needed, primary audience is mobile), **Email** (`mailto:` with title + link).
-- New `components/news/ShareButtons.astro` — inline brand SVGs (lucide has no Messenger mark), absolute share URL built from `Astro.site` + path.
+#### Social share buttons on news articles (merged to `main`, pushed) — ✅ Completed
+
+- Frontend-only. Three share buttons under the news article title/date on `news/[slug].astro`: **Facebook** (`facebook.com/sharer`, new tab), **Messenger** (`fb-messenger://share` app deep link — opens the Messenger app; desktop web Send dialog would need an FB App ID, skipped since audience is mobile-first), **Email** (`mailto:` with title subject + title/link body).
+- New `components/news/ShareButtons.astro` — "Share:" label + circular brand-colored icon buttons (inline FB/Messenger SVGs — lucide has no Messenger mark — + `lucide:mail`); absolute share URL built from `Astro.site` + path.
+- Verified in browser via dev server against live Strapi Cloud: buttons render under title/date with correct `https://cck.ki/news/<slug>` share hrefs. `astro check` (0 errors) + `npm run build` pass clean. Merged + pushed 2026-08-17 (`89d8364`); Vercel auto-deploys.
+- Note: FB shares show the site default OG image — per-article `og:image` from the news photo is still unwired (separate feature).
 
 #### External button links → new tab (merged to `main`, pushed) — ✅ Completed
 

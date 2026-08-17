@@ -55,6 +55,26 @@ const uniqueSlug = (base: string, used: Set<string>): string => {
   return slug;
 };
 
+// Gilbertese is absent from Strapi's predefined ISO locale list, so the admin
+// UI can't add it — register it via the i18n locales service instead (only the
+// admin routes validate codes against that list; the content API accepts any
+// registered locale).
+async function registerKiribatiLocale(strapi: Core.Strapi): Promise<void> {
+  try {
+    const locales = strapi.plugin('i18n').service('locales');
+    const existing = await locales.findByCode('gil');
+    if (!existing) {
+      await locales.create({
+        code: 'gil',
+        name: 'Kiribati (Gilbertese) (gil)',
+      });
+      strapi.log.info('[i18n] registered Kiribati (gil) locale');
+    }
+  } catch (err) {
+    strapi.log.error(`[i18n] failed to register gil locale: ${err}`);
+  }
+}
+
 // Generate a clean slug from the title for any entry still missing one.
 async function backfillSlugs(strapi: Core.Strapi): Promise<void> {
   for (const uid of SLUGGED_TYPES) {
@@ -128,6 +148,9 @@ export default {
           .create({ data: { action, role: publicRole.id } });
       }
     }
+
+    // Make the Kiribati locale available for News translations.
+    await registerKiribatiLocale(strapi);
 
     // Backfill clean slugs for entries created before the `slug` field existed.
     await backfillSlugs(strapi);

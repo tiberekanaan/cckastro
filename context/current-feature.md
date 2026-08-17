@@ -1,6 +1,12 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Kiribati (Gilbertese) language toggle on news articles — branch `feature/news-kiribati-toggle`.
+
+- News currently has no localization (empty `pluginOptions`, live API rejects `locale` key). Goal: editors add a Kiribati translation per article; readers toggle English ⇄ Kiribati on `news/[slug].astro`.
+- Backend: enable Strapi i18n on the News content type (`title` + `description` localized; `date`/`photo` shared across locales; `slug` is a UID so Strapi auto-localizes it). Register custom locale `gil` (Gilbertese) in bootstrap via the i18n locales service — `gil` is not in Strapi's predefined ISO list (admin UI can't add it), but only admin routes validate against that list; the content API accepts any DB-registered locale.
+- Frontend: article page reads `?lang=gil`; after the English fetch, look up the `gil` localization by `documentId` + `locale=gil`. If it exists, render a zero-JS English/Kiribati toggle (query-param links); `lang=gil` renders the Kiribati title/body with shared date/photo. No translation → no toggle, page unchanged.
+- Editors: Content Manager locale switcher (top right of a News entry) → "Kiribati (Gilbertese) (gil)" → fill title/body → Publish. Untranslated articles simply show no toggle.
+- Implemented + verified locally (2026-08-17): schema synced on local Strapi, existing entries kept `locale: en`, bootstrap registered `gil`; test translation of the Starlink article seeded via `strapi console` (placeholder Gilbertese — kept in local dev DB only). Browser-verified: pill toggle under the date (active state swaps), Kiribati title/body render with shared photo/date, untranslated article shows no toggle and `?lang=gil` falls back to English, missing-translation findOne 404s. `tsc --noEmit` (backend), `astro check` (0 errors) + `npm run build` pass clean. Awaiting commit approval.
 
 #### Per-article Facebook/OG share image for news (merged to `main`, pushed, branch deleted) — ✅ Completed
 

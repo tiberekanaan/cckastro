@@ -1,6 +1,9 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Social share buttons on news articles (branch `feature/news-share-buttons`)
+
+- Frontend-only. Three share buttons under the news article title/date on `news/[slug].astro`: **Facebook** (`facebook.com/sharer`), **Messenger** (`fb-messenger://share` app deep link — opens the Messenger app; no FB App ID needed, primary audience is mobile), **Email** (`mailto:` with title + link).
+- New `components/news/ShareButtons.astro` — inline brand SVGs (lucide has no Messenger mark), absolute share URL built from `Astro.site` + path.
 
 #### External button links → new tab (merged to `main`, pushed) — ✅ Completed
 

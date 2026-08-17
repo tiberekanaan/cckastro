@@ -1,0 +1,50 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  url: string;
+}
+
+const { title, url } = Astro.props;
+
+const encodedUrl = encodeURIComponent(url);
+const facebookHref = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+// App deep link — opens the Messenger app directly (no FB App ID required).
+const messengerHref = `fb-messenger://share/?link=${encodedUrl}`;
+const emailHref = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${title}\n\n${url}`)}`;
+
+const buttonClass =
+  "inline-flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 hover:shadow-md";
+---
+
+<div class="mt-5 flex items-center gap-3">
+  <span class="text-sm font-semibold text-muted-foreground">Share:</span>
+  <a
+    href={facebookHref}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Share on Facebook"
+    class:list={[buttonClass, "bg-[#1877F2]"]}
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-4 w-4">
+      <path
+        d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.027 4.388 11.021 10.125 11.927v-8.437H7.078v-3.49h3.047v-2.66c0-3.007 1.792-4.669 4.533-4.669 1.313 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z"
+      ></path>
+    </svg>
+  </a>
+  <a
+    href={messengerHref}
+    aria-label="Share on Messenger"
+    class:list={[buttonClass, "bg-[#0084FF]"]}
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-4 w-4">
+      <path
+        d="M12 0C5.24 0 0 4.95 0 11.64c0 3.499 1.434 6.522 3.769 8.61a.96.96 0 0 1 .323.683l.065 2.135a.96.96 0 0 0 1.347.85l2.381-1.052a.96.96 0 0 1 .641-.047c1.095.301 2.26.462 3.474.462 6.76 0 12-4.95 12-11.64C24 4.95 18.76 0 12 0Zm-6.616 15.05 3.525-5.593a1.8 1.8 0 0 1 2.603-.48l2.804 2.103a.72.72 0 0 0 .867-.003l3.786-2.874c.505-.383 1.165.222.826.76l-3.524 5.592a1.8 1.8 0 0 1-2.604.48l-2.804-2.103a.72.72 0 0 0-.867.003l-3.786 2.874c-.505.384-1.165-.221-.826-.759Z"
+      ></path>
+    </svg>
+  </a>
+  <a href={emailHref} aria-label="Share by email" class:list={[buttonClass, "bg-primary"]}>
+    <Icon name="lucide:mail" class="h-4 w-4" />
+  </a>
+</div>

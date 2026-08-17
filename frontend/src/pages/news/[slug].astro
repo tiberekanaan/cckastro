@@ -9,6 +9,9 @@ import type { NewsItem, StrapiCollectionResponse } from "../../types/strapi";
 
 const { slug } = Astro.params;
 
+// Kiribati (Gilbertese) locale registered in the backend bootstrap.
+const KIRIBATI_LOCALE = "gil";
+
 let article: NewsItem | null = null;
 let loadError = false;
 
@@ -41,6 +44,29 @@ try {
 
 if (!article && !loadError) Astro.response.status = 404;
 
+// Published Kiribati localization (shares the article's documentId), if any.
+let translation: NewsItem | null = null;
+if (article?.documentId) {
+  try {
+    const res = await fetch(
+      `${STRAPI_URL}/api/news/${article.documentId}?locale=${KIRIBATI_LOCALE}`,
+    );
+    if (res.ok) {
+      const json: { data: NewsItem | null } = await res.json();
+      translation = json.data ?? null;
+    }
+  } catch (err) {
+    console.error("[news/[slug]] Kiribati translation fetch failed:", err);
+  }
+}
+
+// ?lang=gil renders the Kiribati version when a translation exists.
+const lang =
+  translation && Astro.url.searchParams.get("lang") === KIRIBATI_LOCALE
+    ? KIRIBATI_LOCALE
+    : "en";
+const display = lang === KIRIBATI_LOCALE && translation ? translation : article;
+
 // Other recent stories for the "More News" section (newest first, current excluded).
 let moreNews: NewsItem[] = [];
 if (article) {
@@ -68,15 +94,16 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
 const fmtDate = (d?: string | null): string =>
   d ? dateFmt.format(new Date(d)) : "";
 
+// Photo and date are shared (non-localized) fields — always read the English entry.
 const photo = mediaUrl(article?.photo);
-const body = article?.description ?? [];
+const body = display?.description ?? [];
 
 // Absolute URL for the share targets (Astro.site = https://cck.ki).
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <BaseLayout
-  title={article?.title ?? "News not found"}
+  title={display?.title ?? "News not found"}
   description={undefined}
   ogImage={photo}
 >
@@ -94,14 +121,46 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           <>
             <header class="mt-6">
               <h1 class="font-serif text-4xl font-bold leading-tight text-primary sm:text-5xl">
-                {article.title}
+                {display?.title ?? article.title}
               </h1>
               {article.date && (
                 <time class="mt-3 block text-sm font-medium text-muted-foreground">
                   {fmtDate(article.date)}
                 </time>
               )}
-              <ShareButtons title={article.title ?? ""} url={shareUrl} />
+              {translation && (
+                <nav
+                  aria-label="Article language"
+                  class="mt-4 inline-flex items-center rounded-full border border-border bg-surface-muted p-1 text-sm font-semibold"
+                >
+                  <a
+                    href={Astro.url.pathname}
+                    aria-current={lang === "en" ? "page" : undefined}
+                    class={`rounded-full px-4 py-1.5 transition-colors ${
+                      lang === "en"
+                        ? "bg-primary text-white"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    English
+                  </a>
+                  <a
+                    href={`${Astro.url.pathname}?lang=${KIRIBATI_LOCALE}`}
+                    aria-current={lang === KIRIBATI_LOCALE ? "page" : undefined}
+                    class={`rounded-full px-4 py-1.5 transition-colors ${
+                      lang === KIRIBATI_LOCALE
+                        ? "bg-primary text-white"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    Kiribati
+                  </a>
+                </nav>
+              )}
+              <ShareButtons
+                title={display?.title ?? article.title ?? ""}
+                url={shareUrl}
+              />
             </header>
 
             {photo && (

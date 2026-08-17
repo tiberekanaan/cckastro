@@ -1,6 +1,9 @@
 #### Current Feature
 
-**Feature:** _None in progress — next feature TBD._
+**Feature:** Per-article Facebook/OG share image for news (branch `fix/news-og-image`)
+
+- Problem: sharing a news article to Facebook shows the generic site OG card, not the article's photo — `news/[slug].astro` never passes `ogImage` to `BaseLayout` (prop already exists, wired for the OG feature but unused).
+- Fix (frontend-only): pass the article photo (`mediaUrl()` result) as `ogImage`; `BaseLayout` already absolutizes it against `Astro.site`. No photo → site default card.
 
 #### Social share buttons on news articles (merged to `main`, pushed) — ✅ Completed
 
